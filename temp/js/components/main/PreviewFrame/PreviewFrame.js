@@ -4,178 +4,182 @@ import { Box, Typography, CircularProgress } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { setControlsSchema } from "../../../store/actions";
 export const PreviewFrame = () => {
-  const dispatch = useDispatch();
-  const iframeRef = useRef(null);
-  const {
-    currentPage,
-    zoom,
-    viewport,
-    direction,
-    controlValues,
-    customCss,
-    customJs,
-    loading,
-  } = useSelector((state) => state.app);
-  const sendMessageToFrame = useCallback((type, payload) => {
-    if (iframeRef.current?.contentWindow) {
-      iframeRef.current.contentWindow.postMessage(
-        {
-          source: "mini-storybook",
-          type,
-          payload,
-        },
-        "*",
-      );
-    }
-  }, []);
-  const loadControlsSchema = useCallback(
-    async (pagePath) => {
-      try {
-        const schemaPath = pagePath.replace(/\.html$/, ".props.schema.json");
-        const response = await fetch(`/${schemaPath}`);
-        if (response.ok) {
-          const schema = await response.json();
-          dispatch(setControlsSchema(schema));
-        } else {
-          dispatch(setControlsSchema(null));
+    const dispatch = useDispatch();
+    const iframeRef = useRef(null);
+    const {
+        currentPage,
+        zoom,
+        viewport,
+        direction,
+        controlValues,
+        customCss,
+        customJs,
+        loading
+    } = useSelector((state) => state.app);
+    const sendMessageToFrame = useCallback((type, payload) => {
+        if (iframeRef.current?.contentWindow) {
+            iframeRef.current.contentWindow.postMessage(
+                {
+                    source: "hub2color",
+                    type,
+                    payload
+                },
+                "*"
+            );
         }
-      } catch (error) {
-        console.warn("Failed to load schema for", pagePath, error);
-        dispatch(setControlsSchema(null));
-      }
-    },
-    [dispatch],
-  );
-  const handleIframeLoad = useCallback(() => {
-    if (!currentPage) return;
-    sendMessageToFrame("NAVIGATED", { path: currentPage });
-    sendMessageToFrame("SET_DIR", { dir: direction });
-    sendMessageToFrame("SET_ZOOM", { scale: zoom });
-    if (customCss) {
-      sendMessageToFrame("APPLY_CSS", { css: customCss });
-    }
-    if (customJs) {
-      sendMessageToFrame("APPLY_JS", { js: customJs });
-    }
-    Object.entries(controlValues).forEach(([name, value]) => {
-      sendMessageToFrame("CONTROL_CHANGE", { name, value });
-    });
-  }, [
-    currentPage,
-    direction,
-    zoom,
-    customCss,
-    customJs,
-    controlValues,
-    sendMessageToFrame,
-  ]);
-  useEffect(() => {
-    if (currentPage) {
-      loadControlsSchema(currentPage);
-    }
-  }, [currentPage, loadControlsSchema]);
-  useEffect(() => {
-    sendMessageToFrame("SET_DIR", { dir: direction });
-  }, [direction, sendMessageToFrame]);
-  useEffect(() => {
-    sendMessageToFrame("SET_ZOOM", { scale: zoom });
-  }, [zoom, sendMessageToFrame]);
-  useEffect(() => {
-    if (customCss) {
-      sendMessageToFrame("APPLY_CSS", { css: customCss });
-    }
-  }, [customCss, sendMessageToFrame]);
-  useEffect(() => {
-    if (customJs) {
-      sendMessageToFrame("APPLY_JS", { js: customJs });
-    }
-  }, [customJs, sendMessageToFrame]);
-  useEffect(() => {
-    Object.entries(controlValues).forEach(([name, value]) => {
-      sendMessageToFrame("CONTROL_CHANGE", { name, value });
-    });
-  }, [controlValues, sendMessageToFrame]);
-  const getViewportWidth = () => {
-    switch (viewport) {
-      case "mobile":
-        return 375;
-      case "tablet":
-        return 768;
-      default:
-        return "100%";
-    }
-  };
-  if (loading) {
-    return _jsx(Box, {
-      sx: {
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        bgcolor: "#f5f5f5",
-      },
-      children: _jsx(CircularProgress, {}),
-    });
-  }
-  if (!currentPage) {
-    return _jsxs(Box, {
-      sx: {
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        bgcolor: "#f5f5f5",
-        flexDirection: "column",
-        gap: 2,
-      },
-      children: [
-        _jsx(Typography, {
-          variant: "h6",
-          color: "text.secondary",
-          children: "Select a page to preview",
-        }),
-        _jsx(Typography, {
-          variant: "body2",
-          color: "text.secondary",
-          children: "Choose a component from the sidebar to get started",
-        }),
-      ],
-    });
-  }
-  return _jsx(Box, {
-    sx: {
-      flex: 1,
-      bgcolor: "#f5f5f5",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      p: 2,
-      overflow: "hidden",
-    },
-    children: _jsx(Box, {
-      sx: {
-        width: getViewportWidth(),
-        height: "100%",
-        bgcolor: "white",
-        border: 1,
-        borderColor: "divider",
-        borderRadius: 1,
-        overflow: "hidden",
-        transform: `scale(${zoom})`,
-        transformOrigin: "center center",
-      },
-      children: _jsx("iframe", {
-        ref: iframeRef,
-        src: `/${currentPage}`,
-        style: {
-          width: "100%",
-          height: "100%",
-          border: "none",
-          display: "block",
+    }, []);
+    const loadControlsSchema = useCallback(
+        async (pagePath) => {
+            try {
+                const schemaPath = pagePath.replace(
+                    /\.html$/,
+                    ".props.schema.json"
+                );
+                const response = await fetch(`/${schemaPath}`);
+                if (response.ok) {
+                    const schema = await response.json();
+                    dispatch(setControlsSchema(schema));
+                } else {
+                    dispatch(setControlsSchema(null));
+                }
+            } catch (error) {
+                console.warn("Failed to load schema for", pagePath, error);
+                dispatch(setControlsSchema(null));
+            }
         },
-        onLoad: handleIframeLoad,
-        title: "Component Preview",
-      }),
-    }),
-  });
+        [dispatch]
+    );
+    const handleIframeLoad = useCallback(() => {
+        if (!currentPage) return;
+        sendMessageToFrame("NAVIGATED", { path: currentPage });
+        sendMessageToFrame("SET_DIR", { dir: direction });
+        sendMessageToFrame("SET_ZOOM", { scale: zoom });
+        if (customCss) {
+            sendMessageToFrame("APPLY_CSS", { css: customCss });
+        }
+        if (customJs) {
+            sendMessageToFrame("APPLY_JS", { js: customJs });
+        }
+        Object.entries(controlValues).forEach(([name, value]) => {
+            sendMessageToFrame("CONTROL_CHANGE", { name, value });
+        });
+    }, [
+        currentPage,
+        direction,
+        zoom,
+        customCss,
+        customJs,
+        controlValues,
+        sendMessageToFrame
+    ]);
+    useEffect(() => {
+        if (currentPage) {
+            loadControlsSchema(currentPage);
+        }
+    }, [currentPage, loadControlsSchema]);
+    useEffect(() => {
+        sendMessageToFrame("SET_DIR", { dir: direction });
+    }, [direction, sendMessageToFrame]);
+    useEffect(() => {
+        sendMessageToFrame("SET_ZOOM", { scale: zoom });
+    }, [zoom, sendMessageToFrame]);
+    useEffect(() => {
+        if (customCss) {
+            sendMessageToFrame("APPLY_CSS", { css: customCss });
+        }
+    }, [customCss, sendMessageToFrame]);
+    useEffect(() => {
+        if (customJs) {
+            sendMessageToFrame("APPLY_JS", { js: customJs });
+        }
+    }, [customJs, sendMessageToFrame]);
+    useEffect(() => {
+        Object.entries(controlValues).forEach(([name, value]) => {
+            sendMessageToFrame("CONTROL_CHANGE", { name, value });
+        });
+    }, [controlValues, sendMessageToFrame]);
+    const getViewportWidth = () => {
+        switch (viewport) {
+            case "mobile":
+                return 375;
+            case "tablet":
+                return 768;
+            default:
+                return "100%";
+        }
+    };
+    if (loading) {
+        return _jsx(Box, {
+            sx: {
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                bgcolor: "#f5f5f5"
+            },
+            children: _jsx(CircularProgress, {})
+        });
+    }
+    if (!currentPage) {
+        return _jsxs(Box, {
+            sx: {
+                flex: 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                bgcolor: "#f5f5f5",
+                flexDirection: "column",
+                gap: 2
+            },
+            children: [
+                _jsx(Typography, {
+                    variant: "h6",
+                    color: "text.secondary",
+                    children: "Select a page to preview"
+                }),
+                _jsx(Typography, {
+                    variant: "body2",
+                    color: "text.secondary",
+                    children:
+                        "Choose a component from the sidebar to get started"
+                })
+            ]
+        });
+    }
+    return _jsx(Box, {
+        sx: {
+            flex: 1,
+            bgcolor: "#f5f5f5",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            p: 2,
+            overflow: "hidden"
+        },
+        children: _jsx(Box, {
+            sx: {
+                width: getViewportWidth(),
+                height: "100%",
+                bgcolor: "white",
+                border: 1,
+                borderColor: "divider",
+                borderRadius: 1,
+                overflow: "hidden",
+                transform: `scale(${zoom})`,
+                transformOrigin: "center center"
+            },
+            children: _jsx("iframe", {
+                ref: iframeRef,
+                src: `/${currentPage}`,
+                style: {
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                    display: "block"
+                },
+                onLoad: handleIframeLoad,
+                title: "Component Preview"
+            })
+        })
+    });
 };

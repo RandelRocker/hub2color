@@ -24,7 +24,7 @@ export const PreviewFrame = () => {
             if (iframeRef.current?.contentWindow) {
                 iframeRef.current.contentWindow.postMessage(
                     {
-                        source: "mini-storybook",
+                        source: "hub2color",
                         type,
                         payload
                     },
@@ -38,7 +38,10 @@ export const PreviewFrame = () => {
     const loadControlsSchema = useCallback(
         async (pagePath: string) => {
             try {
-                const schemaPath = pagePath.replace(/\.html$/, ".props.schema.json");
+                const schemaPath = pagePath.replace(
+                    /\.html$/,
+                    ".props.schema.json"
+                );
                 const response = await fetch(`/${schemaPath}`);
 
                 if (response.ok) {
