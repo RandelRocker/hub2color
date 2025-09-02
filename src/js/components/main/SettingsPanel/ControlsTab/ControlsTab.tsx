@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
     Box,
     Table,
@@ -33,27 +33,38 @@ export const ControlsTab = () => {
     const { controlsSchema, controlValues } = useSelector(
         (state: RootState) => state.app
     );
-    const { control, watch, setValue } = useForm();
+    const { control, watch, reset } = useForm();
+    const isInitializing = useRef(false);
 
     const watchedValues = watch();
 
+    // Reset form when schema changes (component switching)
     useEffect(() => {
         if (controlsSchema) {
-            // Initialize form with current values
-            Object.entries(controlValues).forEach(([name, value]) => {
-                setValue(name, value);
-            });
+            isInitializing.current = true;
+            const defaultValues = { ...controlsSchema.defaults, ...controlValues };
+            reset(defaultValues);
+            // Small delay to prevent race condition
+            setTimeout(() => {
+                isInitializing.current = false;
+            }, 50);
         }
-    }, [controlsSchema, controlValues, setValue]);
+    }, [controlsSchema, controlValues, reset]);
 
+    // Update store when form values change (but not during initialization)
     useEffect(() => {
-        // Update store when form values change
+        if (isInitializing.current) return;
+        
         Object.entries(watchedValues).forEach(([name, value]) => {
-            if (value !== undefined && controlValues[name] !== value) {
+            if (
+                value !== undefined && 
+                controlValues[name] !== value &&
+                controlsSchema?.fields.some(f => f.name === name)
+            ) {
                 dispatch(setControlValue(name, value));
             }
         });
-    }, [watchedValues, controlValues, dispatch]);
+    }, [watchedValues, controlValues, dispatch, controlsSchema]);
 
     if (!controlsSchema) {
         return (
@@ -81,7 +92,6 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue={controlValues[name] || ""}
                         render={({ field: fieldProps }) => (
                             <TextField
                                 {...fieldProps}
@@ -103,7 +113,6 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue={controlValues[name] || 0}
                         render={({ field: fieldProps }) => (
                             <TextField
                                 {...fieldProps}
@@ -127,7 +136,6 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue={controlValues[name] || false}
                         render={({ field: fieldProps }) => (
                             <Switch
                                 checked={fieldProps.value}
@@ -145,7 +153,6 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue={controlValues[name] || options?.[0] || ""}
                         render={({ field: fieldProps }) => (
                             <FormControl size="small" fullWidth>
                                 <Select
@@ -173,7 +180,6 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue={controlValues[name] || []}
                         render={({ field: fieldProps }) => (
                             <FormControl size="small" fullWidth>
                                 <Select
@@ -227,7 +233,6 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue={controlValues[name] || options?.[0] || ""}
                         render={({ field: fieldProps }) => (
                             <RadioGroup {...fieldProps} row sx={{ gap: 1 }}>
                                 {options?.map((option: string) => (
@@ -254,7 +259,6 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue={controlValues[name] || min || 0}
                         render={({ field: fieldProps }) => (
                             <Box sx={{ px: 1 }}>
                                 <Slider
@@ -275,7 +279,6 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue={controlValues[name] || "#000000"}
                         render={({ field: fieldProps }) => (
                             <TextField
                                 {...fieldProps}
