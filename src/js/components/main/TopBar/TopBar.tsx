@@ -49,6 +49,7 @@ export const TopBar = () => {
                 borderBottom: 1,
                 borderColor: "divider",
                 display: "flex",
+                backgroundColor: "#F7F9FC",
                 alignItems: "center",
                 px: 2,
                 gap: 1

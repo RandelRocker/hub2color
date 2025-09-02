@@ -113,6 +113,7 @@ export const SettingsPanel = () => {
                     borderBottom: 1,
                     borderColor: "divider",
                     justifyContent: "space-between",
+                    backgroundColor: "#F7F9FC",
                     "@media (min-width:600px)": {
                         paddingRight: "16px",
                         paddingLeft: "16px"
