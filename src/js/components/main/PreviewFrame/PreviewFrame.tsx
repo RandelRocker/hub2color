@@ -38,7 +38,7 @@ export const PreviewFrame = () => {
     const loadControlsSchema = useCallback(
         async (pagePath: string) => {
             try {
-                const schemaPath = pagePath.replace(/\.html$/, ".schema.json");
+                const schemaPath = pagePath.replace(/\.html$/, ".props.schema.json");
                 const response = await fetch(`/${schemaPath}`);
 
                 if (response.ok) {

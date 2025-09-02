@@ -62,8 +62,8 @@ Node: 18+ or 20+. Use ES2022 syntax where convenient.
 
 ### Controls Schema (derived path)
 
-For a given page item with `path: "components/button.html"`, fetch its controls schema from the **same directory** with suffix `.schema.json`:
-`public/components/button.schema.json`
+For a given page item with `path: "components/button.html"`, fetch its controls schema from the **same directory** with suffix `.props.schema.json`:
+`public/components/button.props.schema.json`
 
 Example controls schema:
 
