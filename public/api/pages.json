@@ -1,0 +1,26 @@
+[
+  {
+    "sectionTitle": "Components",
+    "items": [
+      { 
+        "title": "Button", 
+        "path": "components/button.html",
+        "componentTemplates": [
+          { "label": "Single button", "value": "single" },
+          { "label": "Button sizes", "value": "sizes" },
+          { "label": "Button variants", "value": "variants" },
+          { "label": "All buttons", "value": "all" }
+        ]
+      },
+      { "title": "Card", "path": "components/card.html" },
+      { "title": "Input Field", "path": "components/input.html" }
+    ]
+  },
+  {
+    "sectionTitle": "Layouts",
+    "items": [
+      { "title": "Hero Section", "path": "layouts/hero.html" },
+      { "title": "Product Grid", "path": "layouts/grid.html" }
+    ]
+  }
+]

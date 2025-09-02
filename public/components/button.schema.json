@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "defaults": {
+    "label": "Click me",
+    "variant": "contained",
+    "disabled": false,
+    "size": "medium"
+  },
+  "fields": [
+    {
+      "name": "label",
+      "label": "Label",
+      "description": "Button text",
+      "type": "text"
+    },
+    {
+      "name": "variant",
+      "label": "Variant",
+      "description": "Button style variant",
+      "type": "select",
+      "options": ["contained", "outlined", "text"]
+    },
+    {
+      "name": "disabled",
+      "label": "Disabled",
+      "description": "Disable the button",
+      "type": "boolean"
+    },
+    {
+      "name": "size",
+      "label": "Size",
+      "description": "Button size",
+      "type": "radio",
+      "options": ["small", "medium", "large"]
+    }
+  ]
+}

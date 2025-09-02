@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hero Layout</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: white;
+      }
+
+      .hero {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .hero-content {
+        max-width: 600px;
+      }
+
+      .hero-title {
+        font-size: 48px;
+        font-weight: 700;
+        margin: 0 0 16px 0;
+        line-height: 1.2;
+      }
+
+      .hero-subtitle {
+        font-size: 20px;
+        opacity: 0.9;
+        margin: 0 0 32px 0;
+        line-height: 1.5;
+      }
+
+      .hero-button {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid white;
+        border-radius: 8px;
+        padding: 16px 32px;
+        font-size: 18px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        backdrop-filter: blur(10px);
+      }
+
+      .hero-button:hover {
+        background: white;
+        color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        .hero-title {
+          font-size: 36px;
+        }
+
+        .hero-subtitle {
+          font-size: 18px;
+        }
+
+        .hero-button {
+          font-size: 16px;
+          padding: 12px 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="hero-content">
+        <h1 id="hero-title" class="hero-title">Welcome to the Future</h1>
+        <p id="hero-subtitle" class="hero-subtitle">
+          Discover amazing possibilities with our innovative solution
+        </p>
+        <a href="#" id="hero-button" class="hero-button">Get Started</a>
+      </div>
+    </section>
+
+    <script>
+      (function () {
+        const SRC = "mini-storybook";
+        let title = document.getElementById("hero-title");
+        let subtitle = document.getElementById("hero-subtitle");
+        let button = document.getElementById("hero-button");
+
+        function updateHero() {
+          const heroTitle = window.heroProps?.title || "Welcome to the Future";
+          const heroSubtitle =
+            window.heroProps?.subtitle ||
+            "Discover amazing possibilities with our innovative solution";
+          const buttonText = window.heroProps?.buttonText || "Get Started";
+          const showButton = window.heroProps?.showButton !== false;
+
+          title.textContent = heroTitle;
+          subtitle.textContent = heroSubtitle;
+          button.textContent = buttonText;
+          button.style.display = showButton ? "inline-block" : "none";
+        }
+
+        function ensureStyleTag() {
+          let tag = document.getElementById("injected-css");
+          if (!tag) {
+            tag = document.createElement("style");
+            tag.id = "injected-css";
+            document.head.appendChild(tag);
+          }
+          return tag;
+        }
+
+        function ensureScriptTag() {
+          let tag = document.getElementById("injected-js");
+          if (!tag) {
+            tag = document.createElement("script");
+            tag.id = "injected-js";
+            document.body.appendChild(tag);
+          }
+          return tag;
+        }
+
+        window.addEventListener("message", (e) => {
+          const data = e.data || {};
+          if (data && data.source === SRC) {
+            switch (data.type) {
+              case "APPLY_CSS":
+                ensureStyleTag().textContent = data.payload?.css || "";
+                break;
+              case "APPLY_JS":
+                const js = data.payload?.js || "";
+                const s = ensureScriptTag();
+                s.textContent = js;
+                break;
+              case "SET_DIR":
+                document.documentElement.setAttribute(
+                  "dir",
+                  data.payload?.dir || "ltr",
+                );
+                break;
+              case "CONTROL_CHANGE":
+                if (!window.heroProps) window.heroProps = {};
+                window.heroProps[data.payload?.name] = data.payload?.value;
+                updateHero();
+                break;
+              case "BULK_CONTROLS":
+                window.heroProps = data.payload?.values || {};
+                updateHero();
+                break;
+            }
+          }
+        });
+
+        // Initialize
+        if (!window.heroProps) window.heroProps = {};
+        updateHero();
+      })();
+    </script>
+  </body>
+</html>
