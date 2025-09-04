@@ -92,6 +92,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
+                        defaultValue=""
                         render={({ field: fieldProps }) => (
                             <TextField
                                 {...fieldProps}
@@ -113,6 +114,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
+                        defaultValue=""
                         render={({ field: fieldProps }) => (
                             <TextField
                                 {...fieldProps}
@@ -123,9 +125,9 @@ export const ControlsTab = () => {
                                 slotProps={{
                                     input: {
                                         sx: { fontSize: "0.875rem" }
-                                    }
+                                    },
+                                    htmlInput: { min, max, step }
                                 }}
-                                inputProps={{ min, max, step }}
                             />
                         )}
                     />
@@ -136,6 +138,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
+                        defaultValue={false}
                         render={({ field: fieldProps }) => (
                             <Switch
                                 checked={fieldProps.value}
@@ -153,10 +156,12 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
+                        defaultValue=""
                         render={({ field: fieldProps }) => (
                             <FormControl size="small" fullWidth>
                                 <Select
                                     {...fieldProps}
+                                    value={fieldProps.value ?? ""}
                                     variant="outlined"
                                     sx={{ fontSize: "0.875rem" }}
                                 >
@@ -180,11 +185,13 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
+                        defaultValue={[]}
                         render={({ field: fieldProps }) => (
                             <FormControl size="small" fullWidth>
                                 <Select
                                     {...fieldProps}
                                     multiple
+                                    value={fieldProps.value ?? []}
                                     variant="outlined"
                                     input={<OutlinedInput />}
                                     sx={{ fontSize: "0.875rem" }}
@@ -214,7 +221,7 @@ export const ControlsTab = () => {
                                         >
                                             <Checkbox
                                                 checked={
-                                                    fieldProps.value.indexOf(
+                                                    (fieldProps.value ?? []).indexOf(
                                                         option
                                                     ) > -1
                                                 }
@@ -233,6 +240,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
+                        defaultValue=""
                         render={({ field: fieldProps }) => (
                             <RadioGroup {...fieldProps} row sx={{ gap: 1 }}>
                                 {options?.map((option: string) => (
@@ -259,6 +267,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
+                        defaultValue={min ?? 0}
                         render={({ field: fieldProps }) => (
                             <Box sx={{ px: 1 }}>
                                 <Slider
@@ -279,6 +288,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
+                        defaultValue="#000000"
                         render={({ field: fieldProps }) => (
                             <TextField
                                 {...fieldProps}

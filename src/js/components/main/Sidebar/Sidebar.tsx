@@ -89,21 +89,23 @@ export const Sidebar = () => {
                     placeholder="Find components"
                     value={searchQuery}
                     onChange={handleSearchChange}
-                    InputProps={{
-                        sx: { fontSize: "0.875rem" },
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <IonIcon
-                                    name="search-outline"
-                                    style={{
-                                        height: "1.2em",
-                                        width: "1.2em",
-                                        display: "flex",
-                                        alignItems: "center"
-                                    }}
-                                />
-                            </InputAdornment>
-                        )
+                    slotProps={{
+                        input: {
+                            sx: { fontSize: "0.875rem" },
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <IonIcon
+                                        name="search-outline"
+                                        style={{
+                                            height: "1.2em",
+                                            width: "1.2em",
+                                            display: "flex",
+                                            alignItems: "center"
+                                        }}
+                                    />
+                                </InputAdornment>
+                            )
+                        }
                     }}
                 />
             </Box>
@@ -187,9 +189,11 @@ export const Sidebar = () => {
                                             </ListItemIcon>
                                             <ListItemText
                                                 primary={item.title}
-                                                primaryTypographyProps={{
-                                                    variant: "body2",
-                                                    fontSize: 14
+                                                slotProps={{
+                                                    primary: {
+                                                        variant: "body2",
+                                                        fontSize: 14
+                                                    }
                                                 }}
                                             />
                                         </ListItemButton>
