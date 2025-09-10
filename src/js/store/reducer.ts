@@ -53,7 +53,7 @@ export const appReducer = (
                     );
                     if (selectedTemplate) {
                         draft.selectedTemplate = selectedTemplate;
-                        // draft.controlValues = { ...selectedTemplate.props.defaults };
+                        draft.controlValues = { ...selectedTemplate.props.defaults };
                     }
                 }
                 break;
