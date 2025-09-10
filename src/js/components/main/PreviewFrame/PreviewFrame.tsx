@@ -16,7 +16,8 @@ export const PreviewFrame = () => {
         controlValues,
         customCss,
         customJs,
-        loading
+        loading,
+        selectedTemplate
     } = useSelector((state: RootState) => state.app);
 
     const sendMessageToFrame = useCallback(
@@ -73,6 +74,10 @@ export const PreviewFrame = () => {
             sendMessageToFrame("APPLY_JS", { js: customJs });
         }
 
+        if (selectedTemplate) {
+            sendMessageToFrame("TEMPLATE_CHANGE", { template: selectedTemplate });
+        }
+
         Object.entries(controlValues).forEach(([name, value]) => {
             sendMessageToFrame("CONTROL_CHANGE", { name, value });
         });
@@ -82,6 +87,7 @@ export const PreviewFrame = () => {
         zoom,
         customCss,
         customJs,
+        selectedTemplate,
         controlValues,
         sendMessageToFrame
     ]);
@@ -117,6 +123,12 @@ export const PreviewFrame = () => {
             sendMessageToFrame("CONTROL_CHANGE", { name, value });
         });
     }, [controlValues, sendMessageToFrame]);
+
+    useEffect(() => {
+        if (selectedTemplate) {
+            sendMessageToFrame("TEMPLATE_CHANGE", { template: selectedTemplate });
+        }
+    }, [selectedTemplate, sendMessageToFrame]);
 
     const getViewportWidth = () => {
         switch (viewport) {
