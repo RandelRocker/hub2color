@@ -13,10 +13,10 @@ export const App = () => {
         const loadPages = async () => {
             try {
                 dispatch(setLoading(true));
-                const response = await fetch("/api/pages.json");
+                const response = await fetch("/api/menu.config.json");
                 if (!response.ok) {
                     throw new Error(
-                        `Failed to fetch pages: ${response.status}`,
+                        `Failed to fetch pages: ${response.status}`
                     );
                 }
                 const pages = await response.json();
@@ -26,8 +26,8 @@ export const App = () => {
                     setError(
                         error instanceof Error
                             ? error.message
-                            : "Failed to load pages",
-                    ),
+                            : "Failed to load pages"
+                    )
                 );
             } finally {
                 dispatch(setLoading(false));
@@ -42,7 +42,7 @@ export const App = () => {
             sx={{
                 display: "flex",
                 height: "100vh",
-                bgcolor: "#f8f9fa",
+                bgcolor: "#f8f9fa"
             }}
         >
             <Sidebar />
