@@ -20,15 +20,13 @@ import {
     Checkbox,
     ListItemText,
     OutlinedInput,
-    Chip,
-    Tabs,
-    Tab
+    Chip
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
-import { setControlValue, setSelectedTemplate } from "../../../../store/actions";
+import { setControlValue } from "../../../../store/actions";
 
 export const ControlsTab = () => {
     const dispatch = useDispatch();
@@ -89,9 +87,6 @@ export const ControlsTab = () => {
         });
     }, [watchedValues, controlValues, dispatch, controlsSchema, selectedTemplate]);
 
-    const handleTemplateChange = (_: React.SyntheticEvent, newValue: string) => {
-        dispatch(setSelectedTemplate(newValue));
-    };
 
     if (!controlsSchema) {
         return (
@@ -365,26 +360,6 @@ export const ControlsTab = () => {
 
     return (
         <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-            {controlsSchema.templates && controlsSchema.templates.length > 1 && (
-                <Box sx={{ borderBottom: 1, borderColor: "divider", px: 2 }}>
-                    <Tabs
-                        value={selectedTemplate || controlsSchema.templates[0].templateName}
-                        onChange={handleTemplateChange}
-                        variant="scrollable"
-                        scrollButtons="auto"
-                        sx={{ minHeight: 48 }}
-                    >
-                        {controlsSchema.templates.map((template) => (
-                            <Tab
-                                key={template.templateName}
-                                label={template.templateLabel}
-                                value={template.templateName}
-                                sx={{ minHeight: 48, textTransform: "none" }}
-                            />
-                        ))}
-                    </Tabs>
-                </Box>
-            )}
             <Box sx={{ flex: 1, overflow: "auto" }}>
                 <TableContainer>
                     <Table size="small" stickyHeader>
