@@ -75,7 +75,9 @@ export const PreviewFrame = () => {
         }
 
         if (selectedTemplate) {
-            sendMessageToFrame("TEMPLATE_CHANGE", { template: selectedTemplate });
+            sendMessageToFrame("TEMPLATE_CHANGE", {
+                template: selectedTemplate
+            });
         }
 
         Object.entries(controlValues).forEach(([name, value]) => {
@@ -126,7 +128,9 @@ export const PreviewFrame = () => {
 
     useEffect(() => {
         if (selectedTemplate) {
-            sendMessageToFrame("TEMPLATE_CHANGE", { template: selectedTemplate });
+            sendMessageToFrame("TEMPLATE_CHANGE", {
+                template: selectedTemplate
+            });
         }
     }, [selectedTemplate, sendMessageToFrame]);
 

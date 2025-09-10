@@ -39,7 +39,7 @@ export const appReducer = (
                 if (action.payload) {
                     if (action.payload.templates && action.payload.templates.length > 0) {
                         const firstTemplate = action.payload.templates[0];
-                        draft.selectedTemplate = firstTemplate.templateName;
+                        draft.selectedTemplate = firstTemplate;
                         draft.controlValues = { ...firstTemplate.props.defaults };
                     } else if (action.payload.defaults) {
                         draft.controlValues = { ...action.payload.defaults };
@@ -47,13 +47,13 @@ export const appReducer = (
                 }
                 break;
             case ActionTypes.SET_SELECTED_TEMPLATE:
-                draft.selectedTemplate = action.payload;
                 if (action.payload && draft.controlsSchema?.templates) {
                     const selectedTemplate = draft.controlsSchema.templates.find(
                         t => t.templateName === action.payload
                     );
                     if (selectedTemplate) {
-                        draft.controlValues = { ...selectedTemplate.props.defaults };
+                        draft.selectedTemplate = selectedTemplate;
+                        // draft.controlValues = { ...selectedTemplate.props.defaults };
                     }
                 }
                 break;

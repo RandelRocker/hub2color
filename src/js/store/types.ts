@@ -50,7 +50,7 @@ export interface AppState {
     pages: PageSection[];
     currentPage: string | null;
     controlsSchema: ControlsSchema | null;
-    selectedTemplate: string | null;
+    selectedTemplate: ControlsSchemaTemplate | null;
     controlValues: Record<string, unknown>;
     stylingValues: Record<string, unknown>;
     customCss: string;

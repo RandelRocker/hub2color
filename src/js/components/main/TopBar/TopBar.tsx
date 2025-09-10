@@ -249,7 +249,7 @@ export const TopBar = () => {
                             <Select
                                 name="template"
                                 value={
-                                    selectedTemplate ||
+                                    selectedTemplate?.templateName ||
                                     controlsSchema.templates[0].templateName
                                 }
                                 onChange={handleTemplateChange}

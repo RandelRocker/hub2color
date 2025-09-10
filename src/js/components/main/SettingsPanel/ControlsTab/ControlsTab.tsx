@@ -43,18 +43,24 @@ export const ControlsTab = () => {
         if (controlsSchema) {
             isInitializing.current = true;
             let defaultValues = {};
-            
+
             if (controlsSchema.templates && selectedTemplate) {
                 const template = controlsSchema.templates.find(
-                    t => t.templateName === selectedTemplate
+                    (t) => t.templateName === selectedTemplate?.templateName
                 );
                 if (template) {
-                    defaultValues = { ...template.props.defaults, ...controlValues };
+                    defaultValues = {
+                        ...template.props.defaults,
+                        ...controlValues
+                    };
                 }
             } else if (controlsSchema.defaults) {
-                defaultValues = { ...controlsSchema.defaults, ...controlValues };
+                defaultValues = {
+                    ...controlsSchema.defaults,
+                    ...controlValues
+                };
             }
-            
+
             reset(defaultValues);
             // Small delay to prevent race condition
             setTimeout(() => {
@@ -66,27 +72,36 @@ export const ControlsTab = () => {
     // Update store when form values change (but not during initialization)
     useEffect(() => {
         if (isInitializing.current) return;
-        
+
         Object.entries(watchedValues).forEach(([name, value]) => {
             if (value !== undefined && controlValues[name] !== value) {
                 let hasField = false;
-                
+
                 if (controlsSchema?.templates && selectedTemplate) {
                     const template = controlsSchema.templates.find(
-                        t => t.templateName === selectedTemplate
+                        (t) => t.templateName === selectedTemplate?.templateName
                     );
-                    hasField = template?.props.fields.some(f => f.name === name) || false;
+                    hasField =
+                        template?.props.fields.some((f) => f.name === name) ||
+                        false;
                 } else if (controlsSchema?.fields) {
-                    hasField = controlsSchema.fields.some(f => f.name === name);
+                    hasField = controlsSchema.fields.some(
+                        (f) => f.name === name
+                    );
                 }
-                
+
                 if (hasField) {
                     dispatch(setControlValue(name, value));
                 }
             }
         });
-    }, [watchedValues, controlValues, dispatch, controlsSchema, selectedTemplate]);
-
+    }, [
+        watchedValues,
+        controlValues,
+        dispatch,
+        controlsSchema,
+        selectedTemplate
+    ]);
 
     if (!controlsSchema) {
         return (
@@ -101,7 +116,7 @@ export const ControlsTab = () => {
     const getCurrentSchema = () => {
         if (controlsSchema.templates && selectedTemplate) {
             const template = controlsSchema.templates.find(
-                t => t.templateName === selectedTemplate
+                (t) => t.templateName === selectedTemplate?.templateName
             );
             return template?.props;
         }
@@ -109,7 +124,7 @@ export const ControlsTab = () => {
     };
 
     const currentSchema = getCurrentSchema();
-    
+
     if (!currentSchema?.fields) {
         return (
             <Box sx={{ p: 2, textAlign: "center" }}>
@@ -265,9 +280,9 @@ export const ControlsTab = () => {
                                         >
                                             <Checkbox
                                                 checked={
-                                                    (fieldProps.value ?? []).indexOf(
-                                                        option
-                                                    ) > -1
+                                                    (
+                                                        fieldProps.value ?? []
+                                                    ).indexOf(option) > -1
                                                 }
                                             />
                                             <ListItemText primary={option} />
@@ -365,13 +380,19 @@ export const ControlsTab = () => {
                     <Table size="small" stickyHeader>
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{ fontWeight: 600, width: "20%" }}>
+                                <TableCell
+                                    sx={{ fontWeight: 600, width: "20%" }}
+                                >
                                     Name
                                 </TableCell>
-                                <TableCell sx={{ fontWeight: 600, width: "30%" }}>
+                                <TableCell
+                                    sx={{ fontWeight: 600, width: "30%" }}
+                                >
                                     Description
                                 </TableCell>
-                                <TableCell sx={{ fontWeight: 600, width: "50%" }}>
+                                <TableCell
+                                    sx={{ fontWeight: 600, width: "50%" }}
+                                >
                                     Control
                                 </TableCell>
                             </TableRow>
@@ -395,7 +416,9 @@ export const ControlsTab = () => {
                                             {field.description}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell>{renderControl(field)}</TableCell>
+                                    <TableCell>
+                                        {renderControl(field)}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
