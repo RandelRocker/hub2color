@@ -1,36 +1,76 @@
 {
-  "version": 1,
-  "defaults": {
-    "title": "Card Title",
-    "description": "This is a sample card description that explains what this card is about.",
-    "elevation": "default",
-    "showImage": true
-  },
-  "fields": [
-    {
-      "name": "title",
-      "label": "Title",
-      "description": "Card title text",
-      "type": "text"
-    },
-    {
-      "name": "description",
-      "label": "Description",
-      "description": "Card description text",
-      "type": "text"
-    },
-    {
-      "name": "elevation",
-      "label": "Elevation",
-      "description": "Card shadow style",
-      "type": "select",
-      "options": ["default", "elevated", "outlined"]
-    },
-    {
-      "name": "showImage",
-      "label": "Show Image",
-      "description": "Display the card image",
-      "type": "boolean"
-    }
-  ]
+    "templates": [
+        {
+            "templateName": "default",
+            "templateLabel": "Default Card",
+            "props": {
+                "defaults": {
+                    "title": "Card Title",
+                    "description": "This is a sample card description that explains what this card is about.",
+                    "elevation": "default",
+                    "showImage": true
+                },
+                "fields": [
+                    {
+                        "name": "title",
+                        "label": "Title",
+                        "description": "Card title text",
+                        "type": "text"
+                    },
+                    {
+                        "name": "description",
+                        "label": "Description",
+                        "description": "Card description text",
+                        "type": "text"
+                    },
+                    {
+                        "name": "elevation",
+                        "label": "Elevation",
+                        "description": "Card shadow style",
+                        "type": "select",
+                        "options": ["default", "elevated", "outlined"]
+                    },
+                    {
+                        "name": "showImage",
+                        "label": "Show Image",
+                        "description": "Display the card image",
+                        "type": "boolean"
+                    }
+                ]
+            }
+        },
+        {
+            "templateName": "minimal",
+            "templateLabel": "Minimal Card",
+            "props": {
+                "defaults": {
+                    "title": "Card Title",
+                    "description": "This is a sample card description that explains what this card is about.",
+                    "elevation": "outlined",
+                    "showImage": false
+                },
+                "fields": [
+                    {
+                        "name": "title",
+                        "label": "Title",
+                        "description": "Card title text",
+                        "type": "text"
+                    },
+                    {
+                        "name": "description",
+                        "label": "Description",
+                        "description": "Card description text",
+                        "type": "text"
+                    },
+                    {
+                        "name": "elevation",
+                        "label": "Elevation",
+                        "description": "Card shadow style",
+                        "type": "select",
+                        "options": ["default", "elevated", "outlined"]
+                    }
+                ]
+            }
+        }
+    ]
 }

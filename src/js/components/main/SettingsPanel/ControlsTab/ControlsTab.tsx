@@ -20,17 +20,19 @@ import {
     Checkbox,
     ListItemText,
     OutlinedInput,
-    Chip
+    Chip,
+    Tabs,
+    Tab
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
-import { setControlValue } from "../../../../store/actions";
+import { setControlValue, setSelectedTemplate } from "../../../../store/actions";
 
 export const ControlsTab = () => {
     const dispatch = useDispatch();
-    const { controlsSchema, controlValues } = useSelector(
+    const { controlsSchema, selectedTemplate, controlValues } = useSelector(
         (state: RootState) => state.app
     );
     const { control, watch, reset } = useForm();
@@ -38,39 +40,86 @@ export const ControlsTab = () => {
 
     const watchedValues = watch();
 
-    // Reset form when schema changes (component switching)
+    // Reset form when schema or template changes
     useEffect(() => {
         if (controlsSchema) {
             isInitializing.current = true;
-            const defaultValues = { ...controlsSchema.defaults, ...controlValues };
+            let defaultValues = {};
+            
+            if (controlsSchema.templates && selectedTemplate) {
+                const template = controlsSchema.templates.find(
+                    t => t.templateName === selectedTemplate
+                );
+                if (template) {
+                    defaultValues = { ...template.props.defaults, ...controlValues };
+                }
+            } else if (controlsSchema.defaults) {
+                defaultValues = { ...controlsSchema.defaults, ...controlValues };
+            }
+            
             reset(defaultValues);
             // Small delay to prevent race condition
             setTimeout(() => {
                 isInitializing.current = false;
             }, 50);
         }
-    }, [controlsSchema, controlValues, reset]);
+    }, [controlsSchema, selectedTemplate, controlValues, reset]);
 
     // Update store when form values change (but not during initialization)
     useEffect(() => {
         if (isInitializing.current) return;
         
         Object.entries(watchedValues).forEach(([name, value]) => {
-            if (
-                value !== undefined && 
-                controlValues[name] !== value &&
-                controlsSchema?.fields.some(f => f.name === name)
-            ) {
-                dispatch(setControlValue(name, value));
+            if (value !== undefined && controlValues[name] !== value) {
+                let hasField = false;
+                
+                if (controlsSchema?.templates && selectedTemplate) {
+                    const template = controlsSchema.templates.find(
+                        t => t.templateName === selectedTemplate
+                    );
+                    hasField = template?.props.fields.some(f => f.name === name) || false;
+                } else if (controlsSchema?.fields) {
+                    hasField = controlsSchema.fields.some(f => f.name === name);
+                }
+                
+                if (hasField) {
+                    dispatch(setControlValue(name, value));
+                }
             }
         });
-    }, [watchedValues, controlValues, dispatch, controlsSchema]);
+    }, [watchedValues, controlValues, dispatch, controlsSchema, selectedTemplate]);
+
+    const handleTemplateChange = (_: React.SyntheticEvent, newValue: string) => {
+        dispatch(setSelectedTemplate(newValue));
+    };
 
     if (!controlsSchema) {
         return (
             <Box sx={{ p: 2, textAlign: "center" }}>
                 <Typography variant="body2" color="text.secondary">
                     No controls schema available for this page
+                </Typography>
+            </Box>
+        );
+    }
+
+    const getCurrentSchema = () => {
+        if (controlsSchema.templates && selectedTemplate) {
+            const template = controlsSchema.templates.find(
+                t => t.templateName === selectedTemplate
+            );
+            return template?.props;
+        }
+        return controlsSchema;
+    };
+
+    const currentSchema = getCurrentSchema();
+    
+    if (!currentSchema?.fields) {
+        return (
+            <Box sx={{ p: 2, textAlign: "center" }}>
+                <Typography variant="body2" color="text.secondary">
+                    No fields available for this schema
                 </Typography>
             </Box>
         );
@@ -315,47 +364,69 @@ export const ControlsTab = () => {
     };
 
     return (
-        <Box sx={{ height: "100%", overflow: "auto" }}>
-            <TableContainer>
-                <Table size="small" stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{ fontWeight: 600, width: "20%" }}>
-                                Name
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600, width: "30%" }}>
-                                Description
-                            </TableCell>
-                            <TableCell sx={{ fontWeight: 600, width: "50%" }}>
-                                Control
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {controlsSchema.fields.map((field) => (
-                            <TableRow key={field.name}>
-                                <TableCell>
-                                    <Typography
-                                        variant="body2"
-                                        sx={{ fontWeight: 500 }}
-                                    >
-                                        {field.label}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                    >
-                                        {field.description}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>{renderControl(field)}</TableCell>
-                            </TableRow>
+        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+            {controlsSchema.templates && controlsSchema.templates.length > 1 && (
+                <Box sx={{ borderBottom: 1, borderColor: "divider", px: 2 }}>
+                    <Tabs
+                        value={selectedTemplate || controlsSchema.templates[0].templateName}
+                        onChange={handleTemplateChange}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        sx={{ minHeight: 48 }}
+                    >
+                        {controlsSchema.templates.map((template) => (
+                            <Tab
+                                key={template.templateName}
+                                label={template.templateLabel}
+                                value={template.templateName}
+                                sx={{ minHeight: 48, textTransform: "none" }}
+                            />
                         ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                    </Tabs>
+                </Box>
+            )}
+            <Box sx={{ flex: 1, overflow: "auto" }}>
+                <TableContainer>
+                    <Table size="small" stickyHeader>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 600, width: "20%" }}>
+                                    Name
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600, width: "30%" }}>
+                                    Description
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 600, width: "50%" }}>
+                                    Control
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {currentSchema.fields.map((field) => (
+                                <TableRow key={field.name}>
+                                    <TableCell>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{ fontWeight: 500 }}
+                                        >
+                                            {field.label}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                        >
+                                            {field.description}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>{renderControl(field)}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
         </Box>
     );
 };

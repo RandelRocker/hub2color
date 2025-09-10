@@ -28,16 +28,29 @@ export interface ControlField {
     step?: number;
 }
 
-export interface ControlsSchema {
-    version: number;
+export interface ControlsSchemaProps {
     defaults: Record<string, unknown>;
     fields: ControlField[];
+}
+
+export interface ControlsSchemaTemplate {
+    templateName: string;
+    templateLabel: string;
+    props: ControlsSchemaProps;
+}
+
+export interface ControlsSchema {
+    version?: number;
+    defaults?: Record<string, unknown>;
+    fields?: ControlField[];
+    templates?: ControlsSchemaTemplate[];
 }
 
 export interface AppState {
     pages: PageSection[];
     currentPage: string | null;
     controlsSchema: ControlsSchema | null;
+    selectedTemplate: string | null;
     controlValues: Record<string, unknown>;
     stylingValues: Record<string, unknown>;
     customCss: string;

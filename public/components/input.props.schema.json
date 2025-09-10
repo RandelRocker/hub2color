@@ -1,42 +1,80 @@
 {
-  "version": 1,
-  "defaults": {
-    "label": "Label",
-    "placeholder": "Enter text...",
-    "helperText": "Helper text",
-    "disabled": false,
-    "error": false
-  },
-  "fields": [
-    {
-      "name": "label",
-      "label": "Label",
-      "description": "Input label text",
-      "type": "text"
-    },
-    {
-      "name": "placeholder",
-      "label": "Placeholder",
-      "description": "Input placeholder text",
-      "type": "text"
-    },
-    {
-      "name": "helperText",
-      "label": "Helper Text",
-      "description": "Input helper text",
-      "type": "text"
-    },
-    {
-      "name": "disabled",
-      "label": "Disabled",
-      "description": "Disable the input",
-      "type": "boolean"
-    },
-    {
-      "name": "error",
-      "label": "Error State",
-      "description": "Show error state",
-      "type": "boolean"
-    }
-  ]
+    "templates": [
+        {
+            "templateName": "default",
+            "templateLabel": "Default Input",
+            "props": {
+                "defaults": {
+                    "label": "Label",
+                    "placeholder": "Enter text...",
+                    "helperText": "Helper text",
+                    "disabled": false,
+                    "error": false
+                },
+                "fields": [
+                    {
+                        "name": "label",
+                        "label": "Label",
+                        "description": "Input label text",
+                        "type": "text"
+                    },
+                    {
+                        "name": "placeholder",
+                        "label": "Placeholder",
+                        "description": "Input placeholder text",
+                        "type": "text"
+                    },
+                    {
+                        "name": "helperText",
+                        "label": "Helper Text",
+                        "description": "Input helper text",
+                        "type": "text"
+                    },
+                    {
+                        "name": "disabled",
+                        "label": "Disabled",
+                        "description": "Disable the input",
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "error",
+                        "label": "Error State",
+                        "description": "Show error state",
+                        "type": "boolean"
+                    }
+                ]
+            }
+        },
+        {
+            "templateName": "simple",
+            "templateLabel": "Simple Input",
+            "props": {
+                "defaults": {
+                    "label": "Label",
+                    "placeholder": "Enter text...",
+                    "disabled": false
+                },
+                "fields": [
+                    {
+                        "name": "label",
+                        "label": "Label",
+                        "description": "Input label text",
+                        "type": "text"
+                    },
+                    {
+                        "name": "placeholder",
+                        "label": "Placeholder",
+                        "description": "Input placeholder text",
+                        "type": "text"
+                    },
+                    {
+                        "name": "disabled",
+                        "label": "Disabled",
+                        "description": "Disable the input",
+                        "type": "boolean"
+                    }
+                ]
+            }
+        }
+    ]
 }

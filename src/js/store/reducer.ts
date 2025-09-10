@@ -7,6 +7,7 @@ const initialState: AppState = {
     pages: [],
     currentPage: null,
     controlsSchema: null,
+    selectedTemplate: null,
     controlValues: {},
     stylingValues: {},
     customCss: "",
@@ -34,8 +35,26 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_CONTROLS_SCHEMA:
                 draft.controlsSchema = action.payload;
-                if (action.payload && action.payload.defaults) {
-                    draft.controlValues = { ...action.payload.defaults };
+                draft.selectedTemplate = null;
+                if (action.payload) {
+                    if (action.payload.templates && action.payload.templates.length > 0) {
+                        const firstTemplate = action.payload.templates[0];
+                        draft.selectedTemplate = firstTemplate.templateName;
+                        draft.controlValues = { ...firstTemplate.props.defaults };
+                    } else if (action.payload.defaults) {
+                        draft.controlValues = { ...action.payload.defaults };
+                    }
+                }
+                break;
+            case ActionTypes.SET_SELECTED_TEMPLATE:
+                draft.selectedTemplate = action.payload;
+                if (action.payload && draft.controlsSchema?.templates) {
+                    const selectedTemplate = draft.controlsSchema.templates.find(
+                        t => t.templateName === action.payload
+                    );
+                    if (selectedTemplate) {
+                        draft.controlValues = { ...selectedTemplate.props.defaults };
+                    }
                 }
                 break;
             case ActionTypes.SET_CONTROL_VALUE:

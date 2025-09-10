@@ -16,6 +16,11 @@ export interface SetControlsSchemaAction {
     payload: ControlsSchema | null;
 }
 
+export interface SetSelectedTemplateAction {
+    type: ActionTypes.SET_SELECTED_TEMPLATE;
+    payload: string | null;
+}
+
 export interface SetControlValueAction {
     type: ActionTypes.SET_CONTROL_VALUE;
     payload: { name: string; value: unknown };
@@ -80,6 +85,7 @@ export type AppAction =
     | SetPagesAction
     | SetCurrentPageAction
     | SetControlsSchemaAction
+    | SetSelectedTemplateAction
     | SetControlValueAction
     | SetBulkControlsAction
     | SetStylingValueAction
