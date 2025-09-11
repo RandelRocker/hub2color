@@ -105,7 +105,15 @@ export const ControlsTab = () => {
 
     if (!controlsSchema) {
         return (
-            <Box sx={{ p: 2, textAlign: "center" }}>
+            <Box
+                sx={{
+                    p: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%"
+                }}
+            >
                 <Typography variant="body2" color="text.secondary">
                     No controls schema available for this page
                 </Typography>
@@ -127,7 +135,15 @@ export const ControlsTab = () => {
 
     if (!currentSchema?.fields) {
         return (
-            <Box sx={{ p: 2, textAlign: "center" }}>
+            <Box
+                sx={{
+                    p: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%"
+                }}
+            >
                 <Typography variant="body2" color="text.secondary">
                     No fields available for this schema
                 </Typography>

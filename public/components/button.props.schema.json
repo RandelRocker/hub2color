@@ -1,4 +1,66 @@
 {
+    "style": [
+        {
+            "groupName": "size",
+            "groupLabel": "Size",
+            "fields": [
+                {
+                    "name": "padding",
+                    "label": "Padding",
+                    "defaultValue": "6px 16px",
+                    "themeKey": "button.general.padding",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "groupName": "text",
+            "groupLabel": "Text",
+            "fields": [
+                {
+                    "name": "fontSize",
+                    "label": "Font size",
+                    "defaultValue": "6px 16px",
+                    "themeKey": "button.general.padding",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "groupName": "general",
+            "groupLabel": "Common styles",
+            "fields": [
+                {
+                    "name": "padding",
+                    "label": "Padding",
+                    "themeKey": "button.general.padding",
+                    "type": "text"
+                },
+                {
+                    "name": "backgroundColor",
+                    "label": "Background color",
+                    "themeKey": "button.general.backgroundColor",
+                    "type": "color"
+                },
+                {
+                    "name": "backgroundColorHover",
+                    "label": "Hover background color",
+                    "themeGroup": "button.generalHover.backgroundColor",
+                    "type": "color"
+                },
+                {
+                    "name": "border",
+                    "label": "Border",
+                    "type": "text"
+                },
+                {
+                    "name": "borderRadius",
+                    "label": "Border radius",
+                    "type": "text"
+                }
+            ]
+        }
+    ],
     "templates": [
         {
             "templateName": "single",
@@ -27,7 +89,7 @@
                     {
                         "name": "disabled",
                         "label": "Disabled",
-                        "description": "Disable the button",
+                        "description": "Disable button",
                         "type": "boolean"
                     },
                     {
@@ -66,7 +128,7 @@
                     {
                         "name": "disabled",
                         "label": "Disabled",
-                        "description": "Disable the button",
+                        "description": "Disable button",
                         "type": "boolean"
                     }
                 ]
@@ -91,7 +153,7 @@
                     {
                         "name": "disabled",
                         "label": "Disabled",
-                        "description": "Disable the button",
+                        "description": "Disable button",
                         "type": "boolean"
                     },
                     {
