@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     Box,
     Table,
@@ -20,7 +20,8 @@ import {
     Checkbox,
     ListItemText,
     OutlinedInput,
-    Chip
+    Chip,
+    SelectChangeEvent
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
@@ -190,21 +191,36 @@ export const ControlsTab = () => {
                         name={name}
                         control={control}
                         defaultValue=""
-                        render={({ field: fieldProps }) => (
-                            <TextField
-                                {...fieldProps}
-                                type="number"
-                                size="small"
-                                fullWidth
-                                variant="outlined"
-                                slotProps={{
-                                    input: {
-                                        sx: { fontSize: "0.875rem" }
-                                    },
-                                    htmlInput: { min, max, step }
-                                }}
-                            />
-                        )}
+                        render={({ field: fieldProps }) => {
+                            const handleNumberChange = (
+                                e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                                const inputValue = e.target.value;
+                                // Allow only integers (no decimals)
+                                const validPattern = /^\d*$/;
+
+                                if (validPattern.test(inputValue)) {
+                                    fieldProps.onChange(inputValue);
+                                }
+                            };
+
+                            return (
+                                <TextField
+                                    value={fieldProps.value || ""}
+                                    onChange={handleNumberChange}
+                                    type="text"
+                                    size="small"
+                                    fullWidth
+                                    variant="outlined"
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem" }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                            );
+                        }}
                     />
                 );
 
@@ -377,6 +393,96 @@ export const ControlsTab = () => {
                                 sx={{ width: 60 }}
                             />
                         )}
+                    />
+                );
+
+            case "font":
+                return (
+                    <Controller
+                        name={name}
+                        control={control}
+                        defaultValue=""
+                        render={({ field: fieldProps }) => {
+                            const parseValue = (value: string) => {
+                                const match = value.match(/^(\d*\.?\d*)(.*)$/);
+                                return {
+                                    number: match?.[1] || "",
+                                    unit: match?.[2] || "px"
+                                };
+                            };
+
+                            const { number, unit } = parseValue(
+                                fieldProps.value || ""
+                            );
+
+                            const handleNumberChange = (
+                                e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                                const inputValue = e.target.value;
+                                const validPattern = /^(\d*\.?\d*)$/;
+
+                                if (validPattern.test(inputValue)) {
+                                    const newValue = `${inputValue.trim()}${unit}`;
+                                    fieldProps.onChange(newValue);
+                                }
+                            };
+
+                            const handleUnitChange = (e: SelectChangeEvent) => {
+                                const newUnit = e.target.value;
+                                const newValue = `${number.trim()}${newUnit}`;
+                                fieldProps.onChange(newValue);
+                            };
+
+                            const fontUnits = ["px", "rem", "em", "%", "pt"];
+
+                            return (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1,
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <TextField
+                                        type="text"
+                                        value={number || ""}
+                                        onChange={handleNumberChange}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: 80 }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="16"
+                                    />
+                                    <FormControl
+                                        size="small"
+                                        sx={{ minWidth: 60 }}
+                                    >
+                                        <Select
+                                            value={unit}
+                                            onChange={handleUnitChange}
+                                            variant="outlined"
+                                            sx={{ fontSize: "0.875rem" }}
+                                        >
+                                            {fontUnits.map((unitOption) => (
+                                                <MenuItem
+                                                    key={unitOption}
+                                                    value={unitOption}
+                                                    sx={{
+                                                        fontSize: "0.875rem"
+                                                    }}
+                                                >
+                                                    {unitOption}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+                            );
+                        }}
                     />
                 );
 

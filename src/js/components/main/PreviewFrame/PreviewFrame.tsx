@@ -81,7 +81,15 @@ export const PreviewFrame = () => {
         }
 
         Object.entries(controlValues).forEach(([name, value]) => {
-            sendMessageToFrame("CONTROL_CHANGE", { name, value });
+            // Handle font field empty values (format "_px", "_rem", etc.)
+            const textUnits = ["px", "rem", "em", "%", "pt"];
+            const finalValue =
+                typeof value === "string" &&
+                textUnits.some((unit) => value === unit)
+                    ? undefined
+                    : value;
+
+            sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
         });
     }, [
         currentPage,
@@ -122,7 +130,12 @@ export const PreviewFrame = () => {
 
     useEffect(() => {
         Object.entries(controlValues).forEach(([name, value]) => {
-            sendMessageToFrame("CONTROL_CHANGE", { name, value });
+            // Handle font field empty values (format "_px", "_rem", etc.)
+            const finalValue =
+                typeof value === "string" && value.startsWith("_")
+                    ? undefined
+                    : value;
+            sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
         });
     }, [controlValues, sendMessageToFrame]);
 

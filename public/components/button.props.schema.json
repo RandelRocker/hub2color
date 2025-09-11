@@ -20,9 +20,23 @@
                 {
                     "name": "fontSize",
                     "label": "Font size",
-                    "defaultValue": "6px 16px",
-                    "themeKey": "button.general.padding",
-                    "type": "text"
+                    "defaultValue": "16px",
+                    "themeKey": "button.general.fontSize",
+                    "type": "font"
+                },
+                {
+                    "name": "fontWeight",
+                    "label": "Font weight",
+                    "defaultValue": "500",
+                    "themeKey": "button.general.fontWeight",
+                    "type": "number"
+                },
+                {
+                    "name": "italic",
+                    "label": "Italic",
+                    "defaultValue": false,
+                    "themeKey": "button.general.fontStyle",
+                    "type": "boolean"
                 }
             ]
         },
@@ -70,6 +84,7 @@
                     "label": "Click me",
                     "variant": "contained",
                     "disabled": false,
+                    "fontSize": "1.5rem",
                     "size": "medium"
                 },
                 "fields": [
@@ -78,6 +93,12 @@
                         "label": "Label",
                         "description": "Button text",
                         "type": "text"
+                    },
+                    {
+                        "name": "fontSize",
+                        "label": "Font size",
+                        "description": "Button font size",
+                        "type": "font"
                     },
                     {
                         "name": "variant",
