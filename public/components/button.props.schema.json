@@ -148,6 +148,7 @@
                     "variant": "contained",
                     "disabled": false,
                     "fontSize": "1.5rem",
+                    "color": "primary",
                     "size": "medium"
                 },
                 "fields": [
