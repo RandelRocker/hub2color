@@ -1,14 +1,55 @@
 {
     "style": [
         {
+            "groupName": "colors",
+            "groupLabel": "Colors",
+            "fields": [
+                {
+                    "name": "primary",
+                    "label": "Button primary color",
+                    "defaultValue": "4px 10px",
+                    "themeKey": "button.sizeSmall.padding",
+                    "type": "text"
+                },
+                {
+                    "name": "paddingMedium",
+                    "label": "Medium button padding",
+                    "defaultValue": "6px 16px",
+                    "themeKey": "button.sizeMedium.padding",
+                    "type": "text"
+                },
+                {
+                    "name": "paddingLarge",
+                    "label": "Large button padding",
+                    "defaultValue": "8px 22px",
+                    "themeKey": "button.sizeLarge.padding",
+                    "type": "text"
+                }
+            ]
+        },
+        {
             "groupName": "size",
             "groupLabel": "Size",
             "fields": [
                 {
-                    "name": "padding",
-                    "label": "Padding",
+                    "name": "paddingSmall",
+                    "label": "Small button padding",
+                    "defaultValue": "4px 10px",
+                    "themeKey": "button.sizeSmall.padding",
+                    "type": "text"
+                },
+                {
+                    "name": "paddingMedium",
+                    "label": "Medium button padding",
                     "defaultValue": "6px 16px",
-                    "themeKey": "button.general.padding",
+                    "themeKey": "button.sizeMedium.padding",
+                    "type": "text"
+                },
+                {
+                    "name": "paddingLarge",
+                    "label": "Large button padding",
+                    "defaultValue": "8px 22px",
+                    "themeKey": "button.sizeLarge.padding",
                     "type": "text"
                 }
             ]
@@ -18,8 +59,29 @@
             "groupLabel": "Text",
             "fields": [
                 {
-                    "name": "fontSize",
-                    "label": "Font size",
+                    "name": "fontSizeSmall",
+                    "label": "Small button font size",
+                    "defaultValue": "1rem",
+                    "themeKey": "button.sizeSmall.fontSize",
+                    "type": "font"
+                },
+                {
+                    "name": "fontSizeMedium",
+                    "label": "medium button font size",
+                    "defaultValue": "1.29rem",
+                    "themeKey": "button.sizeMedium.fontSize",
+                    "type": "font"
+                },
+                {
+                    "name": "fontSizeLarge",
+                    "label": "Large button font size",
+                    "defaultValue": "1.5rem",
+                    "themeKey": "button.sizeLarge.fontSize",
+                    "type": "font"
+                },
+                {
+                    "name": "color",
+                    "label": "Font color",
                     "defaultValue": "16px",
                     "themeKey": "button.general.fontSize",
                     "type": "font"
@@ -35,6 +97,7 @@
                     "name": "italic",
                     "label": "Italic",
                     "defaultValue": false,
+                    "checkedValue": "italic",
                     "themeKey": "button.general.fontStyle",
                     "type": "boolean"
                 }
@@ -95,17 +158,18 @@
                         "type": "text"
                     },
                     {
-                        "name": "fontSize",
-                        "label": "Font size",
-                        "description": "Button font size",
-                        "type": "font"
-                    },
-                    {
                         "name": "variant",
                         "label": "Variant",
                         "description": "Button style variant",
                         "type": "select",
                         "options": ["contained", "outlined", "text"]
+                    },
+                    {
+                        "name": "color",
+                        "label": "Color",
+                        "description": "Button colors",
+                        "type": "select",
+                        "options": ["primary", "secondary", "error"]
                     },
                     {
                         "name": "disabled",

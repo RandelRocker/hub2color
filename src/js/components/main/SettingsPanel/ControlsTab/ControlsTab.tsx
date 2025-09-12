@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
     Box,
     Table,
@@ -17,10 +17,10 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
-    Checkbox,
-    ListItemText,
-    OutlinedInput,
-    Chip,
+    // Checkbox,
+    // ListItemText,
+    // OutlinedInput,
+    // Chip,
     SelectChangeEvent
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
@@ -159,8 +159,21 @@ export const ControlsTab = () => {
         min?: number;
         max?: number;
         step?: number;
+        defaultValue?: string | number | boolean;
+        checkedValue?: string;
+        uncheckedValue?: string;
     }) => {
-        const { name, type, options, min, max, step } = field;
+        const {
+            name,
+            type,
+            options,
+            min,
+            max,
+            step,
+            checkedValue,
+            defaultValue = "",
+            uncheckedValue
+        } = field;
 
         switch (type) {
             case "text":
@@ -168,7 +181,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue=""
+                        defaultValue={defaultValue}
                         render={({ field: fieldProps }) => (
                             <TextField
                                 {...fieldProps}
@@ -190,7 +203,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue=""
+                        defaultValue={defaultValue}
                         render={({ field: fieldProps }) => {
                             const handleNumberChange = (
                                 e: React.ChangeEvent<HTMLInputElement>
@@ -229,16 +242,41 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue={false}
-                        render={({ field: fieldProps }) => (
-                            <Switch
-                                checked={fieldProps.value}
-                                onChange={(e) =>
-                                    fieldProps.onChange(e.target.checked)
-                                }
-                                size="small"
-                            />
-                        )}
+                        defaultValue={
+                            defaultValue
+                                ? checkedValue || true
+                                : uncheckedValue || undefined
+                        }
+                        render={({ field: fieldProps }) => {
+                            const actualCheckedValue =
+                                checkedValue !== undefined
+                                    ? checkedValue
+                                    : true;
+                            const actualUncheckedValue =
+                                uncheckedValue !== undefined
+                                    ? uncheckedValue
+                                    : undefined;
+
+                            const isChecked =
+                                fieldProps.value === actualCheckedValue;
+
+                            const handleChange = (
+                                e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                                const newValue = e.target.checked
+                                    ? actualCheckedValue
+                                    : actualUncheckedValue;
+                                fieldProps.onChange(newValue);
+                            };
+
+                            return (
+                                <Switch
+                                    checked={isChecked}
+                                    onChange={handleChange}
+                                    size="small"
+                                />
+                            );
+                        }}
                     />
                 );
 
@@ -247,7 +285,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue=""
+                        defaultValue={defaultValue}
                         render={({ field: fieldProps }) => (
                             <FormControl size="small" fullWidth>
                                 <Select
@@ -271,67 +309,67 @@ export const ControlsTab = () => {
                     />
                 );
 
-            case "multi-select":
-                return (
-                    <Controller
-                        name={name}
-                        control={control}
-                        defaultValue={[]}
-                        render={({ field: fieldProps }) => (
-                            <FormControl size="small" fullWidth>
-                                <Select
-                                    {...fieldProps}
-                                    multiple
-                                    value={fieldProps.value ?? []}
-                                    variant="outlined"
-                                    input={<OutlinedInput />}
-                                    sx={{ fontSize: "0.875rem" }}
-                                    renderValue={(selected) => (
-                                        <Box
-                                            sx={{
-                                                display: "flex",
-                                                flexWrap: "wrap",
-                                                gap: 0.5
-                                            }}
-                                        >
-                                            {selected.map((value: string) => (
-                                                <Chip
-                                                    key={value}
-                                                    label={value}
-                                                    size="small"
-                                                />
-                                            ))}
-                                        </Box>
-                                    )}
-                                >
-                                    {options?.map((option: string) => (
-                                        <MenuItem
-                                            key={option}
-                                            sx={{ fontSize: "0.875rem" }}
-                                            value={option}
-                                        >
-                                            <Checkbox
-                                                checked={
-                                                    (
-                                                        fieldProps.value ?? []
-                                                    ).indexOf(option) > -1
-                                                }
-                                            />
-                                            <ListItemText primary={option} />
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        )}
-                    />
-                );
+            // case "multi-select":
+            //     return (
+            //         <Controller
+            //             name={name}
+            //             control={control}
+            //             defaultValue={[]}
+            //             render={({ field: fieldProps }) => (
+            //                 <FormControl size="small" fullWidth>
+            //                     <Select
+            //                         {...fieldProps}
+            //                         multiple
+            //                         value={fieldProps.value ?? []}
+            //                         variant="outlined"
+            //                         input={<OutlinedInput />}
+            //                         sx={{ fontSize: "0.875rem" }}
+            //                         renderValue={(selected) => (
+            //                             <Box
+            //                                 sx={{
+            //                                     display: "flex",
+            //                                     flexWrap: "wrap",
+            //                                     gap: 0.5
+            //                                 }}
+            //                             >
+            //                                 {selected.map((value: string) => (
+            //                                     <Chip
+            //                                         key={value}
+            //                                         label={value}
+            //                                         size="small"
+            //                                     />
+            //                                 ))}
+            //                             </Box>
+            //                         )}
+            //                     >
+            //                         {options?.map((option: string) => (
+            //                             <MenuItem
+            //                                 key={option}
+            //                                 sx={{ fontSize: "0.875rem" }}
+            //                                 value={option}
+            //                             >
+            //                                 <Checkbox
+            //                                     checked={
+            //                                         (
+            //                                             fieldProps.value ?? []
+            //                                         ).indexOf(option) > -1
+            //                                     }
+            //                                 />
+            //                                 <ListItemText primary={option} />
+            //                             </MenuItem>
+            //                         ))}
+            //                     </Select>
+            //                 </FormControl>
+            //             )}
+            //         />
+            //     );
 
             case "radio":
                 return (
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue=""
+                        defaultValue={defaultValue}
                         render={({ field: fieldProps }) => (
                             <RadioGroup {...fieldProps} row sx={{ gap: 1 }}>
                                 {options?.map((option: string) => (
@@ -358,7 +396,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue={min ?? 0}
+                        defaultValue={defaultValue ?? 0}
                         render={({ field: fieldProps }) => (
                             <Box sx={{ px: 1 }}>
                                 <Slider
@@ -379,7 +417,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue="#000000"
+                        defaultValue={defaultValue || "#000000"}
                         render={({ field: fieldProps }) => (
                             <TextField
                                 {...fieldProps}
@@ -401,7 +439,7 @@ export const ControlsTab = () => {
                     <Controller
                         name={name}
                         control={control}
-                        defaultValue=""
+                        defaultValue={defaultValue}
                         render={({ field: fieldProps }) => {
                             const parseValue = (value: string) => {
                                 const match = value.match(/^(\d*\.?\d*)(.*)$/);
