@@ -666,6 +666,169 @@ export const ControlsTab = () => {
                     />
                 );
 
+            case "boxShadow":
+                return (
+                    <Controller
+                        name={name}
+                        control={control}
+                        defaultValue={
+                            defaultValue || "0px 0px 0px 0px rgba(0, 0, 0, 0.5)"
+                        }
+                        render={({ field: fieldProps }) => {
+                            const parseBoxShadow = (value: string) => {
+                                const match = value.match(
+                                    /^(-?\d*\.?\d*px)\s+(-?\d*\.?\d*px)\s+(\d*\.?\d*px)\s+(\d*\.?\d*px)\s+(#[0-9a-fA-F]{6}|rgba?\([^)]+\)|[a-zA-Z]+)$/
+                                );
+                                return {
+                                    horizontalPosition: match?.[1] || "0px",
+                                    verticalPosition: match?.[2] || "0px",
+                                    blurRadius: match?.[3] || "0px",
+                                    spreadRadius: match?.[4] || "0px",
+                                    color: match?.[5] || "rgba(0, 0, 0, 0.5)"
+                                };
+                            };
+
+                            const {
+                                horizontalPosition,
+                                verticalPosition,
+                                blurRadius,
+                                spreadRadius,
+                                color
+                            } = parseBoxShadow(fieldProps.value || "");
+
+                            const handleFieldChange = (
+                                field: string,
+                                value: string
+                            ) => {
+                                const current = parseBoxShadow(
+                                    fieldProps.value || ""
+                                );
+                                const updated = { ...current, [field]: value };
+                                const newValue = `${updated.horizontalPosition} ${updated.verticalPosition} ${updated.blurRadius} ${updated.spreadRadius} ${updated.color}`;
+                                fieldProps.onChange(newValue);
+                            };
+
+                            const handleNumberFieldChange =
+                                (field: string) =>
+                                (e: React.ChangeEvent<HTMLInputElement>) => {
+                                    const inputValue = e.target.value;
+                                    const validPattern = /^-?\d*\.?\d*$/;
+
+                                    if (validPattern.test(inputValue)) {
+                                        const valueWithUnit = inputValue
+                                            ? `${inputValue}px`
+                                            : "0px";
+                                        handleFieldChange(field, valueWithUnit);
+                                    }
+                                };
+
+                            const extractNumber = (value: string) => {
+                                const match = value.match(/^(-?\d*\.?\d*)/);
+                                return match?.[1] || "0";
+                            };
+
+                            return (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1,
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(
+                                            horizontalPosition
+                                        )}
+                                        onChange={handleNumberFieldChange(
+                                            "horizontalPosition"
+                                        )}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "20%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="H"
+                                        title="Horizontal Position"
+                                    />
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(verticalPosition)}
+                                        onChange={handleNumberFieldChange(
+                                            "verticalPosition"
+                                        )}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "20%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="V"
+                                        title="Vertical Position"
+                                    />
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(blurRadius)}
+                                        onChange={handleNumberFieldChange(
+                                            "blurRadius"
+                                        )}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "20%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="Blur"
+                                        title="Blur Radius"
+                                    />
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(spreadRadius)}
+                                        onChange={handleNumberFieldChange(
+                                            "spreadRadius"
+                                        )}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "20%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="Spread"
+                                        title="Spread Radius"
+                                    />
+                                    <TextField
+                                        type="color"
+                                        value={color}
+                                        onChange={(e) =>
+                                            handleFieldChange(
+                                                "color",
+                                                e.target.value
+                                            )
+                                        }
+                                        size="small"
+                                        sx={{ width: "20%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        title="Color"
+                                    />
+                                </Box>
+                            );
+                        }}
+                    />
+                );
+
             default:
                 return (
                     <Typography variant="caption" color="error">
