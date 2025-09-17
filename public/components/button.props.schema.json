@@ -5,25 +5,25 @@
             "groupLabel": "Colors",
             "fields": [
                 {
-                    "name": "primary",
-                    "label": "Button primary color",
-                    "defaultValue": "4px 10px",
-                    "themeKey": "button.sizeSmall.padding",
-                    "type": "text"
+                    "name": "primaryContainedBackgroundColor",
+                    "label": "Primary contained background color",
+                    "defaultValue": "#6ECD8D",
+                    "themeKey": "button.containedPrimary.backgroundColor",
+                    "type": "color"
                 },
                 {
-                    "name": "paddingMedium",
-                    "label": "Medium button padding",
-                    "defaultValue": "6px 16px",
-                    "themeKey": "button.sizeMedium.padding",
-                    "type": "text"
+                    "name": "primaryContainedBorderColor",
+                    "label": "Primary contained border color",
+                    "defaultValue": "rgba(0,0,0,0)",
+                    "themeKey": "button.containedPrimary.borderColor",
+                    "type": "color"
                 },
                 {
-                    "name": "paddingLarge",
-                    "label": "Large button padding",
-                    "defaultValue": "8px 22px",
-                    "themeKey": "button.sizeLarge.padding",
-                    "type": "text"
+                    "name": "primaryFontColor",
+                    "label": "Button primary text color",
+                    "defaultValue": "#FFFFF",
+                    "themeKey": "button.primary.color",
+                    "type": "color"
                 }
             ]
         },
@@ -63,28 +63,28 @@
                     "label": "Small button font size",
                     "defaultValue": "1rem",
                     "themeKey": "button.sizeSmall.fontSize",
-                    "type": "font"
+                    "type": "units"
                 },
                 {
                     "name": "fontSizeMedium",
                     "label": "medium button font size",
                     "defaultValue": "1.29rem",
                     "themeKey": "button.sizeMedium.fontSize",
-                    "type": "font"
+                    "type": "units"
                 },
                 {
                     "name": "fontSizeLarge",
                     "label": "Large button font size",
                     "defaultValue": "1.5rem",
                     "themeKey": "button.sizeLarge.fontSize",
-                    "type": "font"
+                    "type": "units"
                 },
                 {
                     "name": "color",
                     "label": "Font color",
                     "defaultValue": "16px",
                     "themeKey": "button.general.fontSize",
-                    "type": "font"
+                    "type": "units"
                 },
                 {
                     "name": "fontWeight",

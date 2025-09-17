@@ -245,7 +245,7 @@ export const ControlsTab = () => {
                         defaultValue={
                             defaultValue
                                 ? checkedValue || true
-                                : uncheckedValue || undefined
+                                : uncheckedValue || false
                         }
                         render={({ field: fieldProps }) => {
                             const actualCheckedValue =
@@ -255,7 +255,7 @@ export const ControlsTab = () => {
                             const actualUncheckedValue =
                                 uncheckedValue !== undefined
                                     ? uncheckedValue
-                                    : undefined;
+                                    : false;
 
                             const isChecked =
                                 fieldProps.value === actualCheckedValue;
@@ -434,7 +434,7 @@ export const ControlsTab = () => {
                     />
                 );
 
-            case "font":
+            case "units":
                 return (
                     <Controller
                         name={name}
@@ -471,7 +471,7 @@ export const ControlsTab = () => {
                                 fieldProps.onChange(newValue);
                             };
 
-                            const fontUnits = ["px", "rem", "em", "%", "pt"];
+                            const fontUnits = ["px", "rem", "em", "%"];
 
                             return (
                                 <Box
