@@ -3,7 +3,7 @@ import { Box, Typography, CircularProgress } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../store";
-import { setControlsSchema } from "../../../store/actions";
+import { setControlsSchema, setStyleSchema } from "../../../store/actions";
 
 export const PreviewFrame = () => {
     const dispatch = useDispatch();
@@ -59,6 +59,29 @@ export const PreviewFrame = () => {
         [dispatch]
     );
 
+    const loadStyleSchema = useCallback(
+        async (pagePath: string) => {
+            try {
+                const schemaPath = pagePath.replace(
+                    /\.html$/,
+                    ".style.schema.json"
+                );
+                const response = await fetch(`/${schemaPath}`);
+
+                if (response.ok) {
+                    const schema = await response.json();
+                    dispatch(setStyleSchema(schema));
+                } else {
+                    dispatch(setStyleSchema(null));
+                }
+            } catch (error) {
+                console.warn("Failed to load style schema for", pagePath, error);
+                dispatch(setStyleSchema(null));
+            }
+        },
+        [dispatch]
+    );
+
     const handleIframeLoad = useCallback(() => {
         if (!currentPage) return;
 
@@ -89,7 +112,11 @@ export const PreviewFrame = () => {
                     ? undefined
                     : value;
 
-            sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
+            if (name === "themeOverrides") {
+                sendMessageToFrame("THEME_CHANGE", { theme: value });
+            } else {
+                sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
+            }
         });
     }, [
         currentPage,
@@ -105,8 +132,9 @@ export const PreviewFrame = () => {
     useEffect(() => {
         if (currentPage) {
             loadControlsSchema(currentPage);
+            loadStyleSchema(currentPage);
         }
-    }, [currentPage, loadControlsSchema]);
+    }, [currentPage, loadControlsSchema, loadStyleSchema]);
 
     useEffect(() => {
         sendMessageToFrame("SET_DIR", { dir: direction });
@@ -135,7 +163,12 @@ export const PreviewFrame = () => {
                 typeof value === "string" && value.startsWith("_")
                     ? undefined
                     : value;
-            sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
+            
+            if (name === "themeOverrides") {
+                sendMessageToFrame("THEME_CHANGE", { theme: value });
+            } else {
+                sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
+            }
         });
     }, [controlValues, sendMessageToFrame]);
 

@@ -46,10 +46,38 @@ export interface ControlsSchema {
     templates?: ControlsSchemaTemplate[];
 }
 
+export interface StyleField {
+    id: string;
+    label: string;
+    type: string;
+    defaultValue?: string | number | boolean;
+    themeKey: string;
+    options?: string[];
+    min?: number;
+    max?: number;
+    step?: number;
+    checkedValue?: string;
+    uncheckedValue?: string;
+    fields?: StyleField[];
+}
+
+export interface StyleGroup {
+    type: "group" | "sectionTitle" | "groupTitle";
+    id?: string;
+    label: string;
+    fields?: (StyleField | StyleGroup)[];
+}
+
+export interface StyleSchema {
+    style: (StyleField | StyleGroup)[];
+}
+
 export interface AppState {
     pages: PageSection[];
     currentPage: string | null;
     controlsSchema: ControlsSchema | null;
+    styleSchema: StyleSchema | null;
+    styleSchemaDefaults: Record<string, unknown>;
     selectedTemplate: ControlsSchemaTemplate | null;
     controlValues: Record<string, unknown>;
     stylingValues: Record<string, unknown>;

@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ControlsSchema } from "./types";
+import { PageSection, ControlsSchema, StyleSchema } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -13,6 +13,11 @@ export const setCurrentPage = (page: string | null) => ({
 
 export const setControlsSchema = (schema: ControlsSchema | null) => ({
     type: ActionTypes.SET_CONTROLS_SCHEMA,
+    payload: schema,
+});
+
+export const setStyleSchema = (schema: StyleSchema | null) => ({
+    type: ActionTypes.SET_STYLE_SCHEMA,
     payload: schema,
 });
 

@@ -1,4 +1,4 @@
-import { PageSection, ControlsSchema } from "./types";
+import { PageSection, ControlsSchema, StyleSchema } from "./types";
 import { ActionTypes } from "./constants";
 
 export interface SetPagesAction {
@@ -14,6 +14,11 @@ export interface SetCurrentPageAction {
 export interface SetControlsSchemaAction {
     type: ActionTypes.SET_CONTROLS_SCHEMA;
     payload: ControlsSchema | null;
+}
+
+export interface SetStyleSchemaAction {
+    type: ActionTypes.SET_STYLE_SCHEMA;
+    payload: StyleSchema | null;
 }
 
 export interface SetSelectedTemplateAction {
@@ -85,6 +90,7 @@ export type AppAction =
     | SetPagesAction
     | SetCurrentPageAction
     | SetControlsSchemaAction
+    | SetStyleSchemaAction
     | SetSelectedTemplateAction
     | SetControlValueAction
     | SetBulkControlsAction

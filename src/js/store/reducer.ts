@@ -1,12 +1,14 @@
 import { produce } from "immer";
 import { ActionTypes } from "./constants";
-import { AppState } from "./types";
+import { AppState, StyleField, StyleGroup } from "./types";
 import { AppAction } from "./actionTypes";
 
 const initialState: AppState = {
     pages: [],
     currentPage: null,
     controlsSchema: null,
+    styleSchema: null,
+    styleSchemaDefaults: {},
     selectedTemplate: null,
     controlValues: {},
     stylingValues: {},
@@ -46,6 +48,32 @@ export const appReducer = (
                     }
                 }
                 break;
+            case ActionTypes.SET_STYLE_SCHEMA: {
+                draft.styleSchema = action.payload;
+                
+                const collectDefaults = (items: (StyleField | StyleGroup)[]) => {
+                    items.forEach((item) => {
+                        if (
+                            "id" in item &&
+                            item.type !== "group" &&
+                            item.type !== "sectionTitle"
+                        ) {
+                            const field = item as StyleField;
+                            if (field.defaultValue !== undefined) {
+                                draft.styleSchemaDefaults[field.id] = field.defaultValue;
+                            }
+                        }
+                        if ("fields" in item && item.fields) {
+                            collectDefaults(item.fields);
+                        }
+                    });
+                };
+
+                if (action.payload?.style) {
+                    collectDefaults(action.payload.style);
+                }
+                break;
+            }
             case ActionTypes.SET_SELECTED_TEMPLATE:
                 if (action.payload && draft.controlsSchema?.templates) {
                     const selectedTemplate = draft.controlsSchema.templates.find(

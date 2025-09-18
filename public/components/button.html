@@ -120,6 +120,73 @@
           return tag;
         }
 
+        function ensureThemeStyleTag() {
+          let tag = document.getElementById("theme-styles");
+          if (!tag) {
+            tag = document.createElement("style");
+            tag.id = "theme-styles";
+            document.head.appendChild(tag);
+          }
+          return tag;
+        }
+
+        function applyTheme(theme) {
+          if (!theme) return;
+
+          const themeStyleTag = ensureThemeStyleTag();
+          let css = "";
+
+          function processThemeObject(obj, selector = ".button") {
+            if (!obj || typeof obj !== "object") return;
+
+            for (const [key, value] of Object.entries(obj)) {
+              if (value && typeof value === "object" && !Array.isArray(value)) {
+                // Handle nested objects like containedSizeSmall, containedPrimary, etc.
+                let nestedSelector = selector;
+                
+                // Map theme keys to CSS selectors
+                if (key.includes("containedSizeSmall")) {
+                  nestedSelector = selector + ".small";
+                } else if (key.includes("containedSizeMedium")) {
+                  nestedSelector = selector + ":not(.small):not(.large)";
+                } else if (key.includes("containedSizeLarge")) {
+                  nestedSelector = selector + ".large";
+                } else if (key.includes("containedPrimaryHover")) {
+                  nestedSelector = selector + ".primary:hover";
+                } else if (key.includes("containedPrimary")) {
+                  nestedSelector = selector + ".primary";
+                } else if (key.includes("containedSecondaryHover")) {
+                  nestedSelector = selector + ".secondary:hover";
+                } else if (key.includes("containedSecondary")) {
+                  nestedSelector = selector + ".secondary";
+                } else if (key.includes("containedErrorHover")) {
+                  nestedSelector = selector + ".error:hover";
+                } else if (key.includes("containedError")) {
+                  nestedSelector = selector + ".error";
+                } else if (key.includes("containedDisabled")) {
+                  nestedSelector = selector + ":disabled";
+                } else if (key.includes("containedHover")) {
+                  nestedSelector = selector + ":hover";
+                } else if (key.includes("contained")) {
+                  nestedSelector = selector;
+                }
+
+                processThemeObject(value, nestedSelector);
+              } else {
+                // Handle CSS properties
+                const cssProperty = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+                css += `${selector} { ${cssProperty}: ${value} !important; }\n`;
+              }
+            }
+          }
+
+          if (theme.button) {
+            processThemeObject(theme.button);
+          }
+
+          themeStyleTag.textContent = css;
+        }
+
         window.addEventListener("message", (e) => {
           const data = e.data || {};
           if (data && data.source === SRC) {
@@ -146,6 +213,9 @@
               case "BULK_CONTROLS":
                 window.buttonProps = data.payload?.values || {};
                 updateButton();
+                break;
+              case "THEME_CHANGE":
+                applyTheme(data.payload?.theme);
                 break;
             }
           }
