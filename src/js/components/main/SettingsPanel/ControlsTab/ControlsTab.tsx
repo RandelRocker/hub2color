@@ -829,6 +829,272 @@ export const ControlsTab = () => {
                     />
                 );
 
+            case "padding":
+                return (
+                    <Controller
+                        name={name}
+                        control={control}
+                        defaultValue={defaultValue || "0px 0px 0px 0px"}
+                        render={({ field: fieldProps }) => {
+                            const parsePadding = (value: string) => {
+                                const parts = value.split(/\s+/);
+                                return {
+                                    top: parts[0] || "0px",
+                                    right: parts[1] || parts[0] || "0px",
+                                    bottom: parts[2] || parts[0] || "0px",
+                                    left: parts[3] || parts[1] || parts[0] || "0px"
+                                };
+                            };
+
+                            const {
+                                top,
+                                right,
+                                bottom,
+                                left
+                            } = parsePadding(fieldProps.value || "");
+
+                            const handleFieldChange = (
+                                field: string,
+                                value: string
+                            ) => {
+                                const current = parsePadding(
+                                    fieldProps.value || ""
+                                );
+                                const updated = { ...current, [field]: value };
+                                const newValue = `${updated.top} ${updated.right} ${updated.bottom} ${updated.left}`;
+                                fieldProps.onChange(newValue);
+                            };
+
+                            const handleNumberFieldChange =
+                                (field: string) =>
+                                (e: React.ChangeEvent<HTMLInputElement>) => {
+                                    const inputValue = e.target.value;
+                                    const validPattern = /^\d*\.?\d*$/;
+
+                                    if (validPattern.test(inputValue)) {
+                                        const valueWithUnit = inputValue
+                                            ? `${inputValue}px`
+                                            : "0px";
+                                        handleFieldChange(field, valueWithUnit);
+                                    }
+                                };
+
+                            const extractNumber = (value: string) => {
+                                const match = value.match(/^(\d*\.?\d*)/);
+                                return match?.[1] || "0";
+                            };
+
+                            return (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1,
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(top)}
+                                        onChange={handleNumberFieldChange("top")}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "25%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="T"
+                                        title="Top Padding"
+                                    />
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(right)}
+                                        onChange={handleNumberFieldChange("right")}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "25%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="R"
+                                        title="Right Padding"
+                                    />
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(bottom)}
+                                        onChange={handleNumberFieldChange("bottom")}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "25%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="B"
+                                        title="Bottom Padding"
+                                    />
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(left)}
+                                        onChange={handleNumberFieldChange("left")}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "25%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="L"
+                                        title="Left Padding"
+                                    />
+                                </Box>
+                            );
+                        }}
+                    />
+                );
+
+            case "border":
+                return (
+                    <Controller
+                        name={name}
+                        control={control}
+                        defaultValue={defaultValue || "1px solid #000000"}
+                        render={({ field: fieldProps }) => {
+                            const parseBorder = (value: string) => {
+                                const parts = value.split(/\s+/);
+                                return {
+                                    width: parts[0] || "1px",
+                                    style: parts[1] || "solid",
+                                    color: parts[2] || "#000000"
+                                };
+                            };
+
+                            const {
+                                width,
+                                style,
+                                color
+                            } = parseBorder(fieldProps.value || "");
+
+                            const handleFieldChange = (
+                                field: string,
+                                value: string
+                            ) => {
+                                const current = parseBorder(
+                                    fieldProps.value || ""
+                                );
+                                const updated = { ...current, [field]: value };
+                                const newValue = `${updated.width} ${updated.style} ${updated.color}`;
+                                fieldProps.onChange(newValue);
+                            };
+
+                            const handleWidthChange = (
+                                e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                                const inputValue = e.target.value;
+                                const validPattern = /^\d*\.?\d*$/;
+
+                                if (validPattern.test(inputValue)) {
+                                    const valueWithUnit = inputValue
+                                        ? `${inputValue}px`
+                                        : "0px";
+                                    handleFieldChange("width", valueWithUnit);
+                                }
+                            };
+
+                            const handleStyleChange = (e: SelectChangeEvent) => {
+                                handleFieldChange("style", e.target.value);
+                            };
+
+                            const extractNumber = (value: string) => {
+                                const match = value.match(/^(\d*\.?\d*)/);
+                                return match?.[1] || "1";
+                            };
+
+                            const borderStyles = [
+                                "solid",
+                                "dashed",
+                                "dotted",
+                                "double",
+                                "groove",
+                                "ridge",
+                                "inset",
+                                "outset",
+                                "none",
+                                "hidden"
+                            ];
+
+                            return (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1,
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(width)}
+                                        onChange={handleWidthChange}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "33%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="Width"
+                                        title="Border Width"
+                                    />
+                                    <FormControl
+                                        size="small"
+                                        sx={{ width: "33%" }}
+                                    >
+                                        <Select
+                                            value={style}
+                                            onChange={handleStyleChange}
+                                            variant="outlined"
+                                            sx={{ fontSize: "0.875rem" }}
+                                        >
+                                            {borderStyles.map((styleOption) => (
+                                                <MenuItem
+                                                    key={styleOption}
+                                                    value={styleOption}
+                                                    sx={{
+                                                        fontSize: "0.875rem"
+                                                    }}
+                                                >
+                                                    {styleOption}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                    <TextField
+                                        type="color"
+                                        value={color}
+                                        onChange={(e) =>
+                                            handleFieldChange("color", e.target.value)
+                                        }
+                                        size="small"
+                                        sx={{ width: "33%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        title="Border Color"
+                                    />
+                                </Box>
+                            );
+                        }}
+                    />
+                );
+
             default:
                 return (
                     <Typography variant="caption" color="error">
