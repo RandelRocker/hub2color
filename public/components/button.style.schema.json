@@ -1,6 +1,10 @@
 {
     "style": [
         {
+            "type": "sectionTitle",
+            "label": "Button styles"
+        },
+        {
             "type": "group",
             "id": "buttonSize",
             "label": "Button size",
@@ -116,7 +120,7 @@
         },
         {
             "type": "sectionTitle",
-            "label": "Buttons Colors"
+            "label": "Button styles per color"
         },
         {
             "type": "group",
