@@ -1095,6 +1095,135 @@ export const ControlsTab = () => {
                     />
                 );
 
+            case "borderRadius":
+                return (
+                    <Controller
+                        name={name}
+                        control={control}
+                        defaultValue={defaultValue || "0px 0px 0px 0px"}
+                        render={({ field: fieldProps }) => {
+                            const parseBorderRadius = (value: string) => {
+                                const parts = value.split(/\s+/);
+                                return {
+                                    topLeft: parts[0] || "0px",
+                                    topRight: parts[1] || parts[0] || "0px",
+                                    bottomRight: parts[2] || parts[0] || "0px",
+                                    bottomLeft: parts[3] || parts[1] || parts[0] || "0px"
+                                };
+                            };
+
+                            const {
+                                topLeft,
+                                topRight,
+                                bottomRight,
+                                bottomLeft
+                            } = parseBorderRadius(fieldProps.value || "");
+
+                            const handleFieldChange = (
+                                field: string,
+                                value: string
+                            ) => {
+                                const current = parseBorderRadius(
+                                    fieldProps.value || ""
+                                );
+                                const updated = { ...current, [field]: value };
+                                const newValue = `${updated.topLeft} ${updated.topRight} ${updated.bottomRight} ${updated.bottomLeft}`;
+                                fieldProps.onChange(newValue);
+                            };
+
+                            const handleNumberFieldChange =
+                                (field: string) =>
+                                (e: React.ChangeEvent<HTMLInputElement>) => {
+                                    const inputValue = e.target.value;
+                                    const validPattern = /^\d*\.?\d*$/;
+
+                                    if (validPattern.test(inputValue)) {
+                                        const valueWithUnit = inputValue
+                                            ? `${inputValue}px`
+                                            : "0px";
+                                        handleFieldChange(field, valueWithUnit);
+                                    }
+                                };
+
+                            const extractNumber = (value: string) => {
+                                const match = value.match(/^(\d*\.?\d*)/);
+                                return match?.[1] || "0";
+                            };
+
+                            return (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1,
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(topLeft)}
+                                        onChange={handleNumberFieldChange("topLeft")}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "25%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="TL"
+                                        title="Top Left Radius"
+                                    />
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(topRight)}
+                                        onChange={handleNumberFieldChange("topRight")}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "25%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="TR"
+                                        title="Top Right Radius"
+                                    />
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(bottomRight)}
+                                        onChange={handleNumberFieldChange("bottomRight")}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "25%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="BR"
+                                        title="Bottom Right Radius"
+                                    />
+                                    <TextField
+                                        type="text"
+                                        value={extractNumber(bottomLeft)}
+                                        onChange={handleNumberFieldChange("bottomLeft")}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ width: "25%" }}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                        placeholder="BL"
+                                        title="Bottom Left Radius"
+                                    />
+                                </Box>
+                            );
+                        }}
+                    />
+                );
+
             default:
                 return (
                     <Typography variant="caption" color="error">
