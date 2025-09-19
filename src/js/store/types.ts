@@ -81,6 +81,7 @@ export interface AppState {
     selectedTemplate: ControlsSchemaTemplate | null;
     controlValues: Record<string, unknown>;
     stylingValues: Record<string, unknown>;
+    stylingTheme: Record<string, unknown>;
     customCss: string;
     customJs: string;
     zoom: number;

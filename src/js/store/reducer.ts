@@ -12,6 +12,7 @@ const initialState: AppState = {
     selectedTemplate: null,
     controlValues: {},
     stylingValues: {},
+    stylingTheme: {},
     customCss: "",
     customJs: "",
     zoom: 1,
@@ -93,6 +94,9 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_STYLING_VALUE:
                 draft.stylingValues[action.payload.name] = action.payload.value;
+                break;
+            case ActionTypes.SET_STYLING_THEME:
+                draft.stylingTheme = action.payload;
                 break;
             case ActionTypes.SET_CUSTOM_CSS:
                 draft.customCss = action.payload;

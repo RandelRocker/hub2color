@@ -21,7 +21,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
-import { setControlValue } from "../../../../store/actions";
+import { setStylingTheme } from "../../../../store/actions";
 import { StyleField, StyleGroup } from "../../../../store/types";
 
 export const StylingTab = () => {
@@ -137,10 +137,10 @@ export const StylingTab = () => {
 
                     if (hasActiveFields) {
                         dispatch(
-                            setControlValue("themeOverrides", newThemeValues)
+                            setStylingTheme(newThemeValues)
                         );
                     } else {
-                        dispatch(setControlValue("themeOverrides", {}));
+                        dispatch(setStylingTheme({}));
                     }
                 }
             }

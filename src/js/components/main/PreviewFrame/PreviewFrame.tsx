@@ -14,6 +14,7 @@ export const PreviewFrame = () => {
         viewport,
         direction,
         controlValues,
+        stylingTheme,
         customCss,
         customJs,
         loading,
@@ -75,7 +76,11 @@ export const PreviewFrame = () => {
                     dispatch(setStyleSchema(null));
                 }
             } catch (error) {
-                console.warn("Failed to load style schema for", pagePath, error);
+                console.warn(
+                    "Failed to load style schema for",
+                    pagePath,
+                    error
+                );
                 dispatch(setStyleSchema(null));
             }
         },
@@ -103,6 +108,11 @@ export const PreviewFrame = () => {
             });
         }
 
+        // Send styling theme
+        if (stylingTheme && Object.keys(stylingTheme).length > 0) {
+            sendMessageToFrame("THEME_CHANGE", { theme: stylingTheme });
+        }
+
         Object.entries(controlValues).forEach(([name, value]) => {
             // Handle font field empty values (format "_px", "_rem", etc.)
             const textUnits = ["px", "rem", "em", "%", "pt"];
@@ -112,11 +122,7 @@ export const PreviewFrame = () => {
                     ? undefined
                     : value;
 
-            if (name === "themeOverrides") {
-                sendMessageToFrame("THEME_CHANGE", { theme: value });
-            } else {
-                sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
-            }
+            sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
         });
     }, [
         currentPage,
@@ -126,6 +132,7 @@ export const PreviewFrame = () => {
         customJs,
         selectedTemplate,
         controlValues,
+        stylingTheme,
         sendMessageToFrame
     ]);
 
@@ -163,14 +170,16 @@ export const PreviewFrame = () => {
                 typeof value === "string" && value.startsWith("_")
                     ? undefined
                     : value;
-            
-            if (name === "themeOverrides") {
-                sendMessageToFrame("THEME_CHANGE", { theme: value });
-            } else {
-                sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
-            }
+
+            sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
         });
     }, [controlValues, sendMessageToFrame]);
+
+    useEffect(() => {
+        if (stylingTheme) {
+            sendMessageToFrame("THEME_CHANGE", { theme: stylingTheme });
+        }
+    }, [stylingTheme, sendMessageToFrame]);
 
     useEffect(() => {
         if (selectedTemplate) {

@@ -41,6 +41,11 @@ export const setStylingValue = (name: string, value: unknown) => ({
     payload: { name, value },
 });
 
+export const setStylingTheme = (theme: Record<string, unknown>) => ({
+    type: ActionTypes.SET_STYLING_THEME,
+    payload: theme,
+});
+
 export const setCustomCss = (css: string) => ({
     type: ActionTypes.SET_CUSTOM_CSS,
     payload: css,

@@ -41,6 +41,11 @@ export interface SetStylingValueAction {
     payload: { name: string; value: unknown };
 }
 
+export interface SetStylingThemeAction {
+    type: ActionTypes.SET_STYLING_THEME;
+    payload: Record<string, unknown>;
+}
+
 export interface SetCustomCssAction {
     type: ActionTypes.SET_CUSTOM_CSS;
     payload: string;
@@ -95,6 +100,7 @@ export type AppAction =
     | SetControlValueAction
     | SetBulkControlsAction
     | SetStylingValueAction
+    | SetStylingThemeAction
     | SetCustomCssAction
     | SetCustomJsAction
     | SetZoomAction
