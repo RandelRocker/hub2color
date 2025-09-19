@@ -98,31 +98,33 @@ export const StylingTab = () => {
                 values: true
             },
             callback: ({ values }) => {
-                const filteredValues = Object.entries(values).filter(
-                    ([fieldId, value]) =>
-                        activeFields[fieldId] &&
-                        value !== undefined &&
-                        value !== ""
-                );
-
                 let newThemeValues: Record<string, unknown> = {};
                 let hasActiveFields = false;
 
-                filteredValues.forEach(([fieldId, value]) => {
-                    const field = findFieldById(
-                        styleSchema?.style || [],
-                        fieldId
-                    );
-                    if (field?.themeKey) {
-                        hasActiveFields = true;
-                        const themeObj = buildThemeObject(
-                            field.themeKey,
-                            value
+                Object.entries(values).forEach(([key, value]) => {
+                    // Skip enabled checkboxes themselves
+                    if (key.endsWith('_enabled')) return;
+                    
+                    // Check if this field is enabled
+                    const enabledKey = `${key}_enabled`;
+                    const isEnabled = values[enabledKey];
+                    
+                    if (isEnabled && value !== undefined && value !== "") {
+                        const field = findFieldById(
+                            styleSchema?.style || [],
+                            key
                         );
-                        newThemeValues = mergeThemeObjects(
-                            newThemeValues,
-                            themeObj
-                        );
+                        if (field?.themeKey) {
+                            hasActiveFields = true;
+                            const themeObj = buildThemeObject(
+                                field.themeKey,
+                                value
+                            );
+                            newThemeValues = mergeThemeObjects(
+                                newThemeValues,
+                                themeObj
+                            );
+                        }
                     }
                 });
 
@@ -192,6 +194,8 @@ export const StylingTab = () => {
             defaultValue = "",
             uncheckedValue
         } = field;
+        
+        const isFieldEnabled = activeFields[id] || false;
 
         switch (type) {
             case "text":
@@ -205,7 +209,7 @@ export const StylingTab = () => {
                                 value={fieldProps.value || ""}
                                 size="small"
                                 fullWidth
-                                disabled={!activeFields[id]}
+                                disabled={!isFieldEnabled}
                                 slotProps={{
                                     input: {
                                         sx: { fontSize: "0.875rem" }
@@ -229,7 +233,7 @@ export const StylingTab = () => {
                                 type="number"
                                 size="small"
                                 fullWidth
-                                disabled={!activeFields[id]}
+                                disabled={!isFieldEnabled}
                                 variant="outlined"
                                 slotProps={{
                                     input: {
@@ -278,7 +282,7 @@ export const StylingTab = () => {
                                     checked={isChecked}
                                     onChange={handleChange}
                                     size="small"
-                                    disabled={!activeFields[id]}
+                                    disabled={!isFieldEnabled}
                                 />
                             );
                         }}
@@ -297,7 +301,7 @@ export const StylingTab = () => {
                                     {...fieldProps}
                                     value={fieldProps.value ?? ""}
                                     variant="outlined"
-                                    disabled={!activeFields[id]}
+                                    disabled={!isFieldEnabled}
                                     sx={{ fontSize: "0.875rem" }}
                                 >
                                     {options?.map((option: string) => (
@@ -330,7 +334,7 @@ export const StylingTab = () => {
                                         control={
                                             <Radio
                                                 size="small"
-                                                disabled={!activeFields[id]}
+                                                disabled={!isFieldEnabled}
                                             />
                                         }
                                         slotProps={{
@@ -366,7 +370,7 @@ export const StylingTab = () => {
                                     max={max}
                                     step={step}
                                     size="small"
-                                    disabled={!activeFields[id]}
+                                    disabled={!isFieldEnabled}
                                     valueLabelDisplay="auto"
                                 />
                             </Box>
@@ -385,7 +389,7 @@ export const StylingTab = () => {
                                 {...fieldProps}
                                 type="color"
                                 size="small"
-                                disabled={!activeFields[id]}
+                                disabled={!isFieldEnabled}
                                 slotProps={{
                                     input: {
                                         sx: { fontSize: "0.875rem" }
@@ -452,7 +456,7 @@ export const StylingTab = () => {
                                         onChange={handleNumberChange}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: 80 }}
                                         slotProps={{
                                             input: {
@@ -469,7 +473,7 @@ export const StylingTab = () => {
                                             value={unit}
                                             onChange={handleUnitChange}
                                             variant="outlined"
-                                            disabled={!activeFields[id]}
+                                            disabled={!isFieldEnabled}
                                             sx={{ fontSize: "0.875rem" }}
                                         >
                                             {fontUnits.map((unitOption) => (
@@ -568,7 +572,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -586,7 +590,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -604,7 +608,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -624,7 +628,7 @@ export const StylingTab = () => {
                                             )
                                         }
                                         size="small"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -720,7 +724,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "20%" }}
                                         slotProps={{
                                             input: {
@@ -738,7 +742,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "20%" }}
                                         slotProps={{
                                             input: {
@@ -756,7 +760,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "20%" }}
                                         slotProps={{
                                             input: {
@@ -774,7 +778,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "20%" }}
                                         slotProps={{
                                             input: {
@@ -794,7 +798,7 @@ export const StylingTab = () => {
                                             )
                                         }
                                         size="small"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "20%" }}
                                         slotProps={{
                                             input: {
@@ -888,7 +892,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -906,7 +910,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -924,7 +928,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -942,7 +946,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -1048,7 +1052,7 @@ export const StylingTab = () => {
                                         onChange={handleWidthChange}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "33%" }}
                                         slotProps={{
                                             input: {
@@ -1066,7 +1070,7 @@ export const StylingTab = () => {
                                             value={style}
                                             onChange={handleStyleChange}
                                             variant="outlined"
-                                            disabled={!activeFields[id]}
+                                            disabled={!isFieldEnabled}
                                             sx={{ fontSize: "0.875rem" }}
                                         >
                                             {borderStyles.map((styleOption) => (
@@ -1092,7 +1096,7 @@ export const StylingTab = () => {
                                             )
                                         }
                                         size="small"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "33%" }}
                                         slotProps={{
                                             input: {
@@ -1191,7 +1195,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -1209,7 +1213,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -1227,7 +1231,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -1245,7 +1249,7 @@ export const StylingTab = () => {
                                         )}
                                         size="small"
                                         variant="outlined"
-                                        disabled={!activeFields[id]}
+                                        disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
                                         slotProps={{
                                             input: {
@@ -1283,12 +1287,21 @@ export const StylingTab = () => {
             }}
         >
             <Box sx={{ width: "15%", minWidth: 60 }}>
-                <Checkbox
-                    checked={activeFields[field.id] || false}
-                    onChange={(e) =>
-                        handleActiveChange(field.id, e.target.checked)
-                    }
-                    size="small"
+                <Controller
+                    name={`${field.id}_enabled`}
+                    control={control}
+                    defaultValue={false}
+                    render={({ field: checkboxField }) => (
+                        <Checkbox
+                            checked={(checkboxField.value as boolean) || false}
+                            onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                checkboxField.onChange(isChecked);
+                                handleActiveChange(field.id, isChecked);
+                            }}
+                            size="small"
+                        />
+                    )}
                 />
             </Box>
             <Box sx={{ width: "35%", minWidth: 120 }}>
