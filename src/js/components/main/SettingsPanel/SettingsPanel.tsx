@@ -16,7 +16,7 @@ import CallToActionOutlinedIcon from "@mui/icons-material/CallToActionOutlined";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../store";
-import { setPanelDock, setSavedTheme } from "../../../store/actions";
+import { setPanelDock, setSavedTheme, updateStylingTheme } from "../../../store/actions";
 import { ControlsTab } from "./ControlsTab/ControlsTab";
 import { StylingTab } from "./StylingTab/StylingTab";
 import { CustomCssTab } from "./CustomCssTab/CustomCssTab";
@@ -32,20 +32,11 @@ export const SettingsPanel = () => {
 
     const isBottomDock = panelDock === "bottom";
 
-    const handleResetToPrevious = () => {
-        if (!currentPage) return;
-
-        const saved = localStorage.getItem(`msb:state:${currentPage}`);
-        if (saved) {
-            try {
-                const state = JSON.parse(saved);
-                // Dispatch actions to restore state
-                console.log("Restore previous saved state:", state);
-            } catch (error) {
-                console.error("Failed to parse saved state:", error);
-            }
+    const handleResetToPreviousSaved = useCallback(() => {
+        if (savedTheme?.themeStyles) {
+            dispatch(updateStylingTheme(savedTheme.themeStyles));
         }
-    };
+    }, [savedTheme, dispatch]);
 
     const handleResetToDefault = () => {
         // Reset to schema defaults
@@ -83,10 +74,10 @@ export const SettingsPanel = () => {
         setAnchorEl(null);
     };
 
-    const handleMenuResetToPrevious = () => {
-        handleResetToPrevious();
+    const handleMenuResetToPreviousSaved = useCallback(() => {
+        handleResetToPreviousSaved();
         handleMenuClose();
-    };
+    }, [handleResetToPreviousSaved]);
 
     const handleMenuResetToDefault = () => {
         handleResetToDefault();
@@ -197,7 +188,7 @@ export const SettingsPanel = () => {
                             {`Dock ${isBottomDock ? "Right" : "Bottom"}`}
                         </MenuItem>
                         <MenuItem
-                            onClick={handleMenuResetToPrevious}
+                            onClick={handleMenuResetToPreviousSaved}
                             sx={{ fontSize: "0.875rem" }}
                         >
                             <Restore sx={{ mr: 1, fontSize: "1rem" }} />
