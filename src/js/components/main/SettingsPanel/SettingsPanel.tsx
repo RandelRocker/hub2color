@@ -22,6 +22,7 @@ import {
     updateStylingTheme,
     updateStyleSchemaDefaults
 } from "../../../store/actions";
+import { StyleField, StyleGroup, StylingTheme } from "../../../store/types";
 import { ControlsTab } from "./ControlsTab/ControlsTab";
 import { StylingTab } from "./StylingTab/StylingTab";
 import { CustomCssTab } from "./CustomCssTab/CustomCssTab";
@@ -29,7 +30,7 @@ import { CustomJsTab } from "./CustomJsTab/CustomJsTab";
 
 export const SettingsPanel = () => {
     const dispatch = useDispatch();
-    const { panelDock, currentPage, stylingTheme, savedTheme } = useSelector(
+    const { panelDock, currentPage, stylingTheme, savedTheme, styleSchema } = useSelector(
         (state: RootState) => state.app
     );
     const [activeTab, setActiveTab] = useState(0);
@@ -44,10 +45,40 @@ export const SettingsPanel = () => {
         }
     }, [savedTheme, dispatch]);
 
-    const handleResetToDefault = () => {
-        // Reset to schema defaults
-        console.log("Reset to schema defaults");
-    };
+    const handleResetToDefault = useCallback(() => {
+        if (!styleSchema?.style) return;
+
+        const collectDefaultTheme = (items: (StyleField | StyleGroup)[]): StylingTheme => {
+            const defaultTheme: StylingTheme = {};
+
+            items.forEach((item) => {
+                if (
+                    "id" in item &&
+                    item.type !== "group" &&
+                    item.type !== "sectionTitle"
+                ) {
+                    const field = item as StyleField;
+
+                    if (field.themeKey && field.defaultValue !== undefined) {
+                        defaultTheme[field.themeKey] = {
+                            value: field.defaultValue,
+                            isEnabled: false
+                        };
+                    }
+                }
+                if ("fields" in item && item.fields) {
+                    const nestedDefaults = collectDefaultTheme(item.fields);
+                    Object.assign(defaultTheme, nestedDefaults);
+                }
+            });
+
+            return defaultTheme;
+        };
+
+        const defaultTheme = collectDefaultTheme(styleSchema.style);
+        dispatch(updateStylingTheme(defaultTheme));
+        dispatch(updateStyleSchemaDefaults());
+    }, [styleSchema, dispatch]);
 
     const handleSave = useCallback(() => {
         if (!currentPage) return;
