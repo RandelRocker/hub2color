@@ -2,12 +2,6 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import {
     Box,
     Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
     Checkbox,
     Accordion,
     AccordionSummary,
@@ -1277,8 +1271,18 @@ export const StylingTab = () => {
     };
 
     const renderField = (field: StyleField) => (
-        <TableRow key={field.id}>
-            <TableCell>
+        <Box
+            key={field.id}
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                py: 1.5,
+                px: 2,
+                borderBottom: "1px solid #e0e0e0"
+            }}
+        >
+            <Box sx={{ width: "15%", minWidth: 60 }}>
                 <Checkbox
                     checked={activeFields[field.id] || false}
                     onChange={(e) =>
@@ -1286,14 +1290,14 @@ export const StylingTab = () => {
                     }
                     size="small"
                 />
-            </TableCell>
-            <TableCell>
+            </Box>
+            <Box sx={{ width: "35%", minWidth: 120 }}>
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
                     {field.label}
                 </Typography>
-            </TableCell>
-            <TableCell>{renderControl(field)}</TableCell>
-        </TableRow>
+            </Box>
+            <Box sx={{ width: "50%", flex: 1 }}>{renderControl(field)}</Box>
+        </Box>
     );
 
     const renderGroupAsSection = (group: StyleGroup) => (
@@ -1311,7 +1315,10 @@ export const StylingTab = () => {
                         minHeight: 40,
                         borderBottom: "1px solid #e0e0e0",
                         "&.Mui-expanded": { minHeight: 40 },
-                        px: 2
+                        px: 2,
+                        "&:hover": {
+                            backgroundColor: "#f5f5f5"
+                        }
                     }}
                     expandIcon={<ExpandMoreIcon />}
                 >
@@ -1320,49 +1327,26 @@ export const StylingTab = () => {
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails sx={{ p: 0 }}>
-                    <TableContainer>
-                        <Table size="small">
-                            <TableHead>
-                                <TableRow sx={{ backgroundColor: "#f8f9fa" }}>
-                                    <TableCell
-                                        sx={{ fontWeight: 600, width: "15%" }}
-                                    >
-                                        Enable
-                                    </TableCell>
-                                    <TableCell
-                                        sx={{ fontWeight: 600, width: "35%" }}
-                                    >
-                                        Name
-                                    </TableCell>
-                                    <TableCell
-                                        sx={{ fontWeight: 600, width: "50%" }}
-                                    >
-                                        Control
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {group.fields?.map((field) => {
-                                    if ("type" in field) {
-                                        const fieldOrGroup = field as
-                                            | StyleField
-                                            | StyleGroup;
-                                        if (fieldOrGroup.type === "group") {
-                                            return renderNestedGroupAsTableRow(
-                                                fieldOrGroup as StyleGroup
-                                            );
-                                        } else {
-                                            return renderField(
-                                                fieldOrGroup as StyleField
-                                            );
-                                        }
-                                    } else {
-                                        return renderField(field as StyleField);
-                                    }
-                                })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                    <Box>
+                        {group.fields?.map((field) => {
+                            if ("type" in field) {
+                                const fieldOrGroup = field as
+                                    | StyleField
+                                    | StyleGroup;
+                                if (fieldOrGroup.type === "group") {
+                                    return renderNestedGroupAsSection(
+                                        fieldOrGroup as StyleGroup
+                                    );
+                                } else {
+                                    return renderField(
+                                        fieldOrGroup as StyleField
+                                    );
+                                }
+                            } else {
+                                return renderField(field as StyleField);
+                            }
+                        })}
+                    </Box>
                 </AccordionDetails>
             </Accordion>
         </Box>
@@ -1397,64 +1381,58 @@ export const StylingTab = () => {
         </Box>
     );
 
-    const renderNestedGroupAsTableRow = (group: StyleGroup) => (
-        <TableRow key={group.id}>
-            <TableCell colSpan={3} sx={{ p: 0 }}>
-                <Accordion disableGutters>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography
-                            variant="subtitle2"
-                            sx={{ fontWeight: 600 }}
-                        >
-                            {group.label}
-                        </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails sx={{ p: 0 }}>
-                        <Table size="small">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell
-                                        sx={{ fontWeight: 600, width: "15%" }}
-                                    >
-                                        Enable
-                                    </TableCell>
-                                    <TableCell
-                                        sx={{ fontWeight: 600, width: "35%" }}
-                                    >
-                                        Name
-                                    </TableCell>
-                                    <TableCell
-                                        sx={{ fontWeight: 600, width: "50%" }}
-                                    >
-                                        Control
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {group.fields?.map((field) => {
-                                    if ("type" in field) {
-                                        const fieldOrGroup = field as
-                                            | StyleField
-                                            | StyleGroup;
-                                        if (fieldOrGroup.type === "group") {
-                                            return renderNestedGroupAsTableRow(
-                                                fieldOrGroup as StyleGroup
-                                            );
-                                        } else {
-                                            return renderField(
-                                                fieldOrGroup as StyleField
-                                            );
-                                        }
-                                    } else {
-                                        return renderField(field as StyleField);
-                                    }
-                                })}
-                            </TableBody>
-                        </Table>
-                    </AccordionDetails>
-                </Accordion>
-            </TableCell>
-        </TableRow>
+    const renderNestedGroupAsSection = (group: StyleGroup) => (
+        <Box key={group.id} sx={{ margin: "8px 16px" }}>
+            <Accordion
+                disableGutters
+                sx={{
+                    boxShadow: "none",
+                    "&:before": { display: "none" },
+                    "&.Mui-expanded": { margin: 0 },
+                    border: "none",
+                    borderRadius: 0
+                }}
+            >
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{
+                        minHeight: 36,
+                        "&.Mui-expanded": { minHeight: 36 },
+                        px: 2,
+                        backgroundColor: "#f8f9fa",
+                        "&:hover": {
+                            backgroundColor: "#f1f1f1"
+                        }
+                    }}
+                >
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                        {group.label}
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ p: 0 }}>
+                    <Box>
+                        {group.fields?.map((field) => {
+                            if ("type" in field) {
+                                const fieldOrGroup = field as
+                                    | StyleField
+                                    | StyleGroup;
+                                if (fieldOrGroup.type === "group") {
+                                    return renderNestedGroupAsSection(
+                                        fieldOrGroup as StyleGroup
+                                    );
+                                } else {
+                                    return renderField(
+                                        fieldOrGroup as StyleField
+                                    );
+                                }
+                            } else {
+                                return renderField(field as StyleField);
+                            }
+                        })}
+                    </Box>
+                </AccordionDetails>
+            </Accordion>
+        </Box>
     );
 
     // Memoize rendered items to prevent recalculation on every render
@@ -1514,30 +1492,49 @@ export const StylingTab = () => {
             <Box sx={{ flex: 1, overflow: "auto" }}>
                 {sections}
                 {fieldRows.length > 0 && (
-                    <TableContainer>
-                        <Table size="small" stickyHeader>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell
-                                        sx={{ fontWeight: 600, width: "15%" }}
-                                    >
-                                        Enable
-                                    </TableCell>
-                                    <TableCell
-                                        sx={{ fontWeight: 600, width: "35%" }}
-                                    >
-                                        Name
-                                    </TableCell>
-                                    <TableCell
-                                        sx={{ fontWeight: 600, width: "50%" }}
-                                    >
-                                        Control
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>{fieldRows}</TableBody>
-                        </Table>
-                    </TableContainer>
+                    <Box>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 2,
+                                py: 1.5,
+                                px: 2,
+                                backgroundColor: "#f8f9fa",
+                                borderBottom: "2px solid #e0e0e0",
+                                fontWeight: 600,
+                                position: "sticky",
+                                top: 0,
+                                zIndex: 1
+                            }}
+                        >
+                            <Box sx={{ width: "15%", minWidth: 60 }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 600 }}
+                                >
+                                    Enable
+                                </Typography>
+                            </Box>
+                            <Box sx={{ width: "35%", minWidth: 120 }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 600 }}
+                                >
+                                    Name
+                                </Typography>
+                            </Box>
+                            <Box sx={{ width: "50%", flex: 1 }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 600 }}
+                                >
+                                    Control
+                                </Typography>
+                            </Box>
+                        </Box>
+                        <Box>{fieldRows}</Box>
+                    </Box>
                 )}
             </Box>
         </Box>
