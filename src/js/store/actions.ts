@@ -46,6 +46,11 @@ export const setStylingTheme = (theme: Record<string, unknown>) => ({
     payload: theme,
 });
 
+export const setStylingUIState = (uiState: { scrollPosition?: number; expandedAccordions?: string[] }) => ({
+    type: ActionTypes.SET_STYLING_UI_STATE,
+    payload: uiState,
+});
+
 export const setCustomCss = (css: string) => ({
     type: ActionTypes.SET_CUSTOM_CSS,
     payload: css,

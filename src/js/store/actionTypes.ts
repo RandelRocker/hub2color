@@ -46,6 +46,11 @@ export interface SetStylingThemeAction {
     payload: Record<string, unknown>;
 }
 
+export interface SetStylingUIStateAction {
+    type: ActionTypes.SET_STYLING_UI_STATE;
+    payload: { scrollPosition?: number; expandedAccordions?: string[] };
+}
+
 export interface SetCustomCssAction {
     type: ActionTypes.SET_CUSTOM_CSS;
     payload: string;
@@ -101,6 +106,7 @@ export type AppAction =
     | SetBulkControlsAction
     | SetStylingValueAction
     | SetStylingThemeAction
+    | SetStylingUIStateAction
     | SetCustomCssAction
     | SetCustomJsAction
     | SetZoomAction

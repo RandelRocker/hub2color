@@ -13,6 +13,7 @@ const initialState: AppState = {
     controlValues: {},
     stylingValues: {},
     stylingTheme: {},
+    stylingUIState: { scrollPosition: 0, expandedAccordions: [] },
     customCss: "",
     customJs: "",
     zoom: 1,
@@ -38,6 +39,7 @@ export const appReducer = (
                 // Clear styling values when switching to a different component
                 draft.stylingValues = {};
                 draft.stylingTheme = {};
+                draft.stylingUIState = { scrollPosition: 0, expandedAccordions: [] };
                 break;
             case ActionTypes.SET_CONTROLS_SCHEMA:
                 draft.controlsSchema = action.payload;
@@ -100,6 +102,9 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_STYLING_THEME:
                 draft.stylingTheme = action.payload;
+                break;
+            case ActionTypes.SET_STYLING_UI_STATE:
+                draft.stylingUIState = { ...draft.stylingUIState, ...action.payload };
                 break;
             case ActionTypes.SET_CUSTOM_CSS:
                 draft.customCss = action.payload;

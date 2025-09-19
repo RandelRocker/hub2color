@@ -21,12 +21,13 @@ import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
-import { setStylingTheme, setStylingValue } from "../../../../store/actions";
+import { setStylingTheme, setStylingValue, setStylingUIState } from "../../../../store/actions";
 import { StyleField, StyleGroup } from "../../../../store/types";
 
 export const StylingTab = () => {
     const dispatch = useDispatch();
-    const { styleSchema, styleSchemaDefaults, stylingValues } = useSelector(
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const { styleSchema, styleSchemaDefaults, stylingValues, stylingUIState } = useSelector(
         (state: RootState) => state.app
     );
     // Merge defaults with persisted values
@@ -49,6 +50,9 @@ export const StylingTab = () => {
     
     const [activeFields, setActiveFields] = useState<Record<string, boolean>>(
         initializeActiveFields
+    );
+    const [expandedAccordions, setExpandedAccordions] = useState<string[]>(
+        stylingUIState.expandedAccordions || []
     );
     const lastThemeValues = useRef<Record<string, unknown>>({});
 
@@ -186,6 +190,31 @@ export const StylingTab = () => {
         });
         setActiveFields(newActiveFields);
     }, [stylingValues]);
+
+    // Restore scroll position when component mounts
+    useEffect(() => {
+        if (scrollContainerRef.current && stylingUIState.scrollPosition) {
+            scrollContainerRef.current.scrollTop = stylingUIState.scrollPosition;
+        }
+    }, [stylingUIState.scrollPosition]);
+
+    // Save scroll position when it changes
+    const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+        const scrollTop = e.currentTarget.scrollTop;
+        dispatch(setStylingUIState({ scrollPosition: scrollTop }));
+    }, [dispatch]);
+
+    // Save expanded accordions when they change
+    useEffect(() => {
+        dispatch(setStylingUIState({ expandedAccordions }));
+    }, [expandedAccordions, dispatch]);
+
+    // Restore expanded accordions when stylingUIState changes
+    useEffect(() => {
+        if (stylingUIState.expandedAccordions) {
+            setExpandedAccordions(stylingUIState.expandedAccordions);
+        }
+    }, [stylingUIState.expandedAccordions]);
 
     const handleActiveChange = useCallback(
         (fieldId: string, isActive: boolean) => {
@@ -1343,16 +1372,30 @@ export const StylingTab = () => {
         </Box>
     );
 
-    const renderGroupAsSection = (group: StyleGroup) => (
-        <Box key={group.id}>
-            <Accordion
-                sx={{
-                    boxShadow: "none",
-                    "&:before": { display: "none" },
-                    "&.Mui-expanded": { margin: 0 }
-                }}
-                disableGutters
-            >
+    const renderGroupAsSection = (group: StyleGroup) => {
+        const isExpanded = expandedAccordions.includes(group.id || group.label);
+        
+        const handleAccordionChange = () => {
+            const accordionId = group.id || group.label;
+            setExpandedAccordions(prev => 
+                isExpanded 
+                    ? prev.filter(id => id !== accordionId)
+                    : [...prev, accordionId]
+            );
+        };
+        
+        return (
+            <Box key={group.id}>
+                <Accordion
+                    expanded={isExpanded}
+                    onChange={handleAccordionChange}
+                    sx={{
+                        boxShadow: "none",
+                        "&:before": { display: "none" },
+                        "&.Mui-expanded": { margin: 0 }
+                    }}
+                    disableGutters
+                >
                 <AccordionSummary
                     sx={{
                         minHeight: 40,
@@ -1391,9 +1434,10 @@ export const StylingTab = () => {
                         })}
                     </Box>
                 </AccordionDetails>
-            </Accordion>
-        </Box>
-    );
+                </Accordion>
+            </Box>
+        );
+    };
 
     const renderSectionTitleAsSection = (group: StyleGroup) => (
         <Box
@@ -1424,10 +1468,24 @@ export const StylingTab = () => {
         </Box>
     );
 
-    const renderNestedGroupAsSection = (group: StyleGroup) => (
-        <Box key={group.id} sx={{ margin: "8px 16px" }}>
-            <Accordion
-                disableGutters
+    const renderNestedGroupAsSection = (group: StyleGroup) => {
+        const nestedId = `nested-${group.id || group.label}`;
+        const isExpanded = expandedAccordions.includes(nestedId);
+        
+        const handleAccordionChange = () => {
+            setExpandedAccordions(prev => 
+                isExpanded 
+                    ? prev.filter(id => id !== nestedId)
+                    : [...prev, nestedId]
+            );
+        };
+        
+        return (
+            <Box key={group.id} sx={{ margin: "8px 16px" }}>
+                <Accordion
+                    expanded={isExpanded}
+                    onChange={handleAccordionChange}
+                    disableGutters
                 sx={{
                     boxShadow: "none",
                     "&:before": { display: "none" },
@@ -1474,9 +1532,10 @@ export const StylingTab = () => {
                         })}
                     </Box>
                 </AccordionDetails>
-            </Accordion>
-        </Box>
-    );
+                </Accordion>
+            </Box>
+        );
+    };
 
     // Memoize rendered items to prevent recalculation on every render
     const renderItems = () => {
@@ -1532,7 +1591,11 @@ export const StylingTab = () => {
 
     return (
         <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-            <Box sx={{ flex: 1, overflow: "auto" }}>
+            <Box 
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                sx={{ flex: 1, overflow: "auto" }}
+            >
                 {sections}
                 {fieldRows.length > 0 && (
                     <Box>

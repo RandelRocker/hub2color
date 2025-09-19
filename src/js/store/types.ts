@@ -82,6 +82,7 @@ export interface AppState {
     controlValues: Record<string, unknown>;
     stylingValues: Record<string, unknown>;
     stylingTheme: Record<string, unknown>;
+    stylingUIState: { scrollPosition?: number; expandedAccordions?: string[] };
     customCss: string;
     customJs: string;
     zoom: number;
