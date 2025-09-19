@@ -14,9 +14,13 @@ import {
     Slider,
     RadioGroup,
     FormControlLabel,
-    Radio
+    Radio,
+    IconButton,
+    Menu,
+    Tooltip
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { MoreVert, Restore, RestartAlt } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -30,7 +34,7 @@ import { StyleField, StyleGroup, StylingTheme } from "../../../../store/types";
 export const StylingTab = () => {
     const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const { styleSchema, styleSchemaDefaults, stylingUIState } = useSelector(
+    const { styleSchema, styleSchemaDefaults, stylingUIState, stylingTheme, savedTheme } = useSelector(
         (state: RootState) => state.app
     );
 
@@ -41,6 +45,10 @@ export const StylingTab = () => {
     const [expandedAccordions, setExpandedAccordions] = useState<string[]>(
         stylingUIState.expandedAccordions || []
     );
+    const [fieldMenuAnchor, setFieldMenuAnchor] = useState<{
+        element: HTMLElement | null;
+        fieldId: string | null;
+    }>({ element: null, fieldId: null });
 
     const findFieldById = useCallback(
         (items: (StyleField | StyleGroup)[], id: string): StyleField | null => {
@@ -57,6 +65,70 @@ export const StylingTab = () => {
         },
         []
     );
+
+    const handleFieldMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>, fieldId: string) => {
+        setFieldMenuAnchor({ element: event.currentTarget, fieldId });
+    }, []);
+
+    const handleFieldMenuClose = useCallback(() => {
+        setFieldMenuAnchor({ element: null, fieldId: null });
+    }, []);
+
+    const handleFieldResetToPreviousSaved = useCallback(() => {
+        const fieldId = fieldMenuAnchor.fieldId;
+        if (!fieldId) return;
+
+        const field = findFieldById(styleSchema?.style || [], fieldId);
+        if (!field?.themeKey) return;
+
+        const savedValue = savedTheme?.themeStyles[field.themeKey];
+        if (savedValue) {
+            const currentValues = getValues();
+            const newValues = {
+                ...currentValues,
+                [fieldId]: savedValue.value,
+                [`${fieldId}_enabled`]: savedValue.isEnabled
+            };
+            reset(newValues);
+
+            // Update the styling theme for this field
+            dispatch(updateStylingTheme({
+                [field.themeKey]: {
+                    value: savedValue.value,
+                    isEnabled: savedValue.isEnabled
+                }
+            }));
+        }
+        handleFieldMenuClose();
+    }, [fieldMenuAnchor.fieldId, findFieldById, styleSchema, savedTheme, getValues, reset, dispatch, handleFieldMenuClose]);
+
+    const handleFieldResetToDefault = useCallback(() => {
+        const fieldId = fieldMenuAnchor.fieldId;
+        if (!fieldId) return;
+
+        const field = findFieldById(styleSchema?.style || [], fieldId);
+        if (!field?.themeKey) return;
+
+        const defaultValue = field.defaultValue;
+        if (defaultValue !== undefined) {
+            const currentValues = getValues();
+            const newValues = {
+                ...currentValues,
+                [fieldId]: defaultValue,
+                [`${fieldId}_enabled`]: false
+            };
+            reset(newValues);
+
+            // Update the styling theme for this field
+            dispatch(updateStylingTheme({
+                [field.themeKey]: {
+                    value: defaultValue,
+                    isEnabled: false
+                }
+            }));
+        }
+        handleFieldMenuClose();
+    }, [fieldMenuAnchor.fieldId, findFieldById, styleSchema, getValues, reset, dispatch, handleFieldMenuClose]);
 
     useEffect(() => {
         const callback = subscribe({
@@ -1261,6 +1333,17 @@ export const StylingTab = () => {
                 </Typography>
             </Box>
             <Box sx={{ width: "50%", flex: 1 }}>{renderControl(field)}</Box>
+            <Box sx={{ width: "auto", minWidth: 32 }}>
+                <Tooltip title="Field options">
+                    <IconButton
+                        size="small"
+                        onClick={(e) => handleFieldMenuOpen(e, field.id)}
+                        sx={{ opacity: 0.7, "&:hover": { opacity: 1 } }}
+                    >
+                        <MoreVert fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+            </Box>
         </Box>
     );
 
@@ -1536,11 +1619,49 @@ export const StylingTab = () => {
                                     Control
                                 </Typography>
                             </Box>
+                            <Box sx={{ width: "auto", minWidth: 32 }}>
+                                <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 600 }}
+                                >
+                                    {/* Options column header - empty */}
+                                </Typography>
+                            </Box>
                         </Box>
                         <Box>{fieldRows}</Box>
                     </Box>
                 )}
             </Box>
+
+            {/* Field Context Menu */}
+            <Menu
+                anchorEl={fieldMenuAnchor.element}
+                open={Boolean(fieldMenuAnchor.element)}
+                onClose={handleFieldMenuClose}
+                transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right"
+                }}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right"
+                }}
+            >
+                <MenuItem
+                    onClick={handleFieldResetToPreviousSaved}
+                    sx={{ fontSize: "0.875rem" }}
+                >
+                    <Restore sx={{ mr: 1, fontSize: "1rem" }} />
+                    Reset to Previous Saved
+                </MenuItem>
+                <MenuItem
+                    onClick={handleFieldResetToDefault}
+                    sx={{ fontSize: "0.875rem" }}
+                >
+                    <RestartAlt sx={{ mr: 1, fontSize: "1rem" }} />
+                    Reset to Default
+                </MenuItem>
+            </Menu>
         </Box>
     );
 };
