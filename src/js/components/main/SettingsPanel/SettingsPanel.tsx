@@ -40,6 +40,7 @@ export const SettingsPanel = () => {
     const handleResetToPreviousSaved = useCallback(() => {
         if (savedTheme?.themeStyles) {
             dispatch(updateStylingTheme(savedTheme.themeStyles));
+            dispatch(updateStyleSchemaDefaults());
         }
     }, [savedTheme, dispatch]);
 
