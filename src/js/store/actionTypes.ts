@@ -21,6 +21,10 @@ export interface SetStyleSchemaAction {
     payload: StyleSchema | null;
 }
 
+export interface UpdateStyleSchemaDefaultsAction {
+    type: ActionTypes.UPDATE_STYLE_SCHEMA_DEFAULTS;
+}
+
 export interface SetSelectedTemplateAction {
     type: ActionTypes.SET_SELECTED_TEMPLATE;
     payload: string | null;
@@ -106,6 +110,7 @@ export type AppAction =
     | SetCurrentPageAction
     | SetControlsSchemaAction
     | SetStyleSchemaAction
+    | UpdateStyleSchemaDefaultsAction
     | SetSelectedTemplateAction
     | SetControlValueAction
     | SetBulkControlsAction

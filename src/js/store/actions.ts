@@ -21,6 +21,10 @@ export const setStyleSchema = (schema: StyleSchema | null) => ({
     payload: schema,
 });
 
+export const updateStyleSchemaDefaults = () => ({
+    type: ActionTypes.UPDATE_STYLE_SCHEMA_DEFAULTS,
+});
+
 export const setSelectedTemplate = (templateName: string | null) => ({
     type: ActionTypes.SET_SELECTED_TEMPLATE,
     payload: templateName,

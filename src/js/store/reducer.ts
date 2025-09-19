@@ -119,6 +119,50 @@ export const appReducer = (
                 }
                 break;
             }
+            case ActionTypes.UPDATE_STYLE_SCHEMA_DEFAULTS: {
+                draft.styleSchemaDefaults = {};
+
+                const collectDefaultsFromTheme = (
+                    items: (StyleField | StyleGroup)[]
+                ) => {
+                    items.forEach((item) => {
+                        if (
+                            "id" in item &&
+                            item.type !== "group" &&
+                            item.type !== "sectionTitle"
+                        ) {
+                            const field = item as StyleField;
+
+                            // Start with field's default value
+                            if (field.defaultValue !== undefined) {
+                                draft.styleSchemaDefaults[field.id] =
+                                    field.defaultValue;
+                            }
+
+                            // Override with current styling theme values if they exist
+                            if (
+                                field.themeKey &&
+                                draft.stylingTheme[field.themeKey]
+                            ) {
+                                const themeValue = draft.stylingTheme[field.themeKey];
+
+                                if (themeValue.value !== undefined) {
+                                    draft.styleSchemaDefaults[field.id] = themeValue.value;
+                                    draft.styleSchemaDefaults[`${field.id}_enabled`] = themeValue.isEnabled;
+                                }
+                            }
+                        }
+                        if ("fields" in item && item.fields) {
+                            collectDefaultsFromTheme(item.fields);
+                        }
+                    });
+                };
+
+                if (draft.styleSchema?.style) {
+                    collectDefaultsFromTheme(draft.styleSchema.style);
+                }
+                break;
+            }
             case ActionTypes.SET_SELECTED_TEMPLATE:
                 if (action.payload && draft.controlsSchema?.templates) {
                     const selectedTemplate =

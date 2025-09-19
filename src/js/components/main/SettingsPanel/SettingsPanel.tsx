@@ -16,7 +16,12 @@ import CallToActionOutlinedIcon from "@mui/icons-material/CallToActionOutlined";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../store";
-import { setPanelDock, setSavedTheme, updateStylingTheme } from "../../../store/actions";
+import {
+    setPanelDock,
+    setSavedTheme,
+    updateStylingTheme,
+    updateStyleSchemaDefaults
+} from "../../../store/actions";
 import { ControlsTab } from "./ControlsTab/ControlsTab";
 import { StylingTab } from "./StylingTab/StylingTab";
 import { CustomCssTab } from "./CustomCssTab/CustomCssTab";
@@ -126,7 +131,10 @@ export const SettingsPanel = () => {
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Tabs
                         value={activeTab}
-                        onChange={(_, newValue) => setActiveTab(newValue)}
+                        onChange={(_, newValue) => {
+                            setActiveTab(newValue);
+                            dispatch(updateStyleSchemaDefaults());
+                        }}
                         variant="scrollable"
                         scrollButtons={false}
                         sx={{
