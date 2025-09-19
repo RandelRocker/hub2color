@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 
+import * as helpers from "./helpers";
 import { RootState } from "../../../store";
 import { setControlsSchema, setStyleSchema } from "../../../store/actions";
 
@@ -110,7 +111,9 @@ export const PreviewFrame = () => {
 
         // Send styling theme
         if (stylingTheme && Object.keys(stylingTheme).length > 0) {
-            sendMessageToFrame("THEME_CHANGE", { theme: stylingTheme });
+            sendMessageToFrame("THEME_CHANGE", {
+                theme: helpers.prepareThemeData(stylingTheme)
+            });
         }
 
         Object.entries(controlValues).forEach(([name, value]) => {
@@ -177,7 +180,9 @@ export const PreviewFrame = () => {
 
     useEffect(() => {
         if (stylingTheme) {
-            sendMessageToFrame("THEME_CHANGE", { theme: stylingTheme });
+            sendMessageToFrame("THEME_CHANGE", {
+                theme: helpers.prepareThemeData(stylingTheme)
+            });
         }
     }, [stylingTheme, sendMessageToFrame]);
 

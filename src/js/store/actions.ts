@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ControlsSchema, StyleSchema } from "./types";
+import { PageSection, ControlsSchema, StyleSchema, StoredThemeStyles, StylingTheme } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -41,14 +41,19 @@ export const setStylingValue = (name: string, value: unknown) => ({
     payload: { name, value },
 });
 
-export const setStylingTheme = (theme: Record<string, unknown>) => ({
-    type: ActionTypes.SET_STYLING_THEME,
+export const updateStylingTheme = (theme: StylingTheme) => ({
+    type: ActionTypes.UPDATE_STYLING_THEME,
     payload: theme,
 });
 
 export const setStylingUIState = (uiState: { scrollPosition?: number; expandedAccordions?: string[] }) => ({
     type: ActionTypes.SET_STYLING_UI_STATE,
     payload: uiState,
+});
+
+export const setSavedTheme = (stylingTheme: StoredThemeStyles) => ({
+    type: ActionTypes.SET_SAVED_THEME,
+    payload: stylingTheme,
 });
 
 export const setCustomCss = (css: string) => ({

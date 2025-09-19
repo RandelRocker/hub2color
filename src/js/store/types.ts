@@ -28,6 +28,24 @@ export interface ControlField {
     step?: number;
 }
 
+export interface StylingTheme {
+    [themeKey: string]: {
+        isEnabled: boolean;
+        value: unknown;
+    };
+}
+export interface StoredThemeStyles {
+    themeStyles: {
+        [themeKey: string]: {
+            isEnabled: boolean;
+            value: unknown;
+        };
+    };
+    cssVariableStyles: {
+        [cssVariable: string]: unknown;
+    };
+}
+
 export interface ControlsSchemaProps {
     defaults: Record<string, unknown>;
     fields: ControlField[];
@@ -80,8 +98,8 @@ export interface AppState {
     styleSchemaDefaults: Record<string, unknown>;
     selectedTemplate: ControlsSchemaTemplate | null;
     controlValues: Record<string, unknown>;
-    stylingValues: Record<string, unknown>;
-    stylingTheme: Record<string, unknown>;
+    stylingTheme: StylingTheme;
+    savedTheme: StoredThemeStyles | null;
     stylingUIState: { scrollPosition?: number; expandedAccordions?: string[] };
     customCss: string;
     customJs: string;

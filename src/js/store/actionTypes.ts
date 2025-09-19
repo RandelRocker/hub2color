@@ -1,4 +1,4 @@
-import { PageSection, ControlsSchema, StyleSchema } from "./types";
+import { PageSection, ControlsSchema, StyleSchema, StoredThemeStyles, StylingTheme } from "./types";
 import { ActionTypes } from "./constants";
 
 export interface SetPagesAction {
@@ -41,14 +41,19 @@ export interface SetStylingValueAction {
     payload: { name: string; value: unknown };
 }
 
-export interface SetStylingThemeAction {
-    type: ActionTypes.SET_STYLING_THEME;
-    payload: Record<string, unknown>;
+export interface updateStylingThemeAction {
+    type: ActionTypes.UPDATE_STYLING_THEME;
+    payload: StylingTheme;
 }
 
 export interface SetStylingUIStateAction {
     type: ActionTypes.SET_STYLING_UI_STATE;
     payload: { scrollPosition?: number; expandedAccordions?: string[] };
+}
+
+export interface SetSavedThemesAction {
+    type: ActionTypes.SET_SAVED_THEME;
+    payload: StoredThemeStyles;
 }
 
 export interface SetCustomCssAction {
@@ -105,8 +110,9 @@ export type AppAction =
     | SetControlValueAction
     | SetBulkControlsAction
     | SetStylingValueAction
-    | SetStylingThemeAction
+    | updateStylingThemeAction
     | SetStylingUIStateAction
+    | SetSavedThemesAction
     | SetCustomCssAction
     | SetCustomJsAction
     | SetZoomAction

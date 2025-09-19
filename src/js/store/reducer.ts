@@ -11,9 +11,9 @@ const initialState: AppState = {
     styleSchemaDefaults: {},
     selectedTemplate: null,
     controlValues: {},
-    stylingValues: {},
     stylingTheme: {},
     stylingUIState: { scrollPosition: 0, expandedAccordions: [] },
+    savedTheme: { themeStyles: {}, cssVariableStyles: {} },
     customCss: "",
     customJs: "",
     zoom: 1,
@@ -22,12 +22,12 @@ const initialState: AppState = {
     panelDock: "bottom",
     searchQuery: "",
     loading: false,
-    error: null,
+    error: null
 };
 
 export const appReducer = (
     state = initialState,
-    action: AppAction,
+    action: AppAction
 ): AppState => {
     return produce(state, (draft) => {
         switch (action.type) {
@@ -36,19 +36,34 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_CURRENT_PAGE:
                 draft.currentPage = action.payload;
-                // Clear styling values when switching to a different component
-                draft.stylingValues = {};
-                draft.stylingTheme = {};
-                draft.stylingUIState = { scrollPosition: 0, expandedAccordions: [] };
+                // Clear styling UI state when switching to a different component
+                draft.stylingUIState = {
+                    scrollPosition: 0,
+                    expandedAccordions: []
+                };
+
+                // Restore saved data for this page if it exists
+                if (action.payload && draft.savedTheme) {
+                    draft.stylingTheme = JSON.parse(
+                        JSON.stringify(draft.savedTheme.themeStyles || {})
+                    );
+                } else {
+                    draft.stylingTheme = {};
+                }
                 break;
             case ActionTypes.SET_CONTROLS_SCHEMA:
                 draft.controlsSchema = action.payload;
                 draft.selectedTemplate = null;
                 if (action.payload) {
-                    if (action.payload.templates && action.payload.templates.length > 0) {
+                    if (
+                        action.payload.templates &&
+                        action.payload.templates.length > 0
+                    ) {
                         const firstTemplate = action.payload.templates[0];
                         draft.selectedTemplate = firstTemplate;
-                        draft.controlValues = { ...firstTemplate.props.defaults };
+                        draft.controlValues = {
+                            ...firstTemplate.props.defaults
+                        };
                     } else if (action.payload.defaults) {
                         draft.controlValues = { ...action.payload.defaults };
                     }
@@ -56,8 +71,11 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_STYLE_SCHEMA: {
                 draft.styleSchema = action.payload;
-                
-                const collectDefaults = (items: (StyleField | StyleGroup)[]) => {
+                draft.styleSchemaDefaults = {};
+
+                const collectDefaults = (
+                    items: (StyleField | StyleGroup)[]
+                ) => {
                     items.forEach((item) => {
                         if (
                             "id" in item &&
@@ -66,7 +84,28 @@ export const appReducer = (
                         ) {
                             const field = item as StyleField;
                             if (field.defaultValue !== undefined) {
-                                draft.styleSchemaDefaults[field.id] = field.defaultValue;
+                                draft.styleSchemaDefaults[field.id] =
+                                    field.defaultValue;
+                            }
+
+                            if (
+                                field.themeKey &&
+                                draft.savedTheme?.themeStyles[field.themeKey]
+                            ) {
+                                const valueFromTheme =
+                                    draft.savedTheme.themeStyles[field.themeKey]
+                                        .value;
+
+                                if (valueFromTheme !== undefined) {
+                                    draft.styleSchemaDefaults[field.id] =
+                                        valueFromTheme;
+                                    draft.styleSchemaDefaults[
+                                        `${field.id}_enabled`
+                                    ] =
+                                        draft.savedTheme.themeStyles[
+                                            field.themeKey
+                                        ].isEnabled;
+                                }
                             }
                         }
                         if ("fields" in item && item.fields) {
@@ -82,29 +121,47 @@ export const appReducer = (
             }
             case ActionTypes.SET_SELECTED_TEMPLATE:
                 if (action.payload && draft.controlsSchema?.templates) {
-                    const selectedTemplate = draft.controlsSchema.templates.find(
-                        t => t.templateName === action.payload
-                    );
+                    const selectedTemplate =
+                        draft.controlsSchema.templates.find(
+                            (t) => t.templateName === action.payload
+                        );
                     if (selectedTemplate) {
                         draft.selectedTemplate = selectedTemplate;
-                        draft.controlValues = { ...selectedTemplate.props.defaults };
+                        draft.controlValues = {
+                            ...selectedTemplate.props.defaults
+                        };
                     }
                 }
                 break;
             case ActionTypes.SET_CONTROL_VALUE:
+                if (!draft.controlValues) {
+                    draft.controlValues = {};
+                }
                 draft.controlValues[action.payload.name] = action.payload.value;
                 break;
             case ActionTypes.SET_BULK_CONTROLS:
                 draft.controlValues = action.payload;
                 break;
-            case ActionTypes.SET_STYLING_VALUE:
-                draft.stylingValues[action.payload.name] = action.payload.value;
-                break;
-            case ActionTypes.SET_STYLING_THEME:
-                draft.stylingTheme = action.payload;
+            case ActionTypes.UPDATE_STYLING_THEME:
+                draft.stylingTheme = {
+                    ...draft.stylingTheme,
+                    ...action.payload
+                };
                 break;
             case ActionTypes.SET_STYLING_UI_STATE:
-                draft.stylingUIState = { ...draft.stylingUIState, ...action.payload };
+                if (!draft.stylingUIState) {
+                    draft.stylingUIState = {
+                        scrollPosition: 0,
+                        expandedAccordions: []
+                    };
+                }
+                draft.stylingUIState = {
+                    ...draft.stylingUIState,
+                    ...action.payload
+                };
+                break;
+            case ActionTypes.SET_SAVED_THEME:
+                draft.savedTheme = action.payload;
                 break;
             case ActionTypes.SET_CUSTOM_CSS:
                 draft.customCss = action.payload;

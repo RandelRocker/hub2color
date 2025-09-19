@@ -21,40 +21,26 @@ import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
-import { setStylingTheme, setStylingValue, setStylingUIState } from "../../../../store/actions";
-import { StyleField, StyleGroup } from "../../../../store/types";
+import {
+    updateStylingTheme,
+    setStylingUIState
+} from "../../../../store/actions";
+import { StyleField, StyleGroup, StylingTheme } from "../../../../store/types";
 
 export const StylingTab = () => {
     const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const { styleSchema, styleSchemaDefaults, stylingValues, stylingUIState } = useSelector(
+    const { styleSchema, styleSchemaDefaults, stylingUIState } = useSelector(
         (state: RootState) => state.app
     );
-    // Merge defaults with persisted values
-    const initialValues = { ...styleSchemaDefaults, ...stylingValues };
-    
-    const { control, subscribe } = useForm({
-        defaultValues: initialValues
+
+    const { control, subscribe, getValues, reset } = useForm({
+        defaultValues: styleSchemaDefaults
     });
-    // Initialize activeFields from persisted styling values
-    const initializeActiveFields = () => {
-        const active: Record<string, boolean> = {};
-        Object.keys(stylingValues).forEach(key => {
-            if (key.endsWith('_enabled')) {
-                const fieldId = key.replace('_enabled', '');
-                active[fieldId] = stylingValues[key] as boolean;
-            }
-        });
-        return active;
-    };
-    
-    const [activeFields, setActiveFields] = useState<Record<string, boolean>>(
-        initializeActiveFields
-    );
+
     const [expandedAccordions, setExpandedAccordions] = useState<string[]>(
         stylingUIState.expandedAccordions || []
     );
-    const lastThemeValues = useRef<Record<string, unknown>>({});
 
     const buildThemeObject = useCallback((themeKey: string, value: unknown) => {
         const keys = themeKey.split(".");
@@ -117,60 +103,33 @@ export const StylingTab = () => {
                 values: true
             },
             callback: ({ values }) => {
-                let newThemeValues: Record<string, unknown> = {};
-                let hasActiveFields = false;
+                const newThemeValues: StylingTheme = {};
 
                 Object.entries(values).forEach(([key, value]) => {
-                    // Persist all form values to Redux
-                    dispatch(setStylingValue(key, value));
-                    
-                    // Skip enabled checkboxes for theme processing
-                    if (key.endsWith('_enabled')) return;
-                    
                     // Check if this field is enabled
                     const enabledKey = `${key}_enabled`;
-                    const isEnabled = values[enabledKey];
-                    
-                    if (isEnabled && value !== undefined && value !== "") {
+                    const isEnabled = Boolean(values[enabledKey]);
+
+                    if (value !== undefined) {
                         const field = findFieldById(
                             styleSchema?.style || [],
                             key
                         );
                         if (field?.themeKey) {
-                            hasActiveFields = true;
-                            const themeObj = buildThemeObject(
-                                field.themeKey,
-                                value
-                            );
-                            newThemeValues = mergeThemeObjects(
-                                newThemeValues,
-                                themeObj
-                            );
+                            newThemeValues[field.themeKey] = {
+                                value,
+                                isEnabled
+                            };
                         }
                     }
                 });
 
-                // Only dispatch if the theme actually changed
-                const themeString = JSON.stringify(newThemeValues);
-                const lastThemeString = JSON.stringify(lastThemeValues.current);
-
-                if (themeString !== lastThemeString) {
-                    lastThemeValues.current = newThemeValues;
-
-                    if (hasActiveFields) {
-                        dispatch(
-                            setStylingTheme(newThemeValues)
-                        );
-                    } else {
-                        dispatch(setStylingTheme({}));
-                    }
-                }
+                dispatch(updateStylingTheme(newThemeValues));
             }
         });
 
         return () => callback();
     }, [
-        activeFields,
         buildThemeObject,
         dispatch,
         findFieldById,
@@ -179,30 +138,26 @@ export const StylingTab = () => {
         subscribe
     ]);
 
-    // Update activeFields when stylingValues change (e.g., when switching components)
     useEffect(() => {
-        const newActiveFields: Record<string, boolean> = {};
-        Object.keys(stylingValues).forEach(key => {
-            if (key.endsWith('_enabled')) {
-                const fieldId = key.replace('_enabled', '');
-                newActiveFields[fieldId] = stylingValues[key] as boolean;
-            }
-        });
-        setActiveFields(newActiveFields);
-    }, [stylingValues]);
+        reset(styleSchemaDefaults);
+    }, [reset, styleSchemaDefaults]);
 
     // Restore scroll position when component mounts
     useEffect(() => {
         if (scrollContainerRef.current && stylingUIState.scrollPosition) {
-            scrollContainerRef.current.scrollTop = stylingUIState.scrollPosition;
+            scrollContainerRef.current.scrollTop =
+                stylingUIState.scrollPosition;
         }
     }, [stylingUIState.scrollPosition]);
 
     // Save scroll position when it changes
-    const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-        const scrollTop = e.currentTarget.scrollTop;
-        dispatch(setStylingUIState({ scrollPosition: scrollTop }));
-    }, [dispatch]);
+    const handleScroll = useCallback(
+        (e: React.UIEvent<HTMLDivElement>) => {
+            const scrollTop = e.currentTarget.scrollTop;
+            dispatch(setStylingUIState({ scrollPosition: scrollTop }));
+        },
+        [dispatch]
+    );
 
     // Save expanded accordions when they change
     useEffect(() => {
@@ -215,13 +170,6 @@ export const StylingTab = () => {
             setExpandedAccordions(stylingUIState.expandedAccordions);
         }
     }, [stylingUIState.expandedAccordions]);
-
-    const handleActiveChange = useCallback(
-        (fieldId: string, isActive: boolean) => {
-            setActiveFields((prev) => ({ ...prev, [fieldId]: isActive }));
-        },
-        []
-    );
 
     if (!styleSchema) {
         return (
@@ -253,8 +201,8 @@ export const StylingTab = () => {
             defaultValue = "",
             uncheckedValue
         } = field;
-        
-        const isFieldEnabled = activeFields[id] || false;
+
+        const isFieldEnabled = getValues(`${id}_enabled`) || false;
 
         switch (type) {
             case "text":
@@ -1356,7 +1304,6 @@ export const StylingTab = () => {
                             onChange={(e) => {
                                 const isChecked = e.target.checked;
                                 checkboxField.onChange(isChecked);
-                                handleActiveChange(field.id, isChecked);
                             }}
                             size="small"
                         />
@@ -1374,16 +1321,16 @@ export const StylingTab = () => {
 
     const renderGroupAsSection = (group: StyleGroup) => {
         const isExpanded = expandedAccordions.includes(group.id || group.label);
-        
+
         const handleAccordionChange = () => {
             const accordionId = group.id || group.label;
-            setExpandedAccordions(prev => 
-                isExpanded 
-                    ? prev.filter(id => id !== accordionId)
+            setExpandedAccordions((prev) =>
+                isExpanded
+                    ? prev.filter((id) => id !== accordionId)
                     : [...prev, accordionId]
             );
         };
-        
+
         return (
             <Box key={group.id}>
                 <Accordion
@@ -1396,44 +1343,47 @@ export const StylingTab = () => {
                     }}
                     disableGutters
                 >
-                <AccordionSummary
-                    sx={{
-                        minHeight: 40,
-                        borderBottom: "1px solid #e0e0e0",
-                        "&.Mui-expanded": { minHeight: 40 },
-                        px: 2,
-                        "&:hover": {
-                            backgroundColor: "#f5f5f5"
-                        }
-                    }}
-                    expandIcon={<ExpandMoreIcon />}
-                >
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                        {group.label}
-                    </Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ p: 0 }}>
-                    <Box>
-                        {group.fields?.map((field) => {
-                            if ("type" in field) {
-                                const fieldOrGroup = field as
-                                    | StyleField
-                                    | StyleGroup;
-                                if (fieldOrGroup.type === "group") {
-                                    return renderNestedGroupAsSection(
-                                        fieldOrGroup as StyleGroup
-                                    );
-                                } else {
-                                    return renderField(
-                                        fieldOrGroup as StyleField
-                                    );
-                                }
-                            } else {
-                                return renderField(field as StyleField);
+                    <AccordionSummary
+                        sx={{
+                            minHeight: 40,
+                            borderBottom: "1px solid #e0e0e0",
+                            "&.Mui-expanded": { minHeight: 40 },
+                            px: 2,
+                            "&:hover": {
+                                backgroundColor: "#f5f5f5"
                             }
-                        })}
-                    </Box>
-                </AccordionDetails>
+                        }}
+                        expandIcon={<ExpandMoreIcon />}
+                    >
+                        <Typography
+                            variant="subtitle1"
+                            sx={{ fontWeight: 600 }}
+                        >
+                            {group.label}
+                        </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails sx={{ p: 0 }}>
+                        <Box>
+                            {group.fields?.map((field) => {
+                                if ("type" in field) {
+                                    const fieldOrGroup = field as
+                                        | StyleField
+                                        | StyleGroup;
+                                    if (fieldOrGroup.type === "group") {
+                                        return renderNestedGroupAsSection(
+                                            fieldOrGroup as StyleGroup
+                                        );
+                                    } else {
+                                        return renderField(
+                                            fieldOrGroup as StyleField
+                                        );
+                                    }
+                                } else {
+                                    return renderField(field as StyleField);
+                                }
+                            })}
+                        </Box>
+                    </AccordionDetails>
                 </Accordion>
             </Box>
         );
@@ -1471,67 +1421,70 @@ export const StylingTab = () => {
     const renderNestedGroupAsSection = (group: StyleGroup) => {
         const nestedId = `nested-${group.id || group.label}`;
         const isExpanded = expandedAccordions.includes(nestedId);
-        
+
         const handleAccordionChange = () => {
-            setExpandedAccordions(prev => 
-                isExpanded 
-                    ? prev.filter(id => id !== nestedId)
+            setExpandedAccordions((prev) =>
+                isExpanded
+                    ? prev.filter((id) => id !== nestedId)
                     : [...prev, nestedId]
             );
         };
-        
+
         return (
             <Box key={group.id} sx={{ margin: "8px 16px" }}>
                 <Accordion
                     expanded={isExpanded}
                     onChange={handleAccordionChange}
                     disableGutters
-                sx={{
-                    boxShadow: "none",
-                    "&:before": { display: "none" },
-                    "&.Mui-expanded": { margin: 0 },
-                    border: "none",
-                    borderRadius: 0
-                }}
-            >
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
                     sx={{
-                        minHeight: 36,
-                        "&.Mui-expanded": { minHeight: 36 },
-                        px: 2,
-                        backgroundColor: "#f8f9fa",
-                        "&:hover": {
-                            backgroundColor: "#f1f1f1"
-                        }
+                        boxShadow: "none",
+                        "&:before": { display: "none" },
+                        "&.Mui-expanded": { margin: 0 },
+                        border: "none",
+                        borderRadius: 0
                     }}
                 >
-                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                        {group.label}
-                    </Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ p: 0 }}>
-                    <Box>
-                        {group.fields?.map((field) => {
-                            if ("type" in field) {
-                                const fieldOrGroup = field as
-                                    | StyleField
-                                    | StyleGroup;
-                                if (fieldOrGroup.type === "group") {
-                                    return renderNestedGroupAsSection(
-                                        fieldOrGroup as StyleGroup
-                                    );
-                                } else {
-                                    return renderField(
-                                        fieldOrGroup as StyleField
-                                    );
-                                }
-                            } else {
-                                return renderField(field as StyleField);
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        sx={{
+                            minHeight: 36,
+                            "&.Mui-expanded": { minHeight: 36 },
+                            px: 2,
+                            backgroundColor: "#f8f9fa",
+                            "&:hover": {
+                                backgroundColor: "#f1f1f1"
                             }
-                        })}
-                    </Box>
-                </AccordionDetails>
+                        }}
+                    >
+                        <Typography
+                            variant="subtitle2"
+                            sx={{ fontWeight: 600 }}
+                        >
+                            {group.label}
+                        </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails sx={{ p: 0 }}>
+                        <Box>
+                            {group.fields?.map((field) => {
+                                if ("type" in field) {
+                                    const fieldOrGroup = field as
+                                        | StyleField
+                                        | StyleGroup;
+                                    if (fieldOrGroup.type === "group") {
+                                        return renderNestedGroupAsSection(
+                                            fieldOrGroup as StyleGroup
+                                        );
+                                    } else {
+                                        return renderField(
+                                            fieldOrGroup as StyleField
+                                        );
+                                    }
+                                } else {
+                                    return renderField(field as StyleField);
+                                }
+                            })}
+                        </Box>
+                    </AccordionDetails>
                 </Accordion>
             </Box>
         );
@@ -1591,7 +1544,7 @@ export const StylingTab = () => {
 
     return (
         <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-            <Box 
+            <Box
                 ref={scrollContainerRef}
                 onScroll={handleScroll}
                 sx={{ flex: 1, overflow: "auto" }}

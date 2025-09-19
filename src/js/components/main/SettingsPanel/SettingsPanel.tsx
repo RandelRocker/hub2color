@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
     Box,
     Paper,
@@ -16,7 +16,7 @@ import CallToActionOutlinedIcon from "@mui/icons-material/CallToActionOutlined";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../store";
-import { setPanelDock } from "../../../store/actions";
+import { setPanelDock, setSavedTheme } from "../../../store/actions";
 import { ControlsTab } from "./ControlsTab/ControlsTab";
 import { StylingTab } from "./StylingTab/StylingTab";
 import { CustomCssTab } from "./CustomCssTab/CustomCssTab";
@@ -24,7 +24,7 @@ import { CustomJsTab } from "./CustomJsTab/CustomJsTab";
 
 export const SettingsPanel = () => {
     const dispatch = useDispatch();
-    const { panelDock, currentPage } = useSelector(
+    const { panelDock, currentPage, stylingTheme, savedTheme } = useSelector(
         (state: RootState) => state.app
     );
     const [activeTab, setActiveTab] = useState(0);
@@ -52,16 +52,28 @@ export const SettingsPanel = () => {
         console.log("Reset to schema defaults");
     };
 
-    const handleSave = () => {
+    const handleSave = useCallback(() => {
         if (!currentPage) return;
 
-        // Save current state to localStorage
-        const state = {
-            // We'll implement this when we have all the state
-        };
-        localStorage.setItem(`msb:state:${currentPage}`, JSON.stringify(state));
-        console.log("Save current state");
-    };
+        try {
+            const themeToSave = {
+                themeStyles: {
+                    ...stylingTheme
+                },
+                cssVariableStyles: savedTheme?.cssVariableStyles ?? {}
+            };
+            // Store back to localStorage
+            localStorage.setItem("stylingTheme", JSON.stringify(themeToSave));
+
+            dispatch(setSavedTheme(themeToSave));
+
+            console.log(`Saved styling data for ${currentPage}:`, {
+                stylingTheme
+            });
+        } catch (error) {
+            console.error("Failed to save styling data:", error);
+        }
+    }, [currentPage, stylingTheme, savedTheme?.cssVariableStyles, dispatch]);
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);

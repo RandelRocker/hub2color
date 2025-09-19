@@ -17,7 +17,7 @@ export const ContentArea = () => {
                 flex: 1,
                 display: "flex",
                 flexDirection: isBottomDock ? "column" : "row",
-                overflow: "hidden",
+                overflow: "hidden"
             }}
         >
             <Box
@@ -25,7 +25,7 @@ export const ContentArea = () => {
                     flex: 1,
                     display: "flex",
                     flexDirection: "column",
-                    minHeight: 0,
+                    minHeight: 0
                 }}
             >
                 <TopBar />
