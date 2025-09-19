@@ -76,7 +76,7 @@
                 {
                     "id": "uppercase",
                     "label": "Uppercase",
-                    "defaultValue": true,
+                    "defaultValue": "uppercase",
                     "checkedValue": "uppercase",
                     "themeKey": "button.contained.textTransform",
                     "type": "boolean"

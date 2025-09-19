@@ -198,8 +198,7 @@ export const StylingTab = () => {
             max,
             step,
             checkedValue,
-            defaultValue = "",
-            uncheckedValue
+            defaultValue = ""
         } = field;
 
         const isFieldEnabled = getValues(`${id}_enabled`) || false;
@@ -257,20 +256,12 @@ export const StylingTab = () => {
                     <Controller
                         name={id}
                         control={control}
-                        defaultValue={
-                            defaultValue
-                                ? checkedValue || true
-                                : uncheckedValue || false
-                        }
+                        defaultValue={defaultValue}
                         render={({ field: fieldProps }) => {
                             const actualCheckedValue =
                                 checkedValue !== undefined
                                     ? checkedValue
                                     : true;
-                            const actualUncheckedValue =
-                                uncheckedValue !== undefined
-                                    ? uncheckedValue
-                                    : false;
 
                             const isChecked =
                                 fieldProps.value === actualCheckedValue;
@@ -280,7 +271,7 @@ export const StylingTab = () => {
                             ) => {
                                 const newValue = e.target.checked
                                     ? actualCheckedValue
-                                    : actualUncheckedValue;
+                                    : "";
                                 fieldProps.onChange(newValue);
                             };
 
