@@ -21,19 +21,34 @@ import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
-import { setStylingTheme } from "../../../../store/actions";
+import { setStylingTheme, setStylingValue } from "../../../../store/actions";
 import { StyleField, StyleGroup } from "../../../../store/types";
 
 export const StylingTab = () => {
     const dispatch = useDispatch();
-    const { styleSchema, styleSchemaDefaults } = useSelector(
+    const { styleSchema, styleSchemaDefaults, stylingValues } = useSelector(
         (state: RootState) => state.app
     );
+    // Merge defaults with persisted values
+    const initialValues = { ...styleSchemaDefaults, ...stylingValues };
+    
     const { control, subscribe } = useForm({
-        defaultValues: styleSchemaDefaults
+        defaultValues: initialValues
     });
+    // Initialize activeFields from persisted styling values
+    const initializeActiveFields = () => {
+        const active: Record<string, boolean> = {};
+        Object.keys(stylingValues).forEach(key => {
+            if (key.endsWith('_enabled')) {
+                const fieldId = key.replace('_enabled', '');
+                active[fieldId] = stylingValues[key] as boolean;
+            }
+        });
+        return active;
+    };
+    
     const [activeFields, setActiveFields] = useState<Record<string, boolean>>(
-        {}
+        initializeActiveFields
     );
     const lastThemeValues = useRef<Record<string, unknown>>({});
 
@@ -102,7 +117,10 @@ export const StylingTab = () => {
                 let hasActiveFields = false;
 
                 Object.entries(values).forEach(([key, value]) => {
-                    // Skip enabled checkboxes themselves
+                    // Persist all form values to Redux
+                    dispatch(setStylingValue(key, value));
+                    
+                    // Skip enabled checkboxes for theme processing
                     if (key.endsWith('_enabled')) return;
                     
                     // Check if this field is enabled
@@ -156,6 +174,18 @@ export const StylingTab = () => {
         styleSchema?.style,
         subscribe
     ]);
+
+    // Update activeFields when stylingValues change (e.g., when switching components)
+    useEffect(() => {
+        const newActiveFields: Record<string, boolean> = {};
+        Object.keys(stylingValues).forEach(key => {
+            if (key.endsWith('_enabled')) {
+                const fieldId = key.replace('_enabled', '');
+                newActiveFields[fieldId] = stylingValues[key] as boolean;
+            }
+        });
+        setActiveFields(newActiveFields);
+    }, [stylingValues]);
 
     const handleActiveChange = useCallback(
         (fieldId: string, isActive: boolean) => {

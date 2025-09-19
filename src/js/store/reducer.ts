@@ -35,6 +35,9 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_CURRENT_PAGE:
                 draft.currentPage = action.payload;
+                // Clear styling values when switching to a different component
+                draft.stylingValues = {};
+                draft.stylingTheme = {};
                 break;
             case ActionTypes.SET_CONTROLS_SCHEMA:
                 draft.controlsSchema = action.payload;
