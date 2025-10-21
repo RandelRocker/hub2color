@@ -4,7 +4,20 @@
         "items": [
             {
                 "title": "Button",
-                "path": "components/button.html"
+                "items": [
+                    {
+                        "title": "Contained Button",
+                        "path": "components/contained-button.html"
+                    },
+                    {
+                        "title": "Outlined Button",
+                        "path": "components/outlined-button.html"
+                    },
+                    {
+                        "title": "Text Button",
+                        "path": "components/text-button.html"
+                    }
+                ]
             },
             { "title": "Card", "path": "components/card.html" },
             { "title": "Input Field", "path": "components/input.html" }

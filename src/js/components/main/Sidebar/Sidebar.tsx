@@ -12,13 +12,91 @@ import {
     ListItemText,
     Accordion,
     AccordionSummary,
-    AccordionDetails
+    AccordionDetails,
+    Collapse
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../store";
 import { setCurrentPage, setSearchQuery } from "../../../store/actions";
+import { PageItem } from "../../../store/types";
+
+interface MenuItemProps {
+    item: PageItem;
+    currentPage: string | null;
+    onPageSelect: (path: string) => void;
+    level?: number;
+}
+
+const MenuItem = ({ item, currentPage, onPageSelect, level = 0 }: MenuItemProps) => {
+    const [expanded, setExpanded] = useState(false);
+    const hasChildren = item.items && item.items.length > 0;
+    const paddingLeft = 4 + (level * 2);
+
+    const handleClick = () => {
+        if (hasChildren) {
+            setExpanded(!expanded);
+        } else if (item.path) {
+            onPageSelect(item.path);
+        }
+    };
+
+    return (
+        <>
+            <ListItem disablePadding>
+                <ListItemButton
+                    selected={currentPage === item.path}
+                    onClick={handleClick}
+                    sx={{
+                        pl: paddingLeft,
+                        py: 0.5,
+                        gap: "8px",
+                        "&.Mui-selected": {
+                            bgcolor: "#e3f2fd",
+                            borderRight: 3,
+                            borderColor: "#1976d2"
+                        }
+                    }}
+                >
+                    <ListItemIcon sx={{ minWidth: 0 }}>
+                        <IonIcon
+                            name={hasChildren ? (expanded ? "chevron-down-outline" : "chevron-forward-outline") : "document-text-outline"}
+                            style={{
+                                display: "flex",
+                                alignItems: "center"
+                            }}
+                        />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={item.title}
+                        slotProps={{
+                            primary: {
+                                variant: "body2",
+                                fontSize: 14
+                            }
+                        }}
+                    />
+                </ListItemButton>
+            </ListItem>
+            {hasChildren && (
+                <Collapse in={expanded} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding dense>
+                        {item.items!.map((childItem, index) => (
+                            <MenuItem
+                                key={childItem.path || `${item.title}-${index}`}
+                                item={childItem}
+                                currentPage={currentPage}
+                                onPageSelect={onPageSelect}
+                                level={level + 1}
+                            />
+                        ))}
+                    </List>
+                </Collapse>
+            )}
+        </>
+    );
+};
 
 export const Sidebar = () => {
     const dispatch = useDispatch();
@@ -43,19 +121,36 @@ export const Sidebar = () => {
         dispatch(setCurrentPage(pagePath));
     };
 
+    const filterItems = (items: PageItem[]): PageItem[] => {
+        if (searchQuery === "") return items;
+
+        return items.filter((item) => {
+            const titleMatches = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+
+            if (item.items && item.items.length > 0) {
+                const filteredChildren = filterItems(item.items);
+                return titleMatches || filteredChildren.length > 0;
+            }
+
+            return titleMatches;
+        }).map((item) => {
+            if (item.items && item.items.length > 0) {
+                return {
+                    ...item,
+                    items: filterItems(item.items)
+                };
+            }
+            return item;
+        });
+    };
+
     const filteredPages = pages
         .map((section) => ({
             ...section,
-            items: section.items.filter(
-                (item) =>
-                    searchQuery === "" ||
-                    item.title
-                        .toLowerCase()
-                        .includes(searchQuery.toLowerCase()) ||
-                    section.sectionTitle
-                        .toLowerCase()
-                        .includes(searchQuery.toLowerCase())
-            )
+            items: searchQuery === "" ||
+                   section.sectionTitle.toLowerCase().includes(searchQuery.toLowerCase())
+                   ? filterItems(section.items)
+                   : filterItems(section.items)
         }))
         .filter((section) => section.items.length > 0);
 
@@ -160,44 +255,13 @@ export const Sidebar = () => {
                         </AccordionSummary>
                         <AccordionDetails sx={{ p: 0 }}>
                             <List dense>
-                                {section.items.map((item) => (
-                                    <ListItem key={item.path} disablePadding>
-                                        <ListItemButton
-                                            selected={currentPage === item.path}
-                                            onClick={() =>
-                                                handlePageSelect(item.path)
-                                            }
-                                            sx={{
-                                                pl: 4,
-                                                py: 0.5,
-                                                gap: "8px",
-                                                "&.Mui-selected": {
-                                                    bgcolor: "#e3f2fd",
-                                                    borderRight: 3,
-                                                    borderColor: "#1976d2"
-                                                }
-                                            }}
-                                        >
-                                            <ListItemIcon sx={{ minWidth: 0 }}>
-                                                <IonIcon
-                                                    name="document-text-outline"
-                                                    style={{
-                                                        display: "flex",
-                                                        alignItems: "center"
-                                                    }}
-                                                />
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                primary={item.title}
-                                                slotProps={{
-                                                    primary: {
-                                                        variant: "body2",
-                                                        fontSize: 14
-                                                    }
-                                                }}
-                                            />
-                                        </ListItemButton>
-                                    </ListItem>
+                                {section.items.map((item, index) => (
+                                    <MenuItem
+                                        key={item.path || `${section.sectionTitle}-${index}`}
+                                        item={item}
+                                        currentPage={currentPage}
+                                        onPageSelect={handlePageSelect}
+                                    />
                                 ))}
                             </List>
                         </AccordionDetails>

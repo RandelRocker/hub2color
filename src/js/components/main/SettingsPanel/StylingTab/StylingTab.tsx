@@ -34,9 +34,8 @@ import { StyleField, StyleGroup, StylingTheme } from "../../../../store/types";
 export const StylingTab = () => {
     const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const { styleSchema, styleSchemaDefaults, stylingUIState, stylingTheme, savedTheme } = useSelector(
-        (state: RootState) => state.app
-    );
+    const { styleSchema, styleSchemaDefaults, stylingUIState, savedTheme } =
+        useSelector((state: RootState) => state.app);
 
     const { control, subscribe, getValues, reset } = useForm({
         defaultValues: styleSchemaDefaults
@@ -66,9 +65,12 @@ export const StylingTab = () => {
         []
     );
 
-    const handleFieldMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>, fieldId: string) => {
-        setFieldMenuAnchor({ element: event.currentTarget, fieldId });
-    }, []);
+    const handleFieldMenuOpen = useCallback(
+        (event: React.MouseEvent<HTMLElement>, fieldId: string) => {
+            setFieldMenuAnchor({ element: event.currentTarget, fieldId });
+        },
+        []
+    );
 
     const handleFieldMenuClose = useCallback(() => {
         setFieldMenuAnchor({ element: null, fieldId: null });
@@ -92,15 +94,26 @@ export const StylingTab = () => {
             reset(newValues);
 
             // Update the styling theme for this field
-            dispatch(updateStylingTheme({
-                [field.themeKey]: {
-                    value: savedValue.value,
-                    isEnabled: savedValue.isEnabled
-                }
-            }));
+            dispatch(
+                updateStylingTheme({
+                    [field.themeKey]: {
+                        value: savedValue.value,
+                        isEnabled: savedValue.isEnabled
+                    }
+                })
+            );
         }
         handleFieldMenuClose();
-    }, [fieldMenuAnchor.fieldId, findFieldById, styleSchema, savedTheme, getValues, reset, dispatch, handleFieldMenuClose]);
+    }, [
+        fieldMenuAnchor.fieldId,
+        findFieldById,
+        styleSchema,
+        savedTheme,
+        getValues,
+        reset,
+        dispatch,
+        handleFieldMenuClose
+    ]);
 
     const handleFieldResetToDefault = useCallback(() => {
         const fieldId = fieldMenuAnchor.fieldId;
@@ -120,15 +133,25 @@ export const StylingTab = () => {
             reset(newValues);
 
             // Update the styling theme for this field
-            dispatch(updateStylingTheme({
-                [field.themeKey]: {
-                    value: defaultValue,
-                    isEnabled: false
-                }
-            }));
+            dispatch(
+                updateStylingTheme({
+                    [field.themeKey]: {
+                        value: defaultValue,
+                        isEnabled: false
+                    }
+                })
+            );
         }
         handleFieldMenuClose();
-    }, [fieldMenuAnchor.fieldId, findFieldById, styleSchema, getValues, reset, dispatch, handleFieldMenuClose]);
+    }, [
+        fieldMenuAnchor.fieldId,
+        findFieldById,
+        styleSchema,
+        getValues,
+        reset,
+        dispatch,
+        handleFieldMenuClose
+    ]);
 
     useEffect(() => {
         const callback = subscribe({
@@ -1384,7 +1407,7 @@ export const StylingTab = () => {
                         expandIcon={<ExpandMoreIcon />}
                     >
                         <Typography
-                            variant="subtitle1"
+                            variant="subtitle2"
                             sx={{ fontWeight: 600 }}
                         >
                             {group.label}
@@ -1422,7 +1445,8 @@ export const StylingTab = () => {
             key={`section-${group.label}`}
             sx={{
                 borderBottom: "1px solid #e0e0e0",
-                backgroundColor: "#f8f9fa"
+                backgroundColor: "#f8f9fa",
+                textAlign: "center"
             }}
         >
             <Typography

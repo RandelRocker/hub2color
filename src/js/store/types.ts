@@ -1,7 +1,8 @@
 export interface PageItem {
     title: string;
-    path: string;
+    path?: string;
     icon?: string;
+    items?: PageItem[];
 }
 
 export interface PageSection {
