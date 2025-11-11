@@ -1,44 +1,41 @@
 {
-    "defaults": {
-        "label": "Click me",
-        "variant": "contained",
-        "disabled": false,
-        "fontSize": "1.5rem",
-        "color": "primary",
-        "size": "medium"
-    },
     "fields": [
         {
-            "name": "label",
+            "id": "label",
             "label": "Label",
             "description": "Button text",
+            "defaultValue": "Click me",
             "type": "text"
         },
         {
-            "name": "variant",
+            "id": "variant",
             "label": "Variant",
             "description": "Button style variant",
             "type": "select",
+            "defaultValue": "contained",
             "options": ["contained", "outlined", "text"]
         },
         {
-            "name": "color",
+            "id": "color",
             "label": "Color",
             "description": "Button colors",
             "type": "select",
+            "defaultValue": "primary",
             "options": ["primary", "secondary", "error"]
         },
         {
-            "name": "disabled",
+            "id": "disabled",
             "label": "Disabled",
+            "defaultValue": false,
             "description": "Disable button",
             "type": "boolean"
         },
         {
-            "name": "size",
+            "id": "size",
             "label": "Size",
             "description": "Button size",
             "type": "radio",
+            "defaultValue": "medium",
             "options": ["small", "medium", "large"]
         }
     ]

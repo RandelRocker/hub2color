@@ -52,8 +52,11 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_CONTROLS_SCHEMA:
                 draft.controlsSchema = action.payload;
-                if (action.payload?.defaults) {
-                    draft.controlValues = { ...action.payload.defaults };
+
+                for (const field of action.payload?.fields || []) {
+                    if (field.defaultValue !== undefined) {
+                        draft.controlValues[field.id] = field.defaultValue;
+                    }
                 }
                 break;
             case ActionTypes.SET_STYLE_SCHEMA: {

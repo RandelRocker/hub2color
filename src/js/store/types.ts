@@ -11,8 +11,9 @@ export interface PageSection {
 }
 
 export interface ControlField {
-    name: string;
+    id: string;
     label: string;
+    defaultValue?: string | number | boolean;
     description: string;
     type:
         | "text"
@@ -48,13 +49,11 @@ export interface StoredThemeStyles {
 }
 
 export interface ControlsSchemaProps {
-    defaults: Record<string, unknown>;
     fields: ControlField[];
 }
 
 export interface ControlsSchema {
     version?: number;
-    defaults?: Record<string, unknown>;
     fields?: ControlField[];
 }
 

@@ -43,13 +43,12 @@ export const ControlsTab = () => {
     useEffect(() => {
         if (controlsSchema) {
             isInitializing.current = true;
-            let defaultValues = {};
+            const defaultValues = {} as Record<string, unknown>;
 
-            if (controlsSchema.defaults) {
-                defaultValues = {
-                    ...controlsSchema.defaults,
-                    ...controlValues
-                };
+            for (const field of controlsSchema?.fields || []) {
+                if (field.defaultValue !== undefined) {
+                    defaultValues[field.id] = field.defaultValue;
+                }
             }
 
             reset(defaultValues);
@@ -58,7 +57,7 @@ export const ControlsTab = () => {
                 isInitializing.current = false;
             }, 50);
         }
-    }, [controlsSchema, controlValues, reset]);
+    }, [controlsSchema, reset]);
 
     // Update store when form values change (but not during initialization)
     useEffect(() => {
@@ -67,7 +66,7 @@ export const ControlsTab = () => {
         Object.entries(watchedValues).forEach(([name, value]) => {
             if (value !== undefined && controlValues[name] !== value) {
                 const hasField = controlsSchema?.fields?.some(
-                    (f) => f.name === name
+                    (f) => f.id === name
                 ) || false;
 
                 if (hasField) {
@@ -121,7 +120,7 @@ export const ControlsTab = () => {
     }
 
     const renderControl = (field: {
-        name: string;
+        id: string;
         type: string;
         options?: string[];
         min?: number;
@@ -132,7 +131,7 @@ export const ControlsTab = () => {
         uncheckedValue?: string;
     }) => {
         const {
-            name,
+            id,
             type,
             options,
             min,
@@ -142,6 +141,8 @@ export const ControlsTab = () => {
             defaultValue = "",
             uncheckedValue
         } = field;
+
+        const name = id;
 
         switch (type) {
             case "text":
@@ -1227,7 +1228,7 @@ export const ControlsTab = () => {
                         </TableHead>
                         <TableBody>
                             {currentSchema.fields.map((field) => (
-                                <TableRow key={field.name}>
+                                <TableRow key={field.id}>
                                     <TableCell>
                                         <Typography
                                             variant="body2"
