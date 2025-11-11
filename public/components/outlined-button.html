@@ -166,9 +166,8 @@
                   data.payload?.dir || "ltr",
                 );
                 break;
-              case "CONTROL_CHANGE":
-                if (!window.buttonProps) window.buttonProps = {};
-                window.buttonProps[data.payload?.name] = data.payload?.value;
+              case "CONTROLS_CHANGE":
+                window.buttonProps = data.payload?.values || {};
                 updateButton();
                 break;
               case "BULK_CONTROLS":

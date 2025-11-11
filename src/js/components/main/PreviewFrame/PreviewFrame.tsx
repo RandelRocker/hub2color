@@ -109,6 +109,8 @@ export const PreviewFrame = () => {
             });
         }
 
+        // Send all control values at once
+        const processedValues: Record<string, unknown> = {};
         Object.entries(controlValues).forEach(([name, value]) => {
             // Handle font field empty values (format "_px", "_rem", etc.)
             const textUnits = ["px", "rem", "em", "%", "pt"];
@@ -117,9 +119,9 @@ export const PreviewFrame = () => {
                 textUnits.some((unit) => value === unit)
                     ? undefined
                     : value;
-
-            sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
+            processedValues[name] = finalValue;
         });
+        sendMessageToFrame("CONTROLS_CHANGE", { values: processedValues });
     }, [
         currentPage,
         direction,
@@ -159,15 +161,19 @@ export const PreviewFrame = () => {
     }, [customJs, sendMessageToFrame]);
 
     useEffect(() => {
+        // Send all control values at once
+        const processedValues: Record<string, unknown> = {};
         Object.entries(controlValues).forEach(([name, value]) => {
             // Handle font field empty values (format "_px", "_rem", etc.)
+            const textUnits = ["px", "rem", "em", "%", "pt"];
             const finalValue =
-                typeof value === "string" && value.startsWith("_")
+                typeof value === "string" &&
+                textUnits.some((unit) => value === unit)
                     ? undefined
                     : value;
-
-            sendMessageToFrame("CONTROL_CHANGE", { name, value: finalValue });
+            processedValues[name] = finalValue;
         });
+        sendMessageToFrame("CONTROLS_CHANGE", { values: processedValues });
     }, [controlValues, sendMessageToFrame]);
 
     useEffect(() => {

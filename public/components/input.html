@@ -146,9 +146,8 @@
                   data.payload?.dir || "ltr",
                 );
                 break;
-              case "CONTROL_CHANGE":
-                if (!window.inputProps) window.inputProps = {};
-                window.inputProps[data.payload?.name] = data.payload?.value;
+              case "CONTROLS_CHANGE":
+                window.inputProps = data.payload?.values || {};
                 updateInput();
                 break;
               case "BULK_CONTROLS":

@@ -150,9 +150,8 @@
                   data.payload?.dir || "ltr",
                 );
                 break;
-              case "CONTROL_CHANGE":
-                if (!window.heroProps) window.heroProps = {};
-                window.heroProps[data.payload?.name] = data.payload?.value;
+              case "CONTROLS_CHANGE":
+                window.heroProps = data.payload?.values || {};
                 updateHero();
                 break;
               case "BULK_CONTROLS":

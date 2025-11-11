@@ -177,9 +177,8 @@
                   data.payload?.dir || "ltr",
                 );
                 break;
-              case "CONTROL_CHANGE":
-                if (!window.cardProps) window.cardProps = {};
-                window.cardProps[data.payload?.name] = data.payload?.value;
+              case "CONTROLS_CHANGE":
+                window.cardProps = data.payload?.values || {};
                 updateCard();
                 break;
               case "BULK_CONTROLS":

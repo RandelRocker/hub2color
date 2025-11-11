@@ -259,9 +259,8 @@
                   data.payload?.dir || "ltr",
                 );
                 break;
-              case "CONTROL_CHANGE":
-                if (!window.gridProps) window.gridProps = {};
-                window.gridProps[data.payload?.name] = data.payload?.value;
+              case "CONTROLS_CHANGE":
+                window.gridProps = data.payload?.values || {};
                 updateGrid();
                 break;
               case "BULK_CONTROLS":
