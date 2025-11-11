@@ -31,6 +31,128 @@ import {
 } from "../../../../store/actions";
 import { StyleField, StyleGroup, StylingTheme } from "../../../../store/types";
 
+// Debounced color picker component
+const DebouncedColorPicker = ({
+    value,
+    onChange,
+    disabled,
+    sx
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    disabled?: boolean;
+    sx?: Record<string, unknown>;
+}) => {
+    const [localValue, setLocalValue] = useState(value || "#000000");
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Update local value when prop changes
+    useEffect(() => {
+        setLocalValue(value || "#000000");
+    }, [value]);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        setLocalValue(newValue);
+
+        // Clear existing timeout
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        // Debounce the onChange callback
+        timeoutRef.current = setTimeout(() => {
+            onChange(newValue);
+        }, 150);
+    };
+
+    return (
+        <TextField
+            value={localValue}
+            onChange={handleChange}
+            type="color"
+            size="small"
+            disabled={disabled}
+            slotProps={{
+                input: {
+                    sx: { fontSize: "0.875rem" }
+                }
+            }}
+            sx={sx}
+        />
+    );
+};
+
+// Debounced color picker for composite fields (textShadow, boxShadow, border)
+const DebouncedCompositeColorPicker = ({
+    value,
+    onColorChange,
+    disabled,
+    sx
+}: {
+    value: string;
+    onColorChange: (color: string) => void;
+    disabled?: boolean;
+    sx?: Record<string, unknown>;
+}) => {
+    const [localValue, setLocalValue] = useState(value || "#000000");
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Update local value when prop changes
+    useEffect(() => {
+        setLocalValue(value || "#000000");
+    }, [value]);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        setLocalValue(newValue);
+
+        // Clear existing timeout
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        // Debounce the onChange callback
+        timeoutRef.current = setTimeout(() => {
+            onColorChange(newValue);
+        }, 150);
+    };
+
+    return (
+        <TextField
+            value={localValue}
+            onChange={handleChange}
+            type="color"
+            size="small"
+            disabled={disabled}
+            slotProps={{
+                input: {
+                    sx: { fontSize: "0.875rem" }
+                }
+            }}
+            sx={sx}
+        />
+    );
+};
+
 export const StylingTab = () => {
     const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -432,16 +554,10 @@ export const StylingTab = () => {
                         control={control}
                         defaultValue={defaultValue || "#000000"}
                         render={({ field: fieldProps }) => (
-                            <TextField
-                                {...fieldProps}
-                                type="color"
-                                size="small"
+                            <DebouncedColorPicker
+                                value={(fieldProps.value as string) || "#000000"}
+                                onChange={fieldProps.onChange}
                                 disabled={!isFieldEnabled}
-                                slotProps={{
-                                    input: {
-                                        sx: { fontSize: "0.875rem" }
-                                    }
-                                }}
                                 sx={{ width: 60 }}
                             />
                         )}
@@ -665,24 +781,13 @@ export const StylingTab = () => {
                                         placeholder="Blur"
                                         title="Blur Radius"
                                     />
-                                    <TextField
-                                        type="color"
+                                    <DebouncedCompositeColorPicker
                                         value={color}
-                                        onChange={(e) =>
-                                            handleFieldChange(
-                                                "color",
-                                                e.target.value
-                                            )
+                                        onColorChange={(newColor) =>
+                                            handleFieldChange("color", newColor)
                                         }
-                                        size="small"
                                         disabled={!isFieldEnabled}
                                         sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        title="Color"
                                     />
                                 </Box>
                             );
@@ -835,24 +940,13 @@ export const StylingTab = () => {
                                         placeholder="Spread"
                                         title="Spread Radius"
                                     />
-                                    <TextField
-                                        type="color"
+                                    <DebouncedCompositeColorPicker
                                         value={color}
-                                        onChange={(e) =>
-                                            handleFieldChange(
-                                                "color",
-                                                e.target.value
-                                            )
+                                        onColorChange={(newColor) =>
+                                            handleFieldChange("color", newColor)
                                         }
-                                        size="small"
                                         disabled={!isFieldEnabled}
                                         sx={{ width: "20%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        title="Color"
                                     />
                                 </Box>
                             );
@@ -1133,24 +1227,13 @@ export const StylingTab = () => {
                                             ))}
                                         </Select>
                                     </FormControl>
-                                    <TextField
-                                        type="color"
+                                    <DebouncedCompositeColorPicker
                                         value={color}
-                                        onChange={(e) =>
-                                            handleFieldChange(
-                                                "color",
-                                                e.target.value
-                                            )
+                                        onColorChange={(newColor) =>
+                                            handleFieldChange("color", newColor)
                                         }
-                                        size="small"
                                         disabled={!isFieldEnabled}
                                         sx={{ width: "33%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        title="Border Color"
                                     />
                                 </Box>
                             );

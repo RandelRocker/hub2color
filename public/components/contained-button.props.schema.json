@@ -8,14 +8,6 @@
             "type": "text"
         },
         {
-            "id": "variant",
-            "label": "Variant",
-            "description": "Button style variant",
-            "type": "select",
-            "defaultValue": "contained",
-            "options": ["contained", "outlined", "text"]
-        },
-        {
             "id": "color",
             "label": "Color",
             "description": "Button colors",
