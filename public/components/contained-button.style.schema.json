@@ -136,7 +136,7 @@
                             "id": "primaryButtonBackgroundColor",
                             "label": "Primary background color",
                             "defaultValue": "#6ECD8D",
-                            "themeKey": "button.containedPrimary.backgroundColor",
+                            "cssVariable": "--contained-button-primary-background-color",
                             "type": "color"
                         },
                         {

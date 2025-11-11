@@ -17,7 +17,7 @@
       }
 
       .button {
-        background: #1976d2;
+        background: var(--contained-button-primary-background-color, #1976d2);
         color: white;
         border: none;
         border-radius: 4px;
@@ -107,6 +107,16 @@
           return tag;
         }
 
+        function ensureCssVariablesStyleTag() {
+          let tag = document.getElementById("css-variables");
+          if (!tag) {
+            tag = document.createElement("style");
+            tag.id = "css-variables";
+            document.head.insertBefore(tag, document.head.firstChild);
+          }
+          return tag;
+        }
+
         function applyTheme(theme) {
           if (!theme) return;
 
@@ -175,6 +185,9 @@
                 break;
               case "THEME_CHANGE":
                 applyTheme(data.payload?.theme);
+                break;
+              case "APPLY_CSS_VARIABLES":
+                ensureCssVariablesStyleTag().textContent = data.payload?.css || "";
                 break;
             }
           }

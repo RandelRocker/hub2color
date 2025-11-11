@@ -16,6 +16,7 @@ export const PreviewFrame = () => {
         direction,
         controlValues,
         stylingTheme,
+        cssVariables,
         customCss,
         customJs,
         loading
@@ -109,6 +110,14 @@ export const PreviewFrame = () => {
             });
         }
 
+        // Send CSS variables
+        if (cssVariables && Object.keys(cssVariables).length > 0) {
+            const cssVarsString = helpers.prepareCssVariables(cssVariables);
+            if (cssVarsString) {
+                sendMessageToFrame("APPLY_CSS_VARIABLES", { css: cssVarsString });
+            }
+        }
+
         // Send all control values at once
         const processedValues: Record<string, unknown> = {};
         Object.entries(controlValues).forEach(([name, value]) => {
@@ -130,6 +139,7 @@ export const PreviewFrame = () => {
         customJs,
         controlValues,
         stylingTheme,
+        cssVariables,
         sendMessageToFrame
     ]);
 
@@ -183,6 +193,21 @@ export const PreviewFrame = () => {
             });
         }
     }, [stylingTheme, sendMessageToFrame]);
+
+    useEffect(() => {
+        if (cssVariables && Object.keys(cssVariables).length > 0) {
+            const cssVarsString = helpers.prepareCssVariables(cssVariables);
+            if (cssVarsString) {
+                sendMessageToFrame("APPLY_CSS_VARIABLES", { css: cssVarsString });
+            } else {
+                // Send empty string to clear CSS variables if none are enabled
+                sendMessageToFrame("APPLY_CSS_VARIABLES", { css: "" });
+            }
+        } else {
+            // Clear CSS variables if cssVariables is empty
+            sendMessageToFrame("APPLY_CSS_VARIABLES", { css: "" });
+        }
+    }, [cssVariables, sendMessageToFrame]);
 
     const getViewportWidth = () => {
         switch (viewport) {

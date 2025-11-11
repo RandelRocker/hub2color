@@ -30,3 +30,35 @@ export const prepareThemeData = <T extends FlatInput>(
 
     return result;
 };
+
+export const prepareCssVariables = (
+    cssVariables: FlatInput
+): string => {
+    const variables: string[] = [];
+
+    for (const [cssVarName, { isEnabled, value }] of Object.entries(cssVariables)) {
+        if (!isEnabled) continue;
+
+        // Format the CSS variable value
+        let formattedValue: string;
+        if (typeof value === "string") {
+            // If it's already a string, use it as-is (could be color, unit, etc.)
+            formattedValue = value;
+        } else if (typeof value === "number") {
+            formattedValue = String(value);
+        } else {
+            // For other types, convert to string
+            formattedValue = String(value);
+        }
+
+        // Ensure CSS variable name starts with --
+        const varName = cssVarName.startsWith("--") ? cssVarName : `--${cssVarName}`;
+        variables.push(`  ${varName}: ${formattedValue};`);
+    }
+
+    if (variables.length === 0) {
+        return "";
+    }
+
+    return `:root {\n${variables.join("\n")}\n}`;
+};

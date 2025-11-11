@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ControlsSchema, StyleSchema, StoredThemeStyles, StylingTheme } from "./types";
+import { PageSection, ControlsSchema, StyleSchema, StoredThemeStyles, StylingTheme, CssVariables } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -43,6 +43,11 @@ export const setStylingValue = (name: string, value: unknown) => ({
 export const updateStylingTheme = (theme: StylingTheme) => ({
     type: ActionTypes.UPDATE_STYLING_THEME,
     payload: theme,
+});
+
+export const updateCssVariables = (cssVariables: CssVariables) => ({
+    type: ActionTypes.UPDATE_CSS_VARIABLES,
+    payload: cssVariables,
 });
 
 export const setStylingUIState = (uiState: { scrollPosition?: number; expandedAccordions?: string[] }) => ({

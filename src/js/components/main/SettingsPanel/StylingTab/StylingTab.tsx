@@ -27,9 +27,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../../store";
 import {
     updateStylingTheme,
+    updateCssVariables,
     setStylingUIState
 } from "../../../../store/actions";
-import { StyleField, StyleGroup, StylingTheme } from "../../../../store/types";
+import { StyleField, StyleGroup, StylingTheme, CssVariables } from "../../../../store/types";
 
 // Debounced color picker component
 const DebouncedColorPicker = ({
@@ -203,27 +204,52 @@ export const StylingTab = () => {
         if (!fieldId) return;
 
         const field = findFieldById(styleSchema?.style || [], fieldId);
-        if (!field?.themeKey) return;
+        if (!field) return;
 
-        const savedValue = savedTheme?.themeStyles[field.themeKey];
-        if (savedValue) {
-            const currentValues = getValues();
-            const newValues = {
-                ...currentValues,
-                [fieldId]: savedValue.value,
-                [`${fieldId}_enabled`]: savedValue.isEnabled
-            };
+        const currentValues = getValues();
+        const newValues = { ...currentValues };
+        let hasUpdates = false;
+
+        // Handle themeKey
+        if (field.themeKey) {
+            const savedValue = savedTheme?.themeStyles[field.themeKey];
+            if (savedValue) {
+                newValues[fieldId] = savedValue.value;
+                newValues[`${fieldId}_enabled`] = savedValue.isEnabled;
+                hasUpdates = true;
+
+                dispatch(
+                    updateStylingTheme({
+                        [field.themeKey]: {
+                            value: savedValue.value,
+                            isEnabled: savedValue.isEnabled
+                        }
+                    })
+                );
+            }
+        }
+
+        // Handle cssVariable
+        if (field.cssVariable) {
+            const savedValue = savedTheme?.cssVariableStyles[field.cssVariable];
+            if (savedValue) {
+                newValues[fieldId] = savedValue.value;
+                newValues[`${fieldId}_enabled`] = savedValue.isEnabled;
+                hasUpdates = true;
+
+                dispatch(
+                    updateCssVariables({
+                        [field.cssVariable]: {
+                            value: savedValue.value,
+                            isEnabled: savedValue.isEnabled
+                        }
+                    })
+                );
+            }
+        }
+
+        if (hasUpdates) {
             reset(newValues);
-
-            // Update the styling theme for this field
-            dispatch(
-                updateStylingTheme({
-                    [field.themeKey]: {
-                        value: savedValue.value,
-                        isEnabled: savedValue.isEnabled
-                    }
-                })
-            );
         }
         handleFieldMenuClose();
     }, [
@@ -242,7 +268,7 @@ export const StylingTab = () => {
         if (!fieldId) return;
 
         const field = findFieldById(styleSchema?.style || [], fieldId);
-        if (!field?.themeKey) return;
+        if (!field) return;
 
         const defaultValue = field.defaultValue;
         if (defaultValue !== undefined) {
@@ -255,14 +281,28 @@ export const StylingTab = () => {
             reset(newValues);
 
             // Update the styling theme for this field
-            dispatch(
-                updateStylingTheme({
-                    [field.themeKey]: {
-                        value: defaultValue,
-                        isEnabled: false
-                    }
-                })
-            );
+            if (field.themeKey) {
+                dispatch(
+                    updateStylingTheme({
+                        [field.themeKey]: {
+                            value: defaultValue,
+                            isEnabled: false
+                        }
+                    })
+                );
+            }
+
+            // Update CSS variables for this field
+            if (field.cssVariable) {
+                dispatch(
+                    updateCssVariables({
+                        [field.cssVariable]: {
+                            value: defaultValue,
+                            isEnabled: false
+                        }
+                    })
+                );
+            }
         }
         handleFieldMenuClose();
     }, [
@@ -282,6 +322,7 @@ export const StylingTab = () => {
             },
             callback: ({ values }) => {
                 const newThemeValues: StylingTheme = {};
+                const newCssVariables: CssVariables = {};
 
                 Object.entries(values).forEach(([key, value]) => {
                     // Check if this field is enabled
@@ -299,10 +340,17 @@ export const StylingTab = () => {
                                 isEnabled
                             };
                         }
+                        if (field?.cssVariable) {
+                            newCssVariables[field.cssVariable] = {
+                                value,
+                                isEnabled
+                            };
+                        }
                     }
                 });
 
                 dispatch(updateStylingTheme(newThemeValues));
+                dispatch(updateCssVariables(newCssVariables));
             }
         });
 

@@ -36,6 +36,14 @@ export interface StylingTheme {
         value: unknown;
     };
 }
+
+export interface CssVariables {
+    [cssVariable: string]: {
+        isEnabled: boolean;
+        value: unknown;
+    };
+}
+
 export interface StoredThemeStyles {
     themeStyles: {
         [themeKey: string]: {
@@ -44,7 +52,10 @@ export interface StoredThemeStyles {
         };
     };
     cssVariableStyles: {
-        [cssVariable: string]: unknown;
+        [cssVariable: string]: {
+            isEnabled: boolean;
+            value: unknown;
+        };
     };
 }
 
@@ -62,7 +73,8 @@ export interface StyleField {
     label: string;
     type: string;
     defaultValue?: string | number | boolean;
-    themeKey: string;
+    themeKey?: string;
+    cssVariable?: string;
     options?: string[];
     min?: number;
     max?: number;
@@ -91,6 +103,7 @@ export interface AppState {
     styleSchemaDefaults: Record<string, unknown>;
     controlValues: Record<string, unknown>;
     stylingTheme: StylingTheme;
+    cssVariables: CssVariables;
     savedTheme: StoredThemeStyles | null;
     stylingUIState: { scrollPosition?: number; expandedAccordions?: string[] };
     customCss: string;

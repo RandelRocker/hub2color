@@ -1,4 +1,4 @@
-import { PageSection, ControlsSchema, StyleSchema, StoredThemeStyles, StylingTheme } from "./types";
+import { PageSection, ControlsSchema, StyleSchema, StoredThemeStyles, StylingTheme, CssVariables } from "./types";
 import { ActionTypes } from "./constants";
 
 export interface SetPagesAction {
@@ -43,6 +43,11 @@ export interface SetStylingValueAction {
 export interface updateStylingThemeAction {
     type: ActionTypes.UPDATE_STYLING_THEME;
     payload: StylingTheme;
+}
+
+export interface UpdateCssVariablesAction {
+    type: ActionTypes.UPDATE_CSS_VARIABLES;
+    payload: CssVariables;
 }
 
 export interface SetStylingUIStateAction {
@@ -110,6 +115,7 @@ export type AppAction =
     | SetBulkControlsAction
     | SetStylingValueAction
     | updateStylingThemeAction
+    | UpdateCssVariablesAction
     | SetStylingUIStateAction
     | SetSavedThemesAction
     | SetCustomCssAction

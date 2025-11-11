@@ -11,6 +11,7 @@ const initialState: AppState = {
     styleSchemaDefaults: {},
     controlValues: {},
     stylingTheme: {},
+    cssVariables: {},
     stylingUIState: { scrollPosition: 0, expandedAccordions: [] },
     savedTheme: { themeStyles: {}, cssVariableStyles: {} },
     customCss: "",
@@ -46,8 +47,12 @@ export const appReducer = (
                     draft.stylingTheme = JSON.parse(
                         JSON.stringify(draft.savedTheme.themeStyles || {})
                     );
+                    draft.cssVariables = JSON.parse(
+                        JSON.stringify(draft.savedTheme.cssVariableStyles || {})
+                    );
                 } else {
                     draft.stylingTheme = {};
+                    draft.cssVariables = {};
                 }
                 break;
             case ActionTypes.SET_CONTROLS_SCHEMA:
@@ -97,6 +102,26 @@ export const appReducer = (
                                         ].isEnabled;
                                 }
                             }
+
+                            if (
+                                field.cssVariable &&
+                                draft.savedTheme?.cssVariableStyles[field.cssVariable]
+                            ) {
+                                const valueFromCssVar =
+                                    draft.savedTheme.cssVariableStyles[field.cssVariable]
+                                        .value;
+
+                                if (valueFromCssVar !== undefined) {
+                                    draft.styleSchemaDefaults[field.id] =
+                                        valueFromCssVar;
+                                    draft.styleSchemaDefaults[
+                                        `${field.id}_enabled`
+                                    ] =
+                                        draft.savedTheme.cssVariableStyles[
+                                            field.cssVariable
+                                        ].isEnabled;
+                                }
+                            }
                         }
                         if ("fields" in item && item.fields) {
                             collectDefaults(item.fields);
@@ -141,6 +166,19 @@ export const appReducer = (
                                     draft.styleSchemaDefaults[`${field.id}_enabled`] = themeValue.isEnabled;
                                 }
                             }
+
+                            // Override with current CSS variable values if they exist
+                            if (
+                                field.cssVariable &&
+                                draft.cssVariables[field.cssVariable]
+                            ) {
+                                const cssVarValue = draft.cssVariables[field.cssVariable];
+
+                                if (cssVarValue.value !== undefined) {
+                                    draft.styleSchemaDefaults[field.id] = cssVarValue.value;
+                                    draft.styleSchemaDefaults[`${field.id}_enabled`] = cssVarValue.isEnabled;
+                                }
+                            }
                         }
                         if ("fields" in item && item.fields) {
                             collectDefaultsFromTheme(item.fields);
@@ -165,6 +203,12 @@ export const appReducer = (
             case ActionTypes.UPDATE_STYLING_THEME:
                 draft.stylingTheme = {
                     ...draft.stylingTheme,
+                    ...action.payload
+                };
+                break;
+            case ActionTypes.UPDATE_CSS_VARIABLES:
+                draft.cssVariables = {
+                    ...draft.cssVariables,
                     ...action.payload
                 };
                 break;

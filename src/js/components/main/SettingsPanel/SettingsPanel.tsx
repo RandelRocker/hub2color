@@ -20,9 +20,10 @@ import {
     setPanelDock,
     setSavedTheme,
     updateStylingTheme,
+    updateCssVariables,
     updateStyleSchemaDefaults
 } from "../../../store/actions";
-import { StyleField, StyleGroup, StylingTheme } from "../../../store/types";
+import { StyleField, StyleGroup, StylingTheme, CssVariables } from "../../../store/types";
 import { ControlsTab } from "./ControlsTab/ControlsTab";
 import { StylingTab } from "./StylingTab/StylingTab";
 import { CustomCssTab } from "./CustomCssTab/CustomCssTab";
@@ -30,7 +31,7 @@ import { CustomJsTab } from "./CustomJsTab/CustomJsTab";
 
 export const SettingsPanel = () => {
     const dispatch = useDispatch();
-    const { panelDock, currentPage, stylingTheme, savedTheme, styleSchema } = useSelector(
+    const { panelDock, currentPage, stylingTheme, cssVariables, savedTheme, styleSchema } = useSelector(
         (state: RootState) => state.app
     );
     const [activeTab, setActiveTab] = useState(0);
@@ -41,6 +42,11 @@ export const SettingsPanel = () => {
     const handleResetToPreviousSaved = useCallback(() => {
         if (savedTheme?.themeStyles) {
             dispatch(updateStylingTheme(savedTheme.themeStyles));
+        }
+        if (savedTheme?.cssVariableStyles) {
+            dispatch(updateCssVariables(savedTheme.cssVariableStyles));
+        }
+        if (savedTheme?.themeStyles || savedTheme?.cssVariableStyles) {
             dispatch(updateStyleSchemaDefaults());
         }
     }, [savedTheme, dispatch]);
@@ -75,8 +81,37 @@ export const SettingsPanel = () => {
             return defaultTheme;
         };
 
+        const collectDefaultCssVariables = (items: (StyleField | StyleGroup)[]): CssVariables => {
+            const defaultCssVars: CssVariables = {};
+
+            items.forEach((item) => {
+                if (
+                    "id" in item &&
+                    item.type !== "group" &&
+                    item.type !== "sectionTitle"
+                ) {
+                    const field = item as StyleField;
+
+                    if (field.cssVariable && field.defaultValue !== undefined) {
+                        defaultCssVars[field.cssVariable] = {
+                            value: field.defaultValue,
+                            isEnabled: false
+                        };
+                    }
+                }
+                if ("fields" in item && item.fields) {
+                    const nestedDefaults = collectDefaultCssVariables(item.fields);
+                    Object.assign(defaultCssVars, nestedDefaults);
+                }
+            });
+
+            return defaultCssVars;
+        };
+
         const defaultTheme = collectDefaultTheme(styleSchema.style);
+        const defaultCssVars = collectDefaultCssVariables(styleSchema.style);
         dispatch(updateStylingTheme(defaultTheme));
+        dispatch(updateCssVariables(defaultCssVars));
         dispatch(updateStyleSchemaDefaults());
     }, [styleSchema, dispatch]);
 
@@ -88,7 +123,9 @@ export const SettingsPanel = () => {
                 themeStyles: {
                     ...stylingTheme
                 },
-                cssVariableStyles: savedTheme?.cssVariableStyles ?? {}
+                cssVariableStyles: {
+                    ...cssVariables
+                }
             };
             // Store back to localStorage
             localStorage.setItem("stylingTheme", JSON.stringify(themeToSave));
@@ -96,12 +133,13 @@ export const SettingsPanel = () => {
             dispatch(setSavedTheme(themeToSave));
 
             console.log(`Saved styling data for ${currentPage}:`, {
-                stylingTheme
+                stylingTheme,
+                cssVariables
             });
         } catch (error) {
             console.error("Failed to save styling data:", error);
         }
-    }, [currentPage, stylingTheme, savedTheme?.cssVariableStyles, dispatch]);
+    }, [currentPage, stylingTheme, cssVariables, dispatch]);
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);

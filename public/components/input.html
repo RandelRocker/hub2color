@@ -128,6 +128,16 @@
           return tag;
         }
 
+        function ensureCssVariablesStyleTag() {
+          let tag = document.getElementById("css-variables");
+          if (!tag) {
+            tag = document.createElement("style");
+            tag.id = "css-variables";
+            document.head.insertBefore(tag, document.head.firstChild);
+          }
+          return tag;
+        }
+
         window.addEventListener("message", (e) => {
           const data = e.data || {};
           if (data && data.source === SRC) {
@@ -153,6 +163,9 @@
               case "BULK_CONTROLS":
                 window.inputProps = data.payload?.values || {};
                 updateInput();
+                break;
+              case "APPLY_CSS_VARIABLES":
+                ensureCssVariablesStyleTag().textContent = data.payload?.css || "";
                 break;
             }
           }
