@@ -25,11 +25,6 @@ export const updateStyleSchemaDefaults = () => ({
     type: ActionTypes.UPDATE_STYLE_SCHEMA_DEFAULTS,
 });
 
-export const setSelectedTemplate = (templateName: string | null) => ({
-    type: ActionTypes.SET_SELECTED_TEMPLATE,
-    payload: templateName,
-});
-
 export const setControlValue = (name: string, value: unknown) => ({
     type: ActionTypes.SET_CONTROL_VALUE,
     payload: { name, value },

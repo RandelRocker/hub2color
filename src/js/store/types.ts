@@ -52,17 +52,10 @@ export interface ControlsSchemaProps {
     fields: ControlField[];
 }
 
-export interface ControlsSchemaTemplate {
-    templateName: string;
-    templateLabel: string;
-    props: ControlsSchemaProps;
-}
-
 export interface ControlsSchema {
     version?: number;
     defaults?: Record<string, unknown>;
     fields?: ControlField[];
-    templates?: ControlsSchemaTemplate[];
 }
 
 export interface StyleField {
@@ -97,7 +90,6 @@ export interface AppState {
     controlsSchema: ControlsSchema | null;
     styleSchema: StyleSchema | null;
     styleSchemaDefaults: Record<string, unknown>;
-    selectedTemplate: ControlsSchemaTemplate | null;
     controlValues: Record<string, unknown>;
     stylingTheme: StylingTheme;
     savedTheme: StoredThemeStyles | null;

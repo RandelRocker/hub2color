@@ -18,8 +18,7 @@ export const PreviewFrame = () => {
         stylingTheme,
         customCss,
         customJs,
-        loading,
-        selectedTemplate
+        loading
     } = useSelector((state: RootState) => state.app);
 
     const sendMessageToFrame = useCallback(
@@ -103,12 +102,6 @@ export const PreviewFrame = () => {
             sendMessageToFrame("APPLY_JS", { js: customJs });
         }
 
-        if (selectedTemplate) {
-            sendMessageToFrame("TEMPLATE_CHANGE", {
-                template: selectedTemplate
-            });
-        }
-
         // Send styling theme
         if (stylingTheme && Object.keys(stylingTheme).length > 0) {
             sendMessageToFrame("THEME_CHANGE", {
@@ -133,7 +126,6 @@ export const PreviewFrame = () => {
         zoom,
         customCss,
         customJs,
-        selectedTemplate,
         controlValues,
         stylingTheme,
         sendMessageToFrame
@@ -185,14 +177,6 @@ export const PreviewFrame = () => {
             });
         }
     }, [stylingTheme, sendMessageToFrame]);
-
-    useEffect(() => {
-        if (selectedTemplate) {
-            sendMessageToFrame("TEMPLATE_CHANGE", {
-                template: selectedTemplate
-            });
-        }
-    }, [selectedTemplate, sendMessageToFrame]);
 
     const getViewportWidth = () => {
         switch (viewport) {

@@ -1,101 +1,37 @@
 {
-    "templates": [
+    "defaults": {
+        "label": "Text Button",
+        "disabled": false,
+        "fontSize": "1.5rem",
+        "color": "primary",
+        "size": "medium"
+    },
+    "fields": [
         {
-            "templateName": "single",
-            "templateLabel": "Single Text Button",
-            "props": {
-                "defaults": {
-                    "label": "Text Button",
-                    "disabled": false,
-                    "fontSize": "1.5rem",
-                    "color": "primary",
-                    "size": "medium"
-                },
-                "fields": [
-                    {
-                        "name": "label",
-                        "label": "Label",
-                        "description": "Button text",
-                        "type": "text"
-                    },
-                    {
-                        "name": "color",
-                        "label": "Color",
-                        "description": "Button colors",
-                        "type": "select",
-                        "options": ["primary", "secondary", "error"]
-                    },
-                    {
-                        "name": "disabled",
-                        "label": "Disabled",
-                        "description": "Disable button",
-                        "type": "boolean"
-                    },
-                    {
-                        "name": "size",
-                        "label": "Size",
-                        "description": "Button size",
-                        "type": "radio",
-                        "options": ["small", "medium", "large"]
-                    }
-                ]
-            }
+            "name": "label",
+            "label": "Label",
+            "description": "Button text",
+            "type": "text"
         },
         {
-            "templateName": "sizes",
-            "templateLabel": "Text Button Sizes",
-            "props": {
-                "defaults": {
-                    "label": "Text Button",
-                    "disabled": false
-                },
-                "fields": [
-                    {
-                        "name": "label",
-                        "label": "Label",
-                        "description": "Button text",
-                        "type": "text"
-                    },
-                    {
-                        "name": "disabled",
-                        "label": "Disabled",
-                        "description": "Disable button",
-                        "type": "boolean"
-                    }
-                ]
-            }
+            "name": "color",
+            "label": "Color",
+            "description": "Button colors",
+            "type": "select",
+            "options": ["primary", "secondary", "error"]
         },
         {
-            "templateName": "colors",
-            "templateLabel": "Text Button Colors",
-            "props": {
-                "defaults": {
-                    "label": "Text Button",
-                    "disabled": false,
-                    "size": "medium"
-                },
-                "fields": [
-                    {
-                        "name": "label",
-                        "label": "Label",
-                        "description": "Button text",
-                        "type": "text"
-                    },
-                    {
-                        "name": "disabled",
-                        "label": "Disabled",
-                        "description": "Disable button",
-                        "type": "boolean"
-                    },
-                    {
-                        "name": "size",
-                        "label": "Size",
-                        "description": "Button size",
-                        "type": "radio",
-                        "options": ["small", "medium", "large"]
-                    }
-                ]
-            }
+            "name": "disabled",
+            "label": "Disabled",
+            "description": "Disable button",
+            "type": "boolean"
+        },
+        {
+            "name": "size",
+            "label": "Size",
+            "description": "Button size",
+            "type": "radio",
+            "options": ["small", "medium", "large"]
         }
     ]
 }

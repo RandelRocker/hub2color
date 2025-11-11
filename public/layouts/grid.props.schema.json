@@ -1,82 +1,38 @@
 {
-    "templates": [
+    "defaults": {
+        "title": "Featured Products",
+        "columns": 3,
+        "productCount": 6,
+        "showPrices": true
+    },
+    "fields": [
         {
-            "templateName": "products",
-            "templateLabel": "Product Grid",
-            "props": {
-                "defaults": {
-                    "title": "Featured Products",
-                    "columns": 3,
-                    "productCount": 6,
-                    "showPrices": true
-                },
-                "fields": [
-                    {
-                        "name": "title",
-                        "label": "Grid Title",
-                        "description": "Main title for the product grid",
-                        "type": "text"
-                    },
-                    {
-                        "name": "columns",
-                        "label": "Columns",
-                        "description": "Number of columns in the grid",
-                        "type": "select",
-                        "options": ["2", "3", "4"]
-                    },
-                    {
-                        "name": "productCount",
-                        "label": "Product Count",
-                        "description": "Number of products to display",
-                        "type": "slider",
-                        "min": 1,
-                        "max": 6,
-                        "step": 1
-                    },
-                    {
-                        "name": "showPrices",
-                        "label": "Show Prices",
-                        "description": "Display product prices",
-                        "type": "boolean"
-                    }
-                ]
-            }
+            "name": "title",
+            "label": "Grid Title",
+            "description": "Main title for the product grid",
+            "type": "text"
         },
         {
-            "templateName": "gallery",
-            "templateLabel": "Image Gallery",
-            "props": {
-                "defaults": {
-                    "title": "Image Gallery",
-                    "columns": 4,
-                    "productCount": 8,
-                    "showPrices": false
-                },
-                "fields": [
-                    {
-                        "name": "title",
-                        "label": "Gallery Title",
-                        "description": "Main title for the image gallery",
-                        "type": "text"
-                    },
-                    {
-                        "name": "columns",
-                        "label": "Columns",
-                        "description": "Number of columns in the grid",
-                        "type": "select",
-                        "options": ["2", "3", "4"]
-                    },
-                    {
-                        "name": "productCount",
-                        "label": "Image Count",
-                        "description": "Number of images to display",
-                        "type": "slider",
-                        "min": 1,
-                        "max": 12,
-                        "step": 1
-                    }
-                ]
-            }
+            "name": "columns",
+            "label": "Columns",
+            "description": "Number of columns in the grid",
+            "type": "select",
+            "options": ["2", "3", "4"]
+        },
+        {
+            "name": "productCount",
+            "label": "Product Count",
+            "description": "Number of products to display",
+            "type": "slider",
+            "min": 1,
+            "max": 6,
+            "step": 1
+        },
+        {
+            "name": "showPrices",
+            "label": "Show Prices",
+            "description": "Display product prices",
+            "type": "boolean"
         }
     ]
 }

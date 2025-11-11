@@ -9,7 +9,6 @@ const initialState: AppState = {
     controlsSchema: null,
     styleSchema: null,
     styleSchemaDefaults: {},
-    selectedTemplate: null,
     controlValues: {},
     stylingTheme: {},
     stylingUIState: { scrollPosition: 0, expandedAccordions: [] },
@@ -53,20 +52,8 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_CONTROLS_SCHEMA:
                 draft.controlsSchema = action.payload;
-                draft.selectedTemplate = null;
-                if (action.payload) {
-                    if (
-                        action.payload.templates &&
-                        action.payload.templates.length > 0
-                    ) {
-                        const firstTemplate = action.payload.templates[0];
-                        draft.selectedTemplate = firstTemplate;
-                        draft.controlValues = {
-                            ...firstTemplate.props.defaults
-                        };
-                    } else if (action.payload.defaults) {
-                        draft.controlValues = { ...action.payload.defaults };
-                    }
+                if (action.payload?.defaults) {
+                    draft.controlValues = { ...action.payload.defaults };
                 }
                 break;
             case ActionTypes.SET_STYLE_SCHEMA: {
@@ -163,20 +150,6 @@ export const appReducer = (
                 }
                 break;
             }
-            case ActionTypes.SET_SELECTED_TEMPLATE:
-                if (action.payload && draft.controlsSchema?.templates) {
-                    const selectedTemplate =
-                        draft.controlsSchema.templates.find(
-                            (t) => t.templateName === action.payload
-                        );
-                    if (selectedTemplate) {
-                        draft.selectedTemplate = selectedTemplate;
-                        draft.controlValues = {
-                            ...selectedTemplate.props.defaults
-                        };
-                    }
-                }
-                break;
             case ActionTypes.SET_CONTROL_VALUE:
                 if (!draft.controlValues) {
                     draft.controlValues = {};

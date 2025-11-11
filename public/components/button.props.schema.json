@@ -1,117 +1,45 @@
 {
-    "templates": [
+    "defaults": {
+        "label": "Click me",
+        "variant": "contained",
+        "disabled": false,
+        "fontSize": "1.5rem",
+        "color": "primary",
+        "size": "medium"
+    },
+    "fields": [
         {
-            "templateName": "single",
-            "templateLabel": "Single Button",
-            "props": {
-                "defaults": {
-                    "label": "Click me",
-                    "variant": "contained",
-                    "disabled": false,
-                    "fontSize": "1.5rem",
-                    "color": "primary",
-                    "size": "medium"
-                },
-                "fields": [
-                    {
-                        "name": "label",
-                        "label": "Label",
-                        "description": "Button text",
-                        "type": "text"
-                    },
-                    {
-                        "name": "variant",
-                        "label": "Variant",
-                        "description": "Button style variant",
-                        "type": "select",
-                        "options": ["contained", "outlined", "text"]
-                    },
-                    {
-                        "name": "color",
-                        "label": "Color",
-                        "description": "Button colors",
-                        "type": "select",
-                        "options": ["primary", "secondary", "error"]
-                    },
-                    {
-                        "name": "disabled",
-                        "label": "Disabled",
-                        "description": "Disable button",
-                        "type": "boolean"
-                    },
-                    {
-                        "name": "size",
-                        "label": "Size",
-                        "description": "Button size",
-                        "type": "radio",
-                        "options": ["small", "medium", "large"]
-                    }
-                ]
-            }
+            "name": "label",
+            "label": "Label",
+            "description": "Button text",
+            "type": "text"
         },
         {
-            "templateName": "sizes",
-            "templateLabel": "Button sizes",
-            "props": {
-                "defaults": {
-                    "label": "Click me",
-                    "variant": "contained",
-                    "disabled": false
-                },
-                "fields": [
-                    {
-                        "name": "label",
-                        "label": "Label",
-                        "description": "Button text",
-                        "type": "text"
-                    },
-                    {
-                        "name": "variant",
-                        "label": "Variant",
-                        "description": "Button style variant",
-                        "type": "select",
-                        "options": ["contained", "outlined", "text"]
-                    },
-                    {
-                        "name": "disabled",
-                        "label": "Disabled",
-                        "description": "Disable button",
-                        "type": "boolean"
-                    }
-                ]
-            }
+            "name": "variant",
+            "label": "Variant",
+            "description": "Button style variant",
+            "type": "select",
+            "options": ["contained", "outlined", "text"]
         },
         {
-            "templateName": "variants",
-            "templateLabel": "Button Variants",
-            "props": {
-                "defaults": {
-                    "label": "Click me",
-                    "disabled": false,
-                    "size": "medium"
-                },
-                "fields": [
-                    {
-                        "name": "label",
-                        "label": "Label",
-                        "description": "Button text",
-                        "type": "text"
-                    },
-                    {
-                        "name": "disabled",
-                        "label": "Disabled",
-                        "description": "Disable button",
-                        "type": "boolean"
-                    },
-                    {
-                        "name": "size",
-                        "label": "Size",
-                        "description": "Button size",
-                        "type": "radio",
-                        "options": ["small", "medium", "large"]
-                    }
-                ]
-            }
+            "name": "color",
+            "label": "Color",
+            "description": "Button colors",
+            "type": "select",
+            "options": ["primary", "secondary", "error"]
+        },
+        {
+            "name": "disabled",
+            "label": "Disabled",
+            "description": "Disable button",
+            "type": "boolean"
+        },
+        {
+            "name": "size",
+            "label": "Size",
+            "description": "Button size",
+            "type": "radio",
+            "options": ["small", "medium", "large"]
         }
     ]
 }

@@ -1,67 +1,34 @@
 {
-    "templates": [
+    "defaults": {
+        "title": "Welcome to the Future",
+        "subtitle": "Discover amazing possibilities with our innovative solution",
+        "buttonText": "Get Started",
+        "showButton": true
+    },
+    "fields": [
         {
-            "templateName": "default",
-            "templateLabel": "Default Hero",
-            "props": {
-                "defaults": {
-                    "title": "Welcome to the Future",
-                    "subtitle": "Discover amazing possibilities with our innovative solution",
-                    "buttonText": "Get Started",
-                    "showButton": true
-                },
-                "fields": [
-                    {
-                        "name": "title",
-                        "label": "Title",
-                        "description": "Hero section main title",
-                        "type": "text"
-                    },
-                    {
-                        "name": "subtitle",
-                        "label": "Subtitle",
-                        "description": "Hero section subtitle",
-                        "type": "text"
-                    },
-                    {
-                        "name": "buttonText",
-                        "label": "Button Text",
-                        "description": "Call-to-action button text",
-                        "type": "text"
-                    },
-                    {
-                        "name": "showButton",
-                        "label": "Show Button",
-                        "description": "Display the CTA button",
-                        "type": "boolean"
-                    }
-                ]
-            }
+            "name": "title",
+            "label": "Title",
+            "description": "Hero section main title",
+            "type": "text"
         },
         {
-            "templateName": "minimal",
-            "templateLabel": "Minimal Hero",
-            "props": {
-                "defaults": {
-                    "title": "Welcome",
-                    "subtitle": "Discover amazing possibilities",
-                    "showButton": false
-                },
-                "fields": [
-                    {
-                        "name": "title",
-                        "label": "Title",
-                        "description": "Hero section main title",
-                        "type": "text"
-                    },
-                    {
-                        "name": "subtitle",
-                        "label": "Subtitle",
-                        "description": "Hero section subtitle",
-                        "type": "text"
-                    }
-                ]
-            }
+            "name": "subtitle",
+            "label": "Subtitle",
+            "description": "Hero section subtitle",
+            "type": "text"
+        },
+        {
+            "name": "buttonText",
+            "label": "Button Text",
+            "description": "Call-to-action button text",
+            "type": "text"
+        },
+        {
+            "name": "showButton",
+            "label": "Show Button",
+            "description": "Display the CTA button",
+            "type": "boolean"
         }
     ]
 }

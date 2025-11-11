@@ -2,11 +2,7 @@ import {
     Box,
     IconButton,
     Divider,
-    Tooltip,
-    Select,
-    MenuItem,
-    FormControl,
-    SelectChangeEvent
+    Tooltip
 } from "@mui/material";
 import IonIcon from "@reacticons/ionicons";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,13 +11,12 @@ import { RootState } from "../../../store";
 import {
     setZoom,
     setViewport,
-    setDirection,
-    setSelectedTemplate
+    setDirection
 } from "../../../store/actions";
 
 export const TopBar = () => {
     const dispatch = useDispatch();
-    const { zoom, viewport, direction, controlsSchema, selectedTemplate } =
+    const { zoom, viewport, direction } =
         useSelector((state: RootState) => state.app);
 
     const handleZoomIn = () => {
@@ -44,10 +39,6 @@ export const TopBar = () => {
 
     const handleDirectionToggle = () => {
         dispatch(setDirection(direction === "ltr" ? "rtl" : "ltr"));
-    };
-
-    const handleTemplateChange = (event: SelectChangeEvent) => {
-        dispatch(setSelectedTemplate(event.target.value));
     };
 
     return (
@@ -236,57 +227,6 @@ export const TopBar = () => {
                     />
                 </IconButton>
             </Tooltip>
-
-            {controlsSchema?.templates &&
-                controlsSchema.templates.length > 1 && (
-                    <>
-                        <Divider
-                            orientation="vertical"
-                            flexItem
-                            sx={{ alignSelf: "center", height: "60%", mx: 1 }}
-                        />
-                        <FormControl size="small" sx={{ minWidth: 120 }}>
-                            <Select
-                                name="template"
-                                value={
-                                    selectedTemplate?.templateName ||
-                                    controlsSchema.templates[0].templateName
-                                }
-                                onChange={handleTemplateChange}
-                                displayEmpty
-                                variant="standard"
-                                sx={{
-                                    fontSize: "0.875rem",
-                                    "&:before": {
-                                        borderBottom: "none"
-                                    },
-                                    "&:hover:not(.Mui-disabled):before": {
-                                        borderBottom: "none"
-                                    },
-                                    "&:after": {
-                                        borderBottom: "none"
-                                    },
-                                    "& .MuiInput-input": {
-                                        paddingBottom: 0
-                                    },
-                                    "& .MuiInput-input:focus": {
-                                        backgroundColor: "transparent"
-                                    }
-                                }}
-                            >
-                                {controlsSchema.templates.map((template) => (
-                                    <MenuItem
-                                        key={template.templateName}
-                                        value={template.templateName}
-                                        sx={{ fontSize: "0.875rem" }}
-                                    >
-                                        {template.templateLabel}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </>
-                )}
         </Box>
     );
 };

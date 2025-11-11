@@ -31,7 +31,7 @@ import { setControlValue } from "../../../../store/actions";
 
 export const ControlsTab = () => {
     const dispatch = useDispatch();
-    const { controlsSchema, selectedTemplate, controlValues } = useSelector(
+    const { controlsSchema, controlValues } = useSelector(
         (state: RootState) => state.app
     );
     const { control, watch, reset } = useForm();
@@ -39,23 +39,13 @@ export const ControlsTab = () => {
 
     const watchedValues = watch();
 
-    // Reset form when schema or template changes
+    // Reset form when schema changes
     useEffect(() => {
         if (controlsSchema) {
             isInitializing.current = true;
             let defaultValues = {};
 
-            if (controlsSchema.templates && selectedTemplate) {
-                const template = controlsSchema.templates.find(
-                    (t) => t.templateName === selectedTemplate?.templateName
-                );
-                if (template) {
-                    defaultValues = {
-                        ...template.props.defaults,
-                        ...controlValues
-                    };
-                }
-            } else if (controlsSchema.defaults) {
+            if (controlsSchema.defaults) {
                 defaultValues = {
                     ...controlsSchema.defaults,
                     ...controlValues
@@ -68,7 +58,7 @@ export const ControlsTab = () => {
                 isInitializing.current = false;
             }, 50);
         }
-    }, [controlsSchema, selectedTemplate, controlValues, reset]);
+    }, [controlsSchema, controlValues, reset]);
 
     // Update store when form values change (but not during initialization)
     useEffect(() => {
@@ -76,20 +66,9 @@ export const ControlsTab = () => {
 
         Object.entries(watchedValues).forEach(([name, value]) => {
             if (value !== undefined && controlValues[name] !== value) {
-                let hasField = false;
-
-                if (controlsSchema?.templates && selectedTemplate) {
-                    const template = controlsSchema.templates.find(
-                        (t) => t.templateName === selectedTemplate?.templateName
-                    );
-                    hasField =
-                        template?.props.fields.some((f) => f.name === name) ||
-                        false;
-                } else if (controlsSchema?.fields) {
-                    hasField = controlsSchema.fields.some(
-                        (f) => f.name === name
-                    );
-                }
+                const hasField = controlsSchema?.fields?.some(
+                    (f) => f.name === name
+                ) || false;
 
                 if (hasField) {
                     dispatch(setControlValue(name, value));
@@ -100,8 +79,7 @@ export const ControlsTab = () => {
         watchedValues,
         controlValues,
         dispatch,
-        controlsSchema,
-        selectedTemplate
+        controlsSchema
     ]);
 
     if (!controlsSchema) {
@@ -122,17 +100,7 @@ export const ControlsTab = () => {
         );
     }
 
-    const getCurrentSchema = () => {
-        if (controlsSchema.templates && selectedTemplate) {
-            const template = controlsSchema.templates.find(
-                (t) => t.templateName === selectedTemplate?.templateName
-            );
-            return template?.props;
-        }
-        return controlsSchema;
-    };
-
-    const currentSchema = getCurrentSchema();
+    const currentSchema = controlsSchema;
 
     if (!currentSchema?.fields) {
         return (
