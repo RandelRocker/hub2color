@@ -1,33 +1,31 @@
 {
-    "defaults": {
-        "title": "Welcome to the Future",
-        "subtitle": "Discover amazing possibilities with our innovative solution",
-        "buttonText": "Get Started",
-        "showButton": true
-    },
     "fields": [
         {
-            "name": "title",
+            "id": "title",
             "label": "Title",
             "description": "Hero section main title",
+            "defaultValue": "Welcome to the Future",
             "type": "text"
         },
         {
-            "name": "subtitle",
+            "id": "subtitle",
             "label": "Subtitle",
             "description": "Hero section subtitle",
+            "defaultValue": "Discover amazing possibilities with our innovative solution",
             "type": "text"
         },
         {
-            "name": "buttonText",
+            "id": "buttonText",
             "label": "Button Text",
             "description": "Call-to-action button text",
+            "defaultValue": "Get Started",
             "type": "text"
         },
         {
-            "name": "showButton",
+            "id": "showButton",
             "label": "Show Button",
             "description": "Display the CTA button",
+            "defaultValue": true,
             "type": "boolean"
         }
     ]

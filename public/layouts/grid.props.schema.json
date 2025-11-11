@@ -1,37 +1,35 @@
 {
-    "defaults": {
-        "title": "Featured Products",
-        "columns": 3,
-        "productCount": 6,
-        "showPrices": true
-    },
     "fields": [
         {
-            "name": "title",
+            "id": "title",
             "label": "Grid Title",
             "description": "Main title for the product grid",
+            "defaultValue": "Featured Products",
             "type": "text"
         },
         {
-            "name": "columns",
+            "id": "columns",
             "label": "Columns",
             "description": "Number of columns in the grid",
             "type": "select",
+            "defaultValue": "3",
             "options": ["2", "3", "4"]
         },
         {
-            "name": "productCount",
+            "id": "productCount",
             "label": "Product Count",
             "description": "Number of products to display",
             "type": "slider",
             "min": 1,
             "max": 6,
-            "step": 1
+            "step": 1,
+            "defaultValue": 6
         },
         {
-            "name": "showPrices",
+            "id": "showPrices",
             "label": "Show Prices",
             "description": "Display product prices",
+            "defaultValue": true,
             "type": "boolean"
         }
     ]

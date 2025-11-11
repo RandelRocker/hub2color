@@ -1,36 +1,33 @@
 {
-    "defaults": {
-        "label": "Text Button",
-        "disabled": false,
-        "fontSize": "1.5rem",
-        "color": "primary",
-        "size": "medium"
-    },
     "fields": [
         {
-            "name": "label",
+            "id": "label",
             "label": "Label",
             "description": "Button text",
+            "defaultValue": "Text Button",
             "type": "text"
         },
         {
-            "name": "color",
+            "id": "color",
             "label": "Color",
             "description": "Button colors",
             "type": "select",
+            "defaultValue": "primary",
             "options": ["primary", "secondary", "error"]
         },
         {
-            "name": "disabled",
+            "id": "disabled",
             "label": "Disabled",
             "description": "Disable button",
+            "defaultValue": false,
             "type": "boolean"
         },
         {
-            "name": "size",
+            "id": "size",
             "label": "Size",
             "description": "Button size",
             "type": "radio",
+            "defaultValue": "medium",
             "options": ["small", "medium", "large"]
         }
     ]

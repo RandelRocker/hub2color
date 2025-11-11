@@ -1,40 +1,38 @@
 {
-    "defaults": {
-        "label": "Label",
-        "placeholder": "Enter text...",
-        "helperText": "Helper text",
-        "disabled": false,
-        "error": false
-    },
     "fields": [
         {
-            "name": "label",
+            "id": "label",
             "label": "Label",
             "description": "Input label text",
+            "defaultValue": "Label",
             "type": "text"
         },
         {
-            "name": "placeholder",
+            "id": "placeholder",
             "label": "Placeholder",
             "description": "Input placeholder text",
+            "defaultValue": "Enter text...",
             "type": "text"
         },
         {
-            "name": "helperText",
+            "id": "helperText",
             "label": "Helper Text",
             "description": "Input helper text",
+            "defaultValue": "Helper text",
             "type": "text"
         },
         {
-            "name": "disabled",
+            "id": "disabled",
             "label": "Disabled",
             "description": "Disable the input",
+            "defaultValue": false,
             "type": "boolean"
         },
         {
-            "name": "error",
+            "id": "error",
             "label": "Error State",
             "description": "Show error state",
+            "defaultValue": false,
             "type": "boolean"
         }
     ]

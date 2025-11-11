@@ -1,34 +1,32 @@
 {
-    "defaults": {
-        "title": "Card Title",
-        "description": "This is a sample card description that explains what this card is about.",
-        "elevation": "default",
-        "showImage": true
-    },
     "fields": [
         {
-            "name": "title",
+            "id": "title",
             "label": "Title",
             "description": "Card title text",
+            "defaultValue": "Card Title",
             "type": "text"
         },
         {
-            "name": "description",
+            "id": "description",
             "label": "Description",
             "description": "Card description text",
+            "defaultValue": "This is a sample card description that explains what this card is about.",
             "type": "text"
         },
         {
-            "name": "elevation",
+            "id": "elevation",
             "label": "Elevation",
             "description": "Card shadow style",
             "type": "select",
+            "defaultValue": "default",
             "options": ["default", "elevated", "outlined"]
         },
         {
-            "name": "showImage",
+            "id": "showImage",
             "label": "Show Image",
             "description": "Display the card image",
+            "defaultValue": true,
             "type": "boolean"
         }
     ]
