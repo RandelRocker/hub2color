@@ -14,21 +14,24 @@
                     "label": "Small button padding",
                     "defaultValue": "4px 10px",
                     "themeKey": "button.containedSizeSmall.padding",
-                    "type": "padding"
+                    "type": "padding",
+                    "cssVariable": "--button-contained-size-small-padding"
                 },
                 {
                     "id": "paddingMedium",
                     "label": "Medium button padding",
                     "defaultValue": "6px 16px",
                     "themeKey": "button.containedSizeMedium.padding",
-                    "type": "padding"
+                    "type": "padding",
+                    "cssVariable": "--button-contained-size-medium-padding"
                 },
                 {
                     "id": "paddingLarge",
                     "label": "Large button padding",
                     "defaultValue": "8px 22px",
                     "themeKey": "button.containedSizeLarge.padding",
-                    "type": "padding"
+                    "type": "padding",
+                    "cssVariable": "--button-contained-size-large-padding"
                 }
             ]
         },
@@ -42,28 +45,32 @@
                     "label": "Small button font size",
                     "defaultValue": "1rem",
                     "themeKey": "button.containedSizeSmall.fontSize",
-                    "type": "units"
+                    "type": "units",
+                    "cssVariable": "--button-contained-size-small-font-size"
                 },
                 {
                     "id": "fontSizeMedium",
                     "label": "Medium button font size",
                     "defaultValue": "1.29rem",
                     "themeKey": "button.containedSizeMedium.fontSize",
-                    "type": "units"
+                    "type": "units",
+                    "cssVariable": "--button-contained-size-medium-font-size"
                 },
                 {
                     "id": "fontSizeLarge",
                     "label": "Large button font size",
                     "defaultValue": "1.5rem",
                     "themeKey": "button.containedSizeLarge.fontSize",
-                    "type": "units"
+                    "type": "units",
+                    "cssVariable": "--button-contained-size-large-font-size"
                 },
                 {
                     "id": "fontWeight",
                     "label": "Font weight",
                     "defaultValue": "500",
                     "themeKey": "button.contained.fontWeight",
-                    "type": "number"
+                    "type": "number",
+                    "cssVariable": "--button-contained-font-weight"
                 },
                 {
                     "id": "italic",
@@ -71,7 +78,8 @@
                     "defaultValue": false,
                     "checkedValue": "italic",
                     "themeKey": "button.contained.fontStyle",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "cssVariable": "--button-contained-font-style"
                 },
                 {
                     "id": "uppercase",
@@ -79,7 +87,8 @@
                     "defaultValue": "uppercase",
                     "checkedValue": "uppercase",
                     "themeKey": "button.contained.textTransform",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "cssVariable": "--button-contained-text-transform"
                 }
             ]
         },
@@ -93,7 +102,8 @@
                     "label": "Border Radius",
                     "defaultValue": "4px 4px 4px 4px",
                     "themeKey": "button.contained.borderRadius",
-                    "type": "borderRadius"
+                    "type": "borderRadius",
+                    "cssVariable": "--button-contained-border-radius"
                 }
             ]
         },
@@ -107,14 +117,16 @@
                     "label": "Button shadow",
                     "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                     "themeKey": "button.contained.boxShadow",
-                    "type": "boxShadow"
+                    "type": "boxShadow",
+                    "cssVariable": "--button-contained-box-shadow"
                 },
                 {
                     "id": "buttonShadowHover",
                     "label": "Button hover shadow",
                     "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                     "themeKey": "button.containedHover.boxShadow",
-                    "type": "boxShadow"
+                    "type": "boxShadow",
+                    "cssVariable": "--button-contained-hover-box-shadow"
                 }
             ]
         },
@@ -137,14 +149,16 @@
                             "label": "Primary background color",
                             "defaultValue": "#6ECD8D",
                             "themeKey": "button.containedPrimary.backgroundColor",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-primary-background-color"
                         },
                         {
                             "id": "primaryButtonHoverBackgroundColor",
                             "label": "Primary background hover color",
                             "defaultValue": "#4d8f62",
                             "themeKey": "button.containedPrimaryHover.backgroundColor",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-primary-hover-background-color"
                         }
                     ]
                 },
@@ -158,28 +172,32 @@
                             "label": "Primary text color",
                             "defaultValue": "#ffffff",
                             "themeKey": "button.containedPrimary.color",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-primary-color"
                         },
                         {
                             "id": "primaryButtonHoverTextColor",
                             "label": "Primary text hover color",
                             "defaultValue": "#ffffff",
                             "themeKey": "button.containedPrimaryHover.color",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-primary-hover-color"
                         },
                         {
                             "id": "primaryButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedPrimary.textShadow",
-                            "type": "textShadow"
+                            "type": "textShadow",
+                            "cssVariable": "--button-contained-primary-text-shadow"
                         },
                         {
                             "id": "primaryButtonHoverTextShadow",
                             "label": "Text hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedPrimaryHover.textShadow",
-                            "type": "textShadow"
+                            "type": "textShadow",
+                            "cssVariable": "--button-contained-primary-hover-text-shadow"
                         }
                     ]
                 },
@@ -193,14 +211,16 @@
                             "label": "Border",
                             "defaultValue": "0px solid #000",
                             "themeKey": "button.containedPrimary.border",
-                            "type": "border"
+                            "type": "border",
+                            "cssVariable": "--button-contained-primary-border"
                         },
                         {
                             "id": "primaryButtonHoverBorder",
                             "label": "Border hover",
                             "defaultValue": "0px solid #000",
                             "themeKey": "button.containedPrimaryHover.border",
-                            "type": "border"
+                            "type": "border",
+                            "cssVariable": "--button-contained-primary-hover-border"
                         }
                     ]
                 },
@@ -214,14 +234,16 @@
                             "label": "Button shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedPrimary.boxShadow",
-                            "type": "boxShadow"
+                            "type": "boxShadow",
+                            "cssVariable": "--button-contained-primary-box-shadow"
                         },
                         {
                             "id": "primaryButtonHoverShadow",
                             "label": "Button hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedPrimaryHover.boxShadow",
-                            "type": "boxShadow"
+                            "type": "boxShadow",
+                            "cssVariable": "--button-contained-primary-hover-box-shadow"
                         }
                     ]
                 }
@@ -242,14 +264,16 @@
                             "label": "Secondary background color",
                             "defaultValue": "#2196f3",
                             "themeKey": "button.containedSecondary.backgroundColor",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-secondary-background-color"
                         },
                         {
                             "id": "secondaryButtonHoverBackgroundColor",
                             "label": "Secondary background hover color",
                             "defaultValue": "#1769aa",
                             "themeKey": "button.containedSecondaryHover.backgroundColor",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-secondary-hover-background-color"
                         }
                     ]
                 },
@@ -263,28 +287,32 @@
                             "label": "Secondary text color",
                             "defaultValue": "#ffffff",
                             "themeKey": "button.containedSecondary.color",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-secondary-color"
                         },
                         {
                             "id": "secondaryButtonHoverTextColor",
                             "label": "Secondary text hover color",
                             "defaultValue": "#ffffff",
                             "themeKey": "button.containedSecondaryHover.color",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-secondary-hover-color"
                         },
                         {
                             "id": "secondaryButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedSecondary.textShadow",
-                            "type": "textShadow"
+                            "type": "textShadow",
+                            "cssVariable": "--button-contained-secondary-text-shadow"
                         },
                         {
                             "id": "secondaryButtonHoverTextShadow",
                             "label": "Text hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedSecondaryHover.textShadow",
-                            "type": "textShadow"
+                            "type": "textShadow",
+                            "cssVariable": "--button-contained-secondary-hover-text-shadow"
                         }
                     ]
                 },
@@ -298,14 +326,16 @@
                             "label": "Border",
                             "defaultValue": "0px solid #000",
                             "themeKey": "button.containedSecondary.border",
-                            "type": "border"
+                            "type": "border",
+                            "cssVariable": "--button-contained-secondary-border"
                         },
                         {
                             "id": "secondaryButtonHoverBorder",
                             "label": "Border hover",
                             "defaultValue": "0px solid #000",
                             "themeKey": "button.containedSecondaryHover.border",
-                            "type": "border"
+                            "type": "border",
+                            "cssVariable": "--button-contained-secondary-hover-border"
                         }
                     ]
                 },
@@ -319,14 +349,16 @@
                             "label": "Button shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedSecondary.boxShadow",
-                            "type": "boxShadow"
+                            "type": "boxShadow",
+                            "cssVariable": "--button-contained-secondary-box-shadow"
                         },
                         {
                             "id": "secondaryButtonHoverShadow",
                             "label": "Button hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedSecondaryHover.boxShadow",
-                            "type": "boxShadow"
+                            "type": "boxShadow",
+                            "cssVariable": "--button-contained-secondary-hover-box-shadow"
                         }
                     ]
                 }
@@ -347,14 +379,16 @@
                             "label": "Error background color",
                             "defaultValue": "#ec3238",
                             "themeKey": "button.containedError.backgroundColor",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-error-background-color"
                         },
                         {
                             "id": "errorButtonHoverBackgroundColor",
                             "label": "Error background hover color",
                             "defaultValue": "#a52327",
                             "themeKey": "button.containedErrorHover.backgroundColor",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-error-hover-background-color"
                         }
                     ]
                 },
@@ -368,28 +402,32 @@
                             "label": "Error text color",
                             "defaultValue": "#ffffff",
                             "themeKey": "button.containedError.color",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-error-color"
                         },
                         {
                             "id": "errorButtonHoverTextColor",
                             "label": "Error text hover color",
                             "defaultValue": "#ffffff",
                             "themeKey": "button.containedErrorHover.color",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-error-hover-color"
                         },
                         {
                             "id": "errorButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedError.textShadow",
-                            "type": "textShadow"
+                            "type": "textShadow",
+                            "cssVariable": "--button-contained-error-text-shadow"
                         },
                         {
                             "id": "errorButtonHoverTextShadow",
                             "label": "Text hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedErrorHover.textShadow",
-                            "type": "textShadow"
+                            "type": "textShadow",
+                            "cssVariable": "--button-contained-error-hover-text-shadow"
                         }
                     ]
                 },
@@ -403,14 +441,16 @@
                             "label": "Border",
                             "defaultValue": "0px solid #000",
                             "themeKey": "button.containedError.border",
-                            "type": "border"
+                            "type": "border",
+                            "cssVariable": "--button-contained-error-border"
                         },
                         {
                             "id": "errorButtonHoverBorder",
                             "label": "Border hover",
                             "defaultValue": "0px solid #000",
                             "themeKey": "button.containedErrorHover.border",
-                            "type": "border"
+                            "type": "border",
+                            "cssVariable": "--button-contained-error-hover-border"
                         }
                     ]
                 },
@@ -424,14 +464,16 @@
                             "label": "Button shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedError.boxShadow",
-                            "type": "boxShadow"
+                            "type": "boxShadow",
+                            "cssVariable": "--button-contained-error-box-shadow"
                         },
                         {
                             "id": "errorButtonHoverShadow",
                             "label": "Button hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedErrorHover.boxShadow",
-                            "type": "boxShadow"
+                            "type": "boxShadow",
+                            "cssVariable": "--button-contained-error-hover-box-shadow"
                         }
                     ]
                 }
@@ -452,7 +494,8 @@
                             "label": "Disabled background color",
                             "defaultValue": "rgba(0,0,0,0.12)",
                             "themeKey": "button.containedDisabled.backgroundColor",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-disabled-background-color"
                         }
                     ]
                 },
@@ -466,14 +509,16 @@
                             "label": "Disabled text color",
                             "defaultValue": "rgba(0,0,0,0.26)",
                             "themeKey": "button.containedDisabled.color",
-                            "type": "color"
+                            "type": "color",
+                            "cssVariable": "--button-contained-disabled-color"
                         },
                         {
                             "id": "disabledButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedDisabled.textShadow",
-                            "type": "textShadow"
+                            "type": "textShadow",
+                            "cssVariable": "--button-contained-disabled-text-shadow"
                         }
                     ]
                 },
@@ -487,7 +532,8 @@
                             "label": "Border",
                             "defaultValue": "0px solid #000",
                             "themeKey": "button.containedDisabled.border",
-                            "type": "border"
+                            "type": "border",
+                            "cssVariable": "--button-contained-disabled-border"
                         }
                     ]
                 },
@@ -501,7 +547,8 @@
                             "label": "Button shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.containedDisabled.boxShadow",
-                            "type": "boxShadow"
+                            "type": "boxShadow",
+                            "cssVariable": "--button-contained-disabled-box-shadow"
                         }
                     ]
                 }
