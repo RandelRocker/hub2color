@@ -99,6 +99,18 @@ export const appReducer = (
 
             case ActionTypes.UPDATE_STYLE_TAB_VALUES: {
                 Object.keys(action.payload).forEach((key) => {
+                    // draft.styleTabDefaultValues[key] = action.payload[key].value;
+                    draft.styleTabValues[key] = {
+                        ...draft.styleTabValues[key],
+                        ...action.payload[key]
+                    };
+                    // draft.styleTabDefaultValues[`${action.payload[key].id}_enabled`] = action.payload[key].isEnabled;
+                });
+                break;
+            }
+
+            case ActionTypes.UPDATE_STYLE_TAB_VALUES_WITH_DEFAULT: {
+                Object.keys(action.payload).forEach((key) => {
                     draft.styleTabDefaultValues[key] = action.payload[key].value;
                     draft.styleTabValues[key] = {
                         ...draft.styleTabValues[key],

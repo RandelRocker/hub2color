@@ -26,8 +26,9 @@ export interface UpdateStyleTabValuesAction {
     payload: StylingTabValues;
 }
 
-export interface UpdateStyleTabDefaultValuesAction {
-    type: ActionTypes.UPDATE_STYLE_TAB_DEFAULT_VALUES;
+export interface UpdateStyleTabValuesWithDefaultAction {
+    type: ActionTypes.UPDATE_STYLE_TAB_VALUES_WITH_DEFAULT;
+    payload: StylingTabValues;
 }
 
 export interface UpdateStyleTabToDefaultValuesAction {
@@ -99,7 +100,7 @@ export type AppAction =
     | SetComponentSchemaAction
     | UpdateStyleTabValuesAction
     | UpdateControlsTabValuesAction
-    | UpdateStyleTabDefaultValuesAction
+    | UpdateStyleTabValuesWithDefaultAction
     | SetStylingTabUIStateAction
     | UpdateStyleTabToDefaultValuesAction
     | UpdateStyleTabToPreviousValuesAction

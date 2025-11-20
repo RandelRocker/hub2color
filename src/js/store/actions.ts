@@ -30,8 +30,9 @@ export const updateStylingTabValues = (values: StylingTabValues) => ({
     payload: values,
 });
 
-export const updateStylingTabDefaultValues = () => ({
-    type: ActionTypes.UPDATE_STYLE_TAB_DEFAULT_VALUES,
+export const updateStylingTabValuesWithDefault = (values: StylingTabValues) => ({
+    type: ActionTypes.UPDATE_STYLE_TAB_VALUES_WITH_DEFAULT,
+    payload: values,
 });
 
 export const updateStylingTabToDefaultValues = () => ({

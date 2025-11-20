@@ -25,7 +25,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
-import { updateStylingTabValues, setStylingTabUIState } from "../../../../store/actions";
+import { updateStylingTabValues, updateStylingTabValuesWithDefault, setStylingTabUIState } from "../../../../store/actions";
 import { StylingTabValues, StyleGroup, StyleField } from "../../../../store/types";
 
 // Debounced color picker component
@@ -156,8 +156,6 @@ export const StylingTab = () => {
     const { componentSchema, styleTabDefaultValues, stylingUIState, savedTheme } =
         useSelector((state: RootState) => state.app);
 
-    const currentComponentSchema = useRef(componentSchema);
-
     const { control, subscribe, getValues, reset } = useForm({
         defaultValues: styleTabDefaultValues
     });
@@ -207,31 +205,19 @@ export const StylingTab = () => {
         }
 
         const savedField = savedTheme[field.cssVariable];
-        
-        if (!savedField) {
-            handleFieldMenuClose();
+        const schemaField = findFieldById(componentSchema?.styles || [], field.id);
 
-            return;
-        }
-
-        const currentValues = getValues();
-
-        const newValues = {
-            ...currentValues,
-            [field.id]: savedField.value,
-            [`${field.id}_enabled`]: savedField.isEnabled
-        };
-
-        dispatch(updateStylingTabValues({
+        dispatch(updateStylingTabValuesWithDefault({
             [field.cssVariable]: {
                 id: field.id,
-                ...savedField
+                value: savedField?.value ?? schemaField?.defaultValue,
+                isEnabled: savedField?.isEnabled ?? false,
+                themeKey: field?.themeKey
             }
         }));
 
-        reset(newValues);
         handleFieldMenuClose();
-    }, [fieldMenuAnchor.field, savedTheme, getValues, dispatch, reset, handleFieldMenuClose]);
+    }, [fieldMenuAnchor.field, savedTheme, findFieldById, componentSchema?.styles, dispatch, handleFieldMenuClose]);
 
     const handleFieldResetToDefault = useCallback(() => {
         const field = fieldMenuAnchor.field;
@@ -251,25 +237,17 @@ export const StylingTab = () => {
             return;
         }
 
-        const currentValues = getValues();
-    
-        const newValues = {
-            ...currentValues,
-            [field.id]: defaultValue,
-            [`${field.id}_enabled`]: false
-        };
-
-        dispatch(updateStylingTabValues({
+        dispatch(updateStylingTabValuesWithDefault({
             [field.cssVariable]: {
                 id: field.id,
                 value: defaultValue,
-                isEnabled: false
+                isEnabled: false,
+                themeKey: field?.themeKey
             }
         }));
 
-        reset(newValues);
         handleFieldMenuClose();
-    }, [fieldMenuAnchor.field, findFieldById, componentSchema?.styles, getValues, dispatch, reset, handleFieldMenuClose]);
+    }, [fieldMenuAnchor.field, findFieldById, componentSchema?.styles, dispatch, handleFieldMenuClose]);
 
     useEffect(() => {
         const callback = subscribe({
@@ -307,12 +285,16 @@ export const StylingTab = () => {
         return () => callback();
     }, [componentSchema?.styles, dispatch, findFieldById, subscribe]);
 
+    // useEffect(() => {
+    //     if (currentComponentSchema.current !== componentSchema) {
+    //         currentComponentSchema.current = componentSchema;
+    //         reset(styleTabDefaultValues);
+    //     }
+    // }, [componentSchema, reset, styleTabDefaultValues]);
+
     useEffect(() => {
-        if (currentComponentSchema.current !== componentSchema) {
-            currentComponentSchema.current = componentSchema;
-            reset(styleTabDefaultValues);
-        }
-    }, [componentSchema, reset, styleTabDefaultValues]);
+        reset(styleTabDefaultValues);
+    }, [reset, styleTabDefaultValues]);
 
     // Restore scroll position when component mounts
     useEffect(() => {
