@@ -28,7 +28,7 @@ import { RootState } from "../../../../store";
 import { updateStylingTabValues, updateStylingTabValuesWithDefault, setStylingTabUIState } from "../../../../store/actions";
 import { StylingTabValues, StyleGroup, StyleField } from "../../../../store/types";
 
-// Debounced color picker component
+// Debounced color picker component with color square and hex input
 const DebouncedColorPicker = ({
     value,
     onChange,
@@ -42,6 +42,7 @@ const DebouncedColorPicker = ({
 }) => {
     const [localValue, setLocalValue] = useState(value || "#000000");
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const colorInputRef = useRef<HTMLInputElement>(null);
 
     // Update local value when prop changes
     useEffect(() => {
@@ -57,7 +58,7 @@ const DebouncedColorPicker = ({
         };
     }, []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleColorInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
         setLocalValue(newValue);
 
@@ -72,20 +73,55 @@ const DebouncedColorPicker = ({
         }, 150);
     };
 
+    const handleColorSquareClick = () => {
+        if (!disabled && colorInputRef.current) {
+            colorInputRef.current.click();
+        }
+    };
+
     return (
-        <TextField
-            value={localValue}
-            onChange={handleChange}
-            type="color"
-            size="small"
-            disabled={disabled}
-            slotProps={{
-                input: {
-                    sx: { fontSize: "0.875rem" }
-                }
+        <Box
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                ...sx
             }}
-            sx={sx}
-        />
+        >
+            {/* Color square */}
+            <Box
+                onClick={handleColorSquareClick}
+                sx={{
+                    width: 30,
+                    height: 30,
+                    minWidth: 30,
+                    backgroundColor: localValue || "#000000",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 1,
+                    cursor: disabled ? "not-allowed" : "pointer",
+                    opacity: disabled ? 0.5 : 1,
+                    "&:hover": {
+                        opacity: disabled ? 0.5 : 0.8
+                    },
+                    transition: "opacity 0.2s"
+                }}
+            />
+            {/* Hidden color input */}
+            <input
+                ref={colorInputRef}
+                type="color"
+                value={localValue || "#000000"}
+                onChange={handleColorInputChange}
+                disabled={disabled}
+                style={{
+                    position: "absolute",
+                    width: 0,
+                    height: 0,
+                    opacity: 0,
+                    pointerEvents: "none"
+                }}
+            />
+        </Box>
     );
 };
 
@@ -103,6 +139,7 @@ const DebouncedCompositeColorPicker = ({
 }) => {
     const [localValue, setLocalValue] = useState(value || "#000000");
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const colorInputRef = useRef<HTMLInputElement>(null);
 
     // Update local value when prop changes
     useEffect(() => {
@@ -118,7 +155,7 @@ const DebouncedCompositeColorPicker = ({
         };
     }, []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleColorInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
         setLocalValue(newValue);
 
@@ -133,20 +170,55 @@ const DebouncedCompositeColorPicker = ({
         }, 150);
     };
 
+    const handleColorSquareClick = () => {
+        if (!disabled && colorInputRef.current) {
+            colorInputRef.current.click();
+        }
+    };
+
     return (
-        <TextField
-            value={localValue}
-            onChange={handleChange}
-            type="color"
-            size="small"
-            disabled={disabled}
-            slotProps={{
-                input: {
-                    sx: { fontSize: "0.875rem" }
-                }
+        <Box
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                ...sx
             }}
-            sx={sx}
-        />
+        >
+            {/* Color square */}
+            <Box
+                onClick={handleColorSquareClick}
+                sx={{
+                    width: 30,
+                    height: 30,
+                    minWidth: 30,
+                    backgroundColor: localValue || "#000000",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 1,
+                    cursor: disabled ? "not-allowed" : "pointer",
+                    opacity: disabled ? 0.5 : 1,
+                    "&:hover": {
+                        opacity: disabled ? 0.5 : 0.8
+                    },
+                    transition: "opacity 0.2s"
+                }}
+            />
+            {/* Hidden color input */}
+            <input
+                ref={colorInputRef}
+                type="color"
+                value={localValue || "#000000"}
+                onChange={handleColorInputChange}
+                disabled={disabled}
+                style={{
+                    position: "absolute",
+                    width: 0,
+                    height: 0,
+                    opacity: 0,
+                    pointerEvents: "none"
+                }}
+            />
+        </Box>
     );
 };
 
@@ -541,7 +613,6 @@ export const StylingTab = () => {
                                 value={(fieldProps.value as string) || "#000000"}
                                 onChange={fieldProps.onChange}
                                 disabled={!isFieldEnabled}
-                                sx={{ width: 60 }}
                             />
                         )}
                     />

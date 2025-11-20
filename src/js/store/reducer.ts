@@ -110,8 +110,11 @@ export const appReducer = (
             }
 
             case ActionTypes.UPDATE_STYLE_TAB_VALUES_WITH_DEFAULT: {
+                draft.styleTabDefaultValues = {
+                    ...draft.styleTabDefaultValues
+                };
                 Object.keys(action.payload).forEach((key) => {
-                    draft.styleTabDefaultValues[key] = action.payload[key].value;
+                    draft.styleTabDefaultValues[action.payload[key].id] = action.payload[key].value;
                     draft.styleTabValues[key] = {
                         ...draft.styleTabValues[key],
                         ...action.payload[key]
