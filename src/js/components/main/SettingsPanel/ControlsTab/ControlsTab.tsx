@@ -27,61 +27,40 @@ import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
-import { setControlValue } from "../../../../store/actions";
+import { updateControlsTabValues } from "../../../../store/actions";
 
 export const ControlsTab = () => {
     const dispatch = useDispatch();
-    const { controlsSchema, controlValues } = useSelector(
+    const { componentSchema, controlsTabValues } = useSelector(
         (state: RootState) => state.app
     );
-    const { control, watch, reset } = useForm();
-    const isInitializing = useRef(false);
-
-    const watchedValues = watch();
+    const currentComponentSchema = useRef(componentSchema);
+    const { control, subscribe, reset } = useForm({
+        defaultValues: controlsTabValues
+    });
 
     // Reset form when schema changes
     useEffect(() => {
-        if (controlsSchema) {
-            isInitializing.current = true;
-            const defaultValues = {} as Record<string, unknown>;
-
-            for (const field of controlsSchema?.fields || []) {
-                if (field.defaultValue !== undefined) {
-                    defaultValues[field.id] = field.defaultValue;
-                }
-            }
-
-            reset(defaultValues);
-            // Small delay to prevent race condition
-            setTimeout(() => {
-                isInitializing.current = false;
-            }, 50);
+        if (currentComponentSchema.current !== componentSchema) {
+            currentComponentSchema.current = componentSchema;
+            reset(controlsTabValues);
         }
-    }, [controlsSchema, reset]);
+    }, [componentSchema, controlsTabValues, reset]);
 
-    // Update store when form values change (but not during initialization)
     useEffect(() => {
-        if (isInitializing.current) return;
-
-        Object.entries(watchedValues).forEach(([name, value]) => {
-            if (value !== undefined && controlValues[name] !== value) {
-                const hasField = controlsSchema?.fields?.some(
-                    (f) => f.id === name
-                ) || false;
-
-                if (hasField) {
-                    dispatch(setControlValue(name, value));
-                }
+        const callback = subscribe({
+            formState: {
+                values: true
+            },
+            callback: ({ values }) => {
+                dispatch(updateControlsTabValues(values));
             }
         });
-    }, [
-        watchedValues,
-        controlValues,
-        dispatch,
-        controlsSchema
-    ]);
 
-    if (!controlsSchema) {
+        return () => callback();
+    }, [dispatch, subscribe]);
+
+    if (!componentSchema) {
         return (
             <Box
                 sx={{
@@ -99,9 +78,7 @@ export const ControlsTab = () => {
         );
     }
 
-    const currentSchema = controlsSchema;
-
-    if (!currentSchema?.fields) {
+    if (!componentSchema?.controls) {
         return (
             <Box
                 sx={{
@@ -370,6 +347,7 @@ export const ControlsTab = () => {
                             <Box sx={{ px: 1 }}>
                                 <Slider
                                     {...fieldProps}
+                                    value={fieldProps.value as number || 0}
                                     min={min}
                                     max={max}
                                     step={step}
@@ -419,7 +397,7 @@ export const ControlsTab = () => {
                             };
 
                             const { number, unit } = parseValue(
-                                fieldProps.value || ""
+                                fieldProps.value as string || ""
                             );
 
                             const handleNumberChange = (
@@ -517,14 +495,14 @@ export const ControlsTab = () => {
                                 verticalPosition,
                                 blurRadius,
                                 color
-                            } = parseTextShadow(fieldProps.value || "");
+                            } = parseTextShadow(fieldProps.value as string || "");
 
                             const handleFieldChange = (
                                 field: string,
                                 value: string
                             ) => {
                                 const current = parseTextShadow(
-                                    fieldProps.value || ""
+                                    fieldProps.value as string || ""
                                 );
                                 const updated = { ...current, [field]: value };
                                 const newValue = `${updated.horizontalPosition} ${updated.verticalPosition} ${updated.blurRadius} ${updated.color}`;
@@ -663,14 +641,14 @@ export const ControlsTab = () => {
                                 blurRadius,
                                 spreadRadius,
                                 color
-                            } = parseBoxShadow(fieldProps.value || "");
+                            } = parseBoxShadow(fieldProps.value as string || "");
 
                             const handleFieldChange = (
                                 field: string,
                                 value: string
                             ) => {
                                 const current = parseBoxShadow(
-                                    fieldProps.value || ""
+                                    fieldProps.value as string || ""
                                 );
                                 const updated = { ...current, [field]: value };
                                 const newValue = `${updated.horizontalPosition} ${updated.verticalPosition} ${updated.blurRadius} ${updated.spreadRadius} ${updated.color}`;
@@ -820,14 +798,14 @@ export const ControlsTab = () => {
                                 right,
                                 bottom,
                                 left
-                            } = parsePadding(fieldProps.value || "");
+                            } = parsePadding(fieldProps.value as string || "");
 
                             const handleFieldChange = (
                                 field: string,
                                 value: string
                             ) => {
                                 const current = parsePadding(
-                                    fieldProps.value || ""
+                                    fieldProps.value as string || ""
                                 );
                                 const updated = { ...current, [field]: value };
                                 const newValue = `${updated.top} ${updated.right} ${updated.bottom} ${updated.left}`;
@@ -947,14 +925,14 @@ export const ControlsTab = () => {
                                 width,
                                 style,
                                 color
-                            } = parseBorder(fieldProps.value || "");
+                            } = parseBorder(fieldProps.value as string || "");
 
                             const handleFieldChange = (
                                 field: string,
                                 value: string
                             ) => {
                                 const current = parseBorder(
-                                    fieldProps.value || ""
+                                    fieldProps.value as string || ""
                                 );
                                 const updated = { ...current, [field]: value };
                                 const newValue = `${updated.width} ${updated.style} ${updated.color}`;
@@ -1086,14 +1064,14 @@ export const ControlsTab = () => {
                                 topRight,
                                 bottomRight,
                                 bottomLeft
-                            } = parseBorderRadius(fieldProps.value || "");
+                            } = parseBorderRadius(fieldProps.value as string || "");
 
                             const handleFieldChange = (
                                 field: string,
                                 value: string
                             ) => {
                                 const current = parseBorderRadius(
-                                    fieldProps.value || ""
+                                    fieldProps.value as string || ""
                                 );
                                 const updated = { ...current, [field]: value };
                                 const newValue = `${updated.topLeft} ${updated.topRight} ${updated.bottomRight} ${updated.bottomLeft}`;
@@ -1227,7 +1205,7 @@ export const ControlsTab = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {currentSchema.fields.map((field) => (
+                            {componentSchema.controls.map((field) => (
                                 <TableRow key={field.id}>
                                     <TableCell>
                                         <Typography

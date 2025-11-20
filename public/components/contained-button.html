@@ -117,44 +117,17 @@
           return tag;
         }
 
-        function applyTheme(theme) {
-          if (!theme) return;
+        function applyStyling(styling) {
+          if (!styling) return;
 
           const themeStyleTag = ensureThemeStyleTag();
           let css = "";
 
-          function processThemeObject(obj, selector = ".button") {
-            if (!obj || typeof obj !== "object") return;
+          Object.entries(styling).forEach(([key, style]) => {
+            css += `${key}: ${style.value}; \n`;
+          });
 
-            for (const [key, value] of Object.entries(obj)) {
-              if (value && typeof value === "object" && !Array.isArray(value)) {
-                let nestedSelector = selector;
-
-                if (key.includes("containedSizeSmall")) {
-                  nestedSelector = selector + ".small";
-                } else if (key.includes("containedSizeMedium")) {
-                  nestedSelector = selector + ":not(.small):not(.large)";
-                } else if (key.includes("containedSizeLarge")) {
-                  nestedSelector = selector + ".large";
-                } else if (key.includes("containedDisabled")) {
-                  nestedSelector = selector + ":disabled";
-                } else if (key.includes("containedHover")) {
-                  nestedSelector = selector + ":hover";
-                }
-
-                processThemeObject(value, nestedSelector);
-              } else {
-                const cssProperty = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-                css += `${selector} { ${cssProperty}: ${value} !important; }\n`;
-              }
-            }
-          }
-
-          if (theme.button) {
-            processThemeObject(theme.button);
-          }
-
-          themeStyleTag.textContent = css;
+          themeStyleTag.textContent = `:root {\n${css}\n}`;
         }
 
         window.addEventListener("message", (e) => {
@@ -179,15 +152,8 @@
                 window.buttonProps = data.payload?.values || {};
                 updateButton();
                 break;
-              case "BULK_CONTROLS":
-                window.buttonProps = data.payload?.values || {};
-                updateButton();
-                break;
-              case "THEME_CHANGE":
-                applyTheme(data.payload?.theme);
-                break;
-              case "APPLY_CSS_VARIABLES":
-                ensureCssVariablesStyleTag().textContent = data.payload?.css || "";
+              case "STYLING_CHANGE":
+                applyStyling(data.payload?.styles);
                 break;
             }
           }

@@ -1,3 +1,5 @@
+import { StylingTabValues } from "@/js/store/types";
+
 type FlatInput = {
     [path: string]: {
         isEnabled: boolean;
@@ -62,3 +64,16 @@ export const prepareCssVariables = (
 
     return `:root {\n${variables.join("\n")}\n}`;
 };
+
+export const removeUnitsFromValue = (value: unknown) => {
+    const units = ["px", "rem", "em", "%", "pt"];
+    return typeof value === "string" && units.some((unit) => value === unit) ? undefined : value;
+};
+
+export const prepareStylingTheme = (stylingTheme: StylingTabValues) => {
+  const filteredEntries = Object.entries(stylingTheme).filter(([, value]) => {
+    return value && value.isEnabled === true;
+  });
+
+  return Object.fromEntries(filteredEntries);
+}

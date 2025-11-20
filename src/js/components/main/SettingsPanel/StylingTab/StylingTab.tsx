@@ -25,12 +25,8 @@ import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
-import {
-    updateStylingTheme,
-    updateCssVariables,
-    setStylingUIState
-} from "../../../../store/actions";
-import { StyleField, StyleGroup, StylingTheme, CssVariables } from "../../../../store/types";
+import { updateStylingTabValues, setStylingTabUIState } from "../../../../store/actions";
+import { StylingTabValues, StyleGroup, StyleField } from "../../../../store/types";
 
 // Debounced color picker component
 const DebouncedColorPicker = ({
@@ -157,11 +153,13 @@ const DebouncedCompositeColorPicker = ({
 export const StylingTab = () => {
     const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const { styleSchema, styleSchemaDefaults, stylingUIState, savedTheme } =
+    const { componentSchema, styleTabDefaultValues, stylingUIState, savedTheme } =
         useSelector((state: RootState) => state.app);
 
+    const currentComponentSchema = useRef(componentSchema);
+
     const { control, subscribe, getValues, reset } = useForm({
-        defaultValues: styleSchemaDefaults
+        defaultValues: styleTabDefaultValues
     });
 
     const [expandedAccordions, setExpandedAccordions] = useState<string[]>(
@@ -169,8 +167,8 @@ export const StylingTab = () => {
     );
     const [fieldMenuAnchor, setFieldMenuAnchor] = useState<{
         element: HTMLElement | null;
-        fieldId: string | null;
-    }>({ element: null, fieldId: null });
+        field: StyleField | null;
+    }>({ element: null, field: null });
 
     const findFieldById = useCallback(
         (items: (StyleField | StyleGroup)[], id: string): StyleField | null => {
@@ -189,131 +187,89 @@ export const StylingTab = () => {
     );
 
     const handleFieldMenuOpen = useCallback(
-        (event: React.MouseEvent<HTMLElement>, fieldId: string) => {
-            setFieldMenuAnchor({ element: event.currentTarget, fieldId });
+        (event: React.MouseEvent<HTMLElement>, field: StyleField) => {
+            setFieldMenuAnchor({ element: event.currentTarget, field });
         },
         []
     );
 
     const handleFieldMenuClose = useCallback(() => {
-        setFieldMenuAnchor({ element: null, fieldId: null });
+        setFieldMenuAnchor({ element: null, field: null });
     }, []);
 
     const handleFieldResetToPreviousSaved = useCallback(() => {
-        const fieldId = fieldMenuAnchor.fieldId;
-        if (!fieldId) return;
+        const field = fieldMenuAnchor.field;
 
-        const field = findFieldById(styleSchema?.style || [], fieldId);
-        if (!field) return;
+        if (!savedTheme || !field) {
+            handleFieldMenuClose();
+
+            return;
+        }
+
+        const savedField = savedTheme[field.cssVariable];
+        
+        if (!savedField) {
+            handleFieldMenuClose();
+
+            return;
+        }
 
         const currentValues = getValues();
-        const newValues = { ...currentValues };
-        let hasUpdates = false;
 
-        // Handle themeKey
-        if (field.themeKey) {
-            const savedValue = savedTheme?.themeStyles[field.themeKey];
-            if (savedValue) {
-                newValues[fieldId] = savedValue.value;
-                newValues[`${fieldId}_enabled`] = savedValue.isEnabled;
-                hasUpdates = true;
+        const newValues = {
+            ...currentValues,
+            [field.id]: savedField.value,
+            [`${field.id}_enabled`]: savedField.isEnabled
+        };
 
-                dispatch(
-                    updateStylingTheme({
-                        [field.themeKey]: {
-                            value: savedValue.value,
-                            isEnabled: savedValue.isEnabled
-                        }
-                    })
-                );
+        dispatch(updateStylingTabValues({
+            [field.cssVariable]: {
+                id: field.id,
+                ...savedField
             }
-        }
+        }));
 
-        // Handle cssVariable
-        if (field.cssVariable) {
-            const savedValue = savedTheme?.cssVariableStyles[field.cssVariable];
-            if (savedValue) {
-                newValues[fieldId] = savedValue.value;
-                newValues[`${fieldId}_enabled`] = savedValue.isEnabled;
-                hasUpdates = true;
-
-                dispatch(
-                    updateCssVariables({
-                        [field.cssVariable]: {
-                            value: savedValue.value,
-                            isEnabled: savedValue.isEnabled
-                        }
-                    })
-                );
-            }
-        }
-
-        if (hasUpdates) {
-            reset(newValues);
-        }
+        reset(newValues);
         handleFieldMenuClose();
-    }, [
-        fieldMenuAnchor.fieldId,
-        findFieldById,
-        styleSchema,
-        savedTheme,
-        getValues,
-        reset,
-        dispatch,
-        handleFieldMenuClose
-    ]);
+    }, [fieldMenuAnchor.field, savedTheme, getValues, dispatch, reset, handleFieldMenuClose]);
 
     const handleFieldResetToDefault = useCallback(() => {
-        const fieldId = fieldMenuAnchor.fieldId;
-        if (!fieldId) return;
+        const field = fieldMenuAnchor.field;
 
-        const field = findFieldById(styleSchema?.style || [], fieldId);
-        if (!field) return;
+        if (!field) {
+            handleFieldMenuClose();
 
-        const defaultValue = field.defaultValue;
-        if (defaultValue !== undefined) {
-            const currentValues = getValues();
-            const newValues = {
-                ...currentValues,
-                [fieldId]: defaultValue,
-                [`${fieldId}_enabled`]: false
-            };
-            reset(newValues);
-
-            // Update the styling theme for this field
-            if (field.themeKey) {
-                dispatch(
-                    updateStylingTheme({
-                        [field.themeKey]: {
-                            value: defaultValue,
-                            isEnabled: false
-                        }
-                    })
-                );
-            }
-
-            // Update CSS variables for this field
-            if (field.cssVariable) {
-                dispatch(
-                    updateCssVariables({
-                        [field.cssVariable]: {
-                            value: defaultValue,
-                            isEnabled: false
-                        }
-                    })
-                );
-            }
+            return;
         }
+
+        const schemaField = findFieldById(componentSchema?.styles || [], field.id);
+        const defaultValue = schemaField?.defaultValue;
+
+        if (!schemaField || defaultValue === undefined) {
+            handleFieldMenuClose();
+
+            return;
+        }
+
+        const currentValues = getValues();
+    
+        const newValues = {
+            ...currentValues,
+            [field.id]: defaultValue,
+            [`${field.id}_enabled`]: false
+        };
+
+        dispatch(updateStylingTabValues({
+            [field.cssVariable]: {
+                id: field.id,
+                value: defaultValue,
+                isEnabled: false
+            }
+        }));
+
+        reset(newValues);
         handleFieldMenuClose();
-    }, [
-        fieldMenuAnchor.fieldId,
-        findFieldById,
-        styleSchema,
-        getValues,
-        reset,
-        dispatch,
-        handleFieldMenuClose
-    ]);
+    }, [fieldMenuAnchor.field, findFieldById, componentSchema?.styles, getValues, dispatch, reset, handleFieldMenuClose]);
 
     useEffect(() => {
         const callback = subscribe({
@@ -321,8 +277,7 @@ export const StylingTab = () => {
                 values: true
             },
             callback: ({ values }) => {
-                const newThemeValues: StylingTheme = {};
-                const newCssVariables: CssVariables = {};
+                const stylingTabValues: StylingTabValues = {};
 
                 Object.entries(values).forEach(([key, value]) => {
                     // Check if this field is enabled
@@ -331,35 +286,33 @@ export const StylingTab = () => {
 
                     if (value !== undefined) {
                         const field = findFieldById(
-                            styleSchema?.style || [],
+                            componentSchema?.styles || [],
                             key
                         );
-                        if (field?.themeKey) {
-                            newThemeValues[field.themeKey] = {
-                                value,
-                                isEnabled
-                            };
-                        }
                         if (field?.cssVariable) {
-                            newCssVariables[field.cssVariable] = {
+                            stylingTabValues[field.cssVariable] = {
+                                id: field.id,
                                 value,
+                                themeKey: field?.themeKey,
                                 isEnabled
                             };
                         }
                     }
                 });
 
-                dispatch(updateStylingTheme(newThemeValues));
-                dispatch(updateCssVariables(newCssVariables));
+                dispatch(updateStylingTabValues(stylingTabValues));
             }
         });
 
         return () => callback();
-    }, [dispatch, findFieldById, styleSchema?.style, subscribe]);
+    }, [componentSchema?.styles, dispatch, findFieldById, subscribe]);
 
     useEffect(() => {
-        reset(styleSchemaDefaults);
-    }, [reset, styleSchemaDefaults]);
+        if (currentComponentSchema.current !== componentSchema) {
+            currentComponentSchema.current = componentSchema;
+            reset(styleTabDefaultValues);
+        }
+    }, [componentSchema, reset, styleTabDefaultValues]);
 
     // Restore scroll position when component mounts
     useEffect(() => {
@@ -373,14 +326,14 @@ export const StylingTab = () => {
     const handleScroll = useCallback(
         (e: React.UIEvent<HTMLDivElement>) => {
             const scrollTop = e.currentTarget.scrollTop;
-            dispatch(setStylingUIState({ scrollPosition: scrollTop }));
+            dispatch(setStylingTabUIState({ scrollPosition: scrollTop }));
         },
         [dispatch]
     );
 
     // Save expanded accordions when they change
     useEffect(() => {
-        dispatch(setStylingUIState({ expandedAccordions }));
+        dispatch(setStylingTabUIState({ expandedAccordions }));
     }, [expandedAccordions, dispatch]);
 
     // Restore expanded accordions when stylingUIState changes
@@ -390,7 +343,7 @@ export const StylingTab = () => {
         }
     }, [stylingUIState.expandedAccordions]);
 
-    if (!styleSchema) {
+    if (!componentSchema) {
         return (
             <Box
                 sx={{
@@ -1491,7 +1444,7 @@ export const StylingTab = () => {
                 <Tooltip title="Field options">
                     <IconButton
                         size="small"
-                        onClick={(e) => handleFieldMenuOpen(e, field.id)}
+                        onClick={(e) => handleFieldMenuOpen(e, field)}
                         sx={{ opacity: 0.7, "&:hover": { opacity: 1 } }}
                     >
                         <MoreVert fontSize="small" />
@@ -1678,7 +1631,7 @@ export const StylingTab = () => {
         const sections: JSX.Element[] = [];
         const fieldRows: JSX.Element[] = [];
 
-        styleSchema.style.forEach((item) => {
+        componentSchema.styles.forEach((item) => {
             if ("type" in item) {
                 const itemTyped = item as StyleField | StyleGroup;
                 if (itemTyped.type === "group") {
@@ -1705,7 +1658,7 @@ export const StylingTab = () => {
     };
 
     // Show loading state during initialization to prevent heavy rendering during tab transitions
-    if (!styleSchema) {
+    if (!componentSchema) {
         return (
             <Box
                 sx={{

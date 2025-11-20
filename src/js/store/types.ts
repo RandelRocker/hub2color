@@ -30,33 +30,25 @@ export interface ControlField {
     step?: number;
 }
 
-export interface StylingTheme {
-    [themeKey: string]: {
+export interface StylingTabValues {
+    [cssVariable: string]: {
+        id: string;
         isEnabled: boolean;
         value: unknown;
+        themeKey?: string;
     };
 }
 
-export interface CssVariables {
-    [cssVariable: string]: {
-        isEnabled: boolean;
-        value: unknown;
-    };
+export interface ControlsTabValues {
+    [name: string]: unknown
 }
 
 export interface StoredThemeStyles {
-    themeStyles: {
-        [themeKey: string]: {
-            isEnabled: boolean;
-            value: unknown;
-        };
-    };
-    cssVariableStyles: {
-        [cssVariable: string]: {
-            isEnabled: boolean;
-            value: unknown;
-        };
-    };
+    [cssVariable: string]: {
+        isEnabled: boolean;
+        value: unknown;
+        themeKey?: string;
+    }
 }
 
 export interface ControlsSchemaProps {
@@ -74,7 +66,7 @@ export interface StyleField {
     type: string;
     defaultValue?: string | number | boolean;
     themeKey?: string;
-    cssVariable?: string;
+    cssVariable: string;
     options?: string[];
     min?: number;
     max?: number;
@@ -92,18 +84,22 @@ export interface StyleGroup {
 }
 
 export interface StyleSchema {
-    style: (StyleField | StyleGroup)[];
+    styles: (StyleField | StyleGroup)[];
+}
+
+export interface ComponentSchema {
+    controls: ControlField[];
+    styles: (StyleField | StyleGroup)[];
 }
 
 export interface AppState {
     pages: PageSection[];
     currentPage: string | null;
-    controlsSchema: ControlsSchema | null;
-    styleSchema: StyleSchema | null;
-    styleSchemaDefaults: Record<string, unknown>;
-    controlValues: Record<string, unknown>;
-    stylingTheme: StylingTheme;
-    cssVariables: CssVariables;
+    componentSchema: ComponentSchema | null;
+    controlsTabValues: ControlsTabValues;
+    controlsTabDefaultValues: ControlsTabValues;
+    styleTabValues: StylingTabValues;
+    styleTabDefaultValues: Record<string, unknown>;
     savedTheme: StoredThemeStyles | null;
     stylingUIState: { scrollPosition?: number; expandedAccordions?: string[] };
     customCss: string;

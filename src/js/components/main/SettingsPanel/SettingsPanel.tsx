@@ -18,12 +18,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store";
 import {
     setPanelDock,
-    setSavedTheme,
-    updateStylingTheme,
-    updateCssVariables,
+    saveStylingTheme,
+    updateStylingTabToDefaultValues,
+    updateStylingTabToPreviousValues,
     updateStyleSchemaDefaults
 } from "../../../store/actions";
-import { StyleField, StyleGroup, StylingTheme, CssVariables } from "../../../store/types";
 import { ControlsTab } from "./ControlsTab/ControlsTab";
 import { StylingTab } from "./StylingTab/StylingTab";
 import { CustomCssTab } from "./CustomCssTab/CustomCssTab";
@@ -31,7 +30,7 @@ import { CustomJsTab } from "./CustomJsTab/CustomJsTab";
 
 export const SettingsPanel = () => {
     const dispatch = useDispatch();
-    const { panelDock, currentPage, stylingTheme, cssVariables, savedTheme, styleSchema } = useSelector(
+    const { panelDock, currentPage, styleTabValues } = useSelector(
         (state: RootState) => state.app
     );
     const [activeTab, setActiveTab] = useState(0);
@@ -40,106 +39,30 @@ export const SettingsPanel = () => {
     const isBottomDock = panelDock === "bottom";
 
     const handleResetToPreviousSaved = useCallback(() => {
-        if (savedTheme?.themeStyles) {
-            dispatch(updateStylingTheme(savedTheme.themeStyles));
-        }
-        if (savedTheme?.cssVariableStyles) {
-            dispatch(updateCssVariables(savedTheme.cssVariableStyles));
-        }
-        if (savedTheme?.themeStyles || savedTheme?.cssVariableStyles) {
-            dispatch(updateStyleSchemaDefaults());
-        }
-    }, [savedTheme, dispatch]);
+        dispatch(updateStylingTabToPreviousValues());
+    }, [dispatch]);
 
     const handleResetToDefault = useCallback(() => {
-        if (!styleSchema?.style) return;
-
-        const collectDefaultTheme = (items: (StyleField | StyleGroup)[]): StylingTheme => {
-            const defaultTheme: StylingTheme = {};
-
-            items.forEach((item) => {
-                if (
-                    "id" in item &&
-                    item.type !== "group" &&
-                    item.type !== "sectionTitle"
-                ) {
-                    const field = item as StyleField;
-
-                    if (field.themeKey && field.defaultValue !== undefined) {
-                        defaultTheme[field.themeKey] = {
-                            value: field.defaultValue,
-                            isEnabled: false
-                        };
-                    }
-                }
-                if ("fields" in item && item.fields) {
-                    const nestedDefaults = collectDefaultTheme(item.fields);
-                    Object.assign(defaultTheme, nestedDefaults);
-                }
-            });
-
-            return defaultTheme;
-        };
-
-        const collectDefaultCssVariables = (items: (StyleField | StyleGroup)[]): CssVariables => {
-            const defaultCssVars: CssVariables = {};
-
-            items.forEach((item) => {
-                if (
-                    "id" in item &&
-                    item.type !== "group" &&
-                    item.type !== "sectionTitle"
-                ) {
-                    const field = item as StyleField;
-
-                    if (field.cssVariable && field.defaultValue !== undefined) {
-                        defaultCssVars[field.cssVariable] = {
-                            value: field.defaultValue,
-                            isEnabled: false
-                        };
-                    }
-                }
-                if ("fields" in item && item.fields) {
-                    const nestedDefaults = collectDefaultCssVariables(item.fields);
-                    Object.assign(defaultCssVars, nestedDefaults);
-                }
-            });
-
-            return defaultCssVars;
-        };
-
-        const defaultTheme = collectDefaultTheme(styleSchema.style);
-        const defaultCssVars = collectDefaultCssVariables(styleSchema.style);
-        dispatch(updateStylingTheme(defaultTheme));
-        dispatch(updateCssVariables(defaultCssVars));
-        dispatch(updateStyleSchemaDefaults());
-    }, [styleSchema, dispatch]);
+       dispatch(updateStylingTabToDefaultValues());
+    }, [dispatch]);
 
     const handleSave = useCallback(() => {
         if (!currentPage) return;
 
         try {
-            const themeToSave = {
-                themeStyles: {
-                    ...stylingTheme
-                },
-                cssVariableStyles: {
-                    ...cssVariables
-                }
-            };
-            // Store back to localStorage
-            localStorage.setItem("stylingTheme", JSON.stringify(themeToSave));
+            const filteredEntries = Object.entries(styleTabValues).filter(([, value]) => {
+                return value && value.isEnabled === true;
+              });
+            
+            const stylingTheme = Object.fromEntries(filteredEntries);
 
-            dispatch(setSavedTheme(themeToSave));
+            localStorage.setItem("stylingTheme", JSON.stringify(stylingTheme));
 
-            console.log(`Saved styling data for ${currentPage}:`, {
-                stylingTheme,
-                cssVariables
-            });
+            dispatch(saveStylingTheme(stylingTheme));
         } catch (error) {
             console.error("Failed to save styling data:", error);
         }
-    }, [currentPage, stylingTheme, cssVariables, dispatch]);
+    }, [currentPage, styleTabValues, dispatch]);
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);

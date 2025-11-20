@@ -9,7 +9,7 @@ import {
     setPages,
     setLoading,
     setError,
-    setSavedTheme
+    saveStylingTheme
 } from "../../../store/actions";
 
 export const App = () => {
@@ -18,7 +18,6 @@ export const App = () => {
     useEffect(() => {
         const loadPages = async () => {
             try {
-                dispatch(setLoading(true));
                 const response = await fetch("/api/menu.config.json");
                 if (!response.ok) {
                     throw new Error(
@@ -40,27 +39,15 @@ export const App = () => {
             }
         };
 
-        const loadSavedThemes = () => {
-            /**
-             * {
-             *    themeStyles: {
-             *       [themeKey]: {
-             *          isEnabled: boolean,
-             *          value: value
-             *       }
-             *    },
-             *    cssVariableStyles: {
-             *       [cssVariable]: value
-             *    }
-             * }
-             */
+        const loadSavedStylingTheme = () => {
             try {
-                const savedThemeJson = localStorage.getItem("stylingTheme");
-                if (savedThemeJson) {
+                // here will be request to backend to get saved styling theme
+                const savedStylingThemeJson = localStorage.getItem("stylingTheme");
+                if (savedStylingThemeJson) {
                     const savedTheme: StoredThemeStyles =
-                        JSON.parse(savedThemeJson);
+                        JSON.parse(savedStylingThemeJson);
 
-                    dispatch(setSavedTheme(savedTheme));
+                    dispatch(saveStylingTheme(savedTheme));
                 }
             } catch (error) {
                 console.error("Failed to load saved themes:", error);
@@ -68,7 +55,7 @@ export const App = () => {
         };
 
         loadPages();
-        loadSavedThemes();
+        loadSavedStylingTheme();
     }, [dispatch]);
 
     return (

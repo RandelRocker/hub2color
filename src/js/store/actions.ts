@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ControlsSchema, StyleSchema, StoredThemeStyles, StylingTheme, CssVariables } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, StoredThemeStyles, ControlsTabValues } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -11,13 +11,8 @@ export const setCurrentPage = (page: string | null) => ({
     payload: page,
 });
 
-export const setControlsSchema = (schema: ControlsSchema | null) => ({
-    type: ActionTypes.SET_CONTROLS_SCHEMA,
-    payload: schema,
-});
-
-export const setStyleSchema = (schema: StyleSchema | null) => ({
-    type: ActionTypes.SET_STYLE_SCHEMA,
+export const setComponentSchema = (schema: ComponentSchema | null) => ({
+    type: ActionTypes.SET_COMPONENT_SCHEMA,
     payload: schema,
 });
 
@@ -25,38 +20,35 @@ export const updateStyleSchemaDefaults = () => ({
     type: ActionTypes.UPDATE_STYLE_SCHEMA_DEFAULTS,
 });
 
-export const setControlValue = (name: string, value: unknown) => ({
-    type: ActionTypes.SET_CONTROL_VALUE,
-    payload: { name, value },
-});
-
-export const setBulkControls = (values: Record<string, unknown>) => ({
-    type: ActionTypes.SET_BULK_CONTROLS,
+export const updateControlsTabValues = (values: ControlsTabValues) => ({
+    type: ActionTypes.UPDATE_CONTROLS_TAB_VALUES,
     payload: values,
 });
 
-export const setStylingValue = (name: string, value: unknown) => ({
-    type: ActionTypes.SET_STYLING_VALUE,
-    payload: { name, value },
+export const updateStylingTabValues = (values: StylingTabValues) => ({
+    type: ActionTypes.UPDATE_STYLE_TAB_VALUES,
+    payload: values,
 });
 
-export const updateStylingTheme = (theme: StylingTheme) => ({
-    type: ActionTypes.UPDATE_STYLING_THEME,
-    payload: theme,
+export const updateStylingTabDefaultValues = () => ({
+    type: ActionTypes.UPDATE_STYLE_TAB_DEFAULT_VALUES,
 });
 
-export const updateCssVariables = (cssVariables: CssVariables) => ({
-    type: ActionTypes.UPDATE_CSS_VARIABLES,
-    payload: cssVariables,
+export const updateStylingTabToDefaultValues = () => ({
+    type: ActionTypes.UPDATE_STYLE_TAB_TO_DEFAULT_VALUES,
 });
 
-export const setStylingUIState = (uiState: { scrollPosition?: number; expandedAccordions?: string[] }) => ({
-    type: ActionTypes.SET_STYLING_UI_STATE,
+export const updateStylingTabToPreviousValues = () => ({
+    type: ActionTypes.UPDATE_STYLE_TAB_TO_PREVIOUS_VALUES,
+});
+
+export const setStylingTabUIState = (uiState: { scrollPosition?: number; expandedAccordions?: string[] }) => ({
+    type: ActionTypes.SET_STYLING_TAB_UI_STATE,
     payload: uiState,
 });
 
-export const setSavedTheme = (stylingTheme: StoredThemeStyles) => ({
-    type: ActionTypes.SET_SAVED_THEME,
+export const saveStylingTheme = (stylingTheme: StoredThemeStyles) => ({
+    type: ActionTypes.SET_STYLING_THEME,
     payload: stylingTheme,
 });
 

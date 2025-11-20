@@ -1,4 +1,4 @@
-import { PageSection, ControlsSchema, StyleSchema, StoredThemeStyles, StylingTheme, CssVariables } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, StoredThemeStyles, ControlsTabValues } from "./types";
 import { ActionTypes } from "./constants";
 
 export interface SetPagesAction {
@@ -11,52 +11,40 @@ export interface SetCurrentPageAction {
     payload: string | null;
 }
 
-export interface SetControlsSchemaAction {
-    type: ActionTypes.SET_CONTROLS_SCHEMA;
-    payload: ControlsSchema | null;
+export interface SetComponentSchemaAction {
+    type: ActionTypes.SET_COMPONENT_SCHEMA;
+    payload: ComponentSchema | null;
 }
 
-export interface SetStyleSchemaAction {
-    type: ActionTypes.SET_STYLE_SCHEMA;
-    payload: StyleSchema | null;
+export interface UpdateControlsTabValuesAction {
+    type: ActionTypes.UPDATE_CONTROLS_TAB_VALUES;
+    payload: ControlsTabValues;
 }
 
-export interface UpdateStyleSchemaDefaultsAction {
-    type: ActionTypes.UPDATE_STYLE_SCHEMA_DEFAULTS;
+export interface UpdateStyleTabValuesAction {
+    type: ActionTypes.UPDATE_STYLE_TAB_VALUES;
+    payload: StylingTabValues;
 }
 
-export interface SetControlValueAction {
-    type: ActionTypes.SET_CONTROL_VALUE;
-    payload: { name: string; value: unknown };
+export interface UpdateStyleTabDefaultValuesAction {
+    type: ActionTypes.UPDATE_STYLE_TAB_DEFAULT_VALUES;
 }
 
-export interface SetBulkControlsAction {
-    type: ActionTypes.SET_BULK_CONTROLS;
-    payload: Record<string, unknown>;
+export interface UpdateStyleTabToDefaultValuesAction {
+    type: ActionTypes.UPDATE_STYLE_TAB_TO_DEFAULT_VALUES;
 }
 
-export interface SetStylingValueAction {
-    type: ActionTypes.SET_STYLING_VALUE;
-    payload: { name: string; value: unknown };
+export interface UpdateStyleTabToPreviousValuesAction {
+    type: ActionTypes.UPDATE_STYLE_TAB_TO_PREVIOUS_VALUES;
 }
 
-export interface updateStylingThemeAction {
-    type: ActionTypes.UPDATE_STYLING_THEME;
-    payload: StylingTheme;
-}
-
-export interface UpdateCssVariablesAction {
-    type: ActionTypes.UPDATE_CSS_VARIABLES;
-    payload: CssVariables;
-}
-
-export interface SetStylingUIStateAction {
-    type: ActionTypes.SET_STYLING_UI_STATE;
+export interface SetStylingTabUIStateAction {
+    type: ActionTypes.SET_STYLING_TAB_UI_STATE;
     payload: { scrollPosition?: number; expandedAccordions?: string[] };
 }
 
-export interface SetSavedThemesAction {
-    type: ActionTypes.SET_SAVED_THEME;
+export interface saveStylingThemeAction {
+    type: ActionTypes.SET_STYLING_THEME;
     payload: StoredThemeStyles;
 }
 
@@ -108,16 +96,14 @@ export interface SetErrorAction {
 export type AppAction =
     | SetPagesAction
     | SetCurrentPageAction
-    | SetControlsSchemaAction
-    | SetStyleSchemaAction
-    | UpdateStyleSchemaDefaultsAction
-    | SetControlValueAction
-    | SetBulkControlsAction
-    | SetStylingValueAction
-    | updateStylingThemeAction
-    | UpdateCssVariablesAction
-    | SetStylingUIStateAction
-    | SetSavedThemesAction
+    | SetComponentSchemaAction
+    | UpdateStyleTabValuesAction
+    | UpdateControlsTabValuesAction
+    | UpdateStyleTabDefaultValuesAction
+    | SetStylingTabUIStateAction
+    | UpdateStyleTabToDefaultValuesAction
+    | UpdateStyleTabToPreviousValuesAction
+    | saveStylingThemeAction
     | SetCustomCssAction
     | SetCustomJsAction
     | SetZoomAction

@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import * as helpers from "./helpers";
 import { RootState } from "../../../store";
-import { setControlsSchema, setStyleSchema } from "../../../store/actions";
+import { setComponentSchema } from "../../../store/actions";
 
 export const PreviewFrame = () => {
     const dispatch = useDispatch();
@@ -14,12 +14,11 @@ export const PreviewFrame = () => {
         zoom,
         viewport,
         direction,
-        controlValues,
-        stylingTheme,
-        cssVariables,
         customCss,
         customJs,
-        loading
+        loading,
+        styleTabValues,
+        controlsTabValues
     } = useSelector((state: RootState) => state.app);
 
     const sendMessageToFrame = useCallback(
@@ -38,43 +37,17 @@ export const PreviewFrame = () => {
         []
     );
 
-    const loadControlsSchema = useCallback(
+    const loadComponentSchema = useCallback(
         async (pagePath: string) => {
             try {
-                const schemaPath = pagePath.replace(
-                    /\.html$/,
-                    ".props.schema.json"
-                );
+                const schemaPath = pagePath.replace(/\.html$/, ".schema.json");
                 const response = await fetch(`/${schemaPath}`);
 
                 if (response.ok) {
                     const schema = await response.json();
-                    dispatch(setControlsSchema(schema));
+                    dispatch(setComponentSchema(schema));
                 } else {
-                    dispatch(setControlsSchema(null));
-                }
-            } catch (error) {
-                console.warn("Failed to load schema for", pagePath, error);
-                dispatch(setControlsSchema(null));
-            }
-        },
-        [dispatch]
-    );
-
-    const loadStyleSchema = useCallback(
-        async (pagePath: string) => {
-            try {
-                const schemaPath = pagePath.replace(
-                    /\.html$/,
-                    ".style.schema.json"
-                );
-                const response = await fetch(`/${schemaPath}`);
-
-                if (response.ok) {
-                    const schema = await response.json();
-                    dispatch(setStyleSchema(schema));
-                } else {
-                    dispatch(setStyleSchema(null));
+                    dispatch(setComponentSchema(null));
                 }
             } catch (error) {
                 console.warn(
@@ -82,7 +55,7 @@ export const PreviewFrame = () => {
                     pagePath,
                     error
                 );
-                dispatch(setStyleSchema(null));
+                dispatch(setComponentSchema(null));
             }
         },
         [dispatch]
@@ -104,51 +77,27 @@ export const PreviewFrame = () => {
         }
 
         // Send styling theme
-        if (stylingTheme && Object.keys(stylingTheme).length > 0) {
-            sendMessageToFrame("THEME_CHANGE", {
-                theme: helpers.prepareThemeData(stylingTheme)
+        if (styleTabValues) {
+            sendMessageToFrame("STYLING_CHANGE", {
+                styles: helpers.prepareStylingTheme(styleTabValues)
             });
         }
 
-        // Send CSS variables
-        if (cssVariables && Object.keys(cssVariables).length > 0) {
-            const cssVarsString = helpers.prepareCssVariables(cssVariables);
-            if (cssVarsString) {
-                sendMessageToFrame("APPLY_CSS_VARIABLES", { css: cssVarsString });
-            }
-        }
-
-        // Send all control values at once
+        // Send control values
         const processedValues: Record<string, unknown> = {};
-        Object.entries(controlValues).forEach(([name, value]) => {
-            // Handle font field empty values (format "_px", "_rem", etc.)
-            const textUnits = ["px", "rem", "em", "%", "pt"];
-            const finalValue =
-                typeof value === "string" &&
-                textUnits.some((unit) => value === unit)
-                    ? undefined
-                    : value;
-            processedValues[name] = finalValue;
+
+        Object.entries(controlsTabValues).forEach(([name, value]) => {
+            processedValues[name] = helpers.removeUnitsFromValue(value);
         });
+
         sendMessageToFrame("CONTROLS_CHANGE", { values: processedValues });
-    }, [
-        currentPage,
-        direction,
-        zoom,
-        customCss,
-        customJs,
-        controlValues,
-        stylingTheme,
-        cssVariables,
-        sendMessageToFrame
-    ]);
+    }, [currentPage, sendMessageToFrame, direction, zoom, customCss, customJs, styleTabValues, controlsTabValues]);
 
     useEffect(() => {
         if (currentPage) {
-            loadControlsSchema(currentPage);
-            loadStyleSchema(currentPage);
+            loadComponentSchema(currentPage);
         }
-    }, [currentPage, loadControlsSchema, loadStyleSchema]);
+    }, [currentPage, loadComponentSchema]);
 
     useEffect(() => {
         sendMessageToFrame("SET_DIR", { dir: direction });
@@ -171,43 +120,22 @@ export const PreviewFrame = () => {
     }, [customJs, sendMessageToFrame]);
 
     useEffect(() => {
-        // Send all control values at once
         const processedValues: Record<string, unknown> = {};
-        Object.entries(controlValues).forEach(([name, value]) => {
-            // Handle font field empty values (format "_px", "_rem", etc.)
-            const textUnits = ["px", "rem", "em", "%", "pt"];
-            const finalValue =
-                typeof value === "string" &&
-                textUnits.some((unit) => value === unit)
-                    ? undefined
-                    : value;
-            processedValues[name] = finalValue;
+
+        Object.entries(controlsTabValues).forEach(([name, value]) => {
+            processedValues[name] = helpers.removeUnitsFromValue(value);
         });
+
         sendMessageToFrame("CONTROLS_CHANGE", { values: processedValues });
-    }, [controlValues, sendMessageToFrame]);
+    }, [controlsTabValues, sendMessageToFrame]);
 
     useEffect(() => {
-        if (stylingTheme) {
-            sendMessageToFrame("THEME_CHANGE", {
-                theme: helpers.prepareThemeData(stylingTheme)
+        if (styleTabValues) {
+            sendMessageToFrame("STYLING_CHANGE", {
+                styles: helpers.prepareStylingTheme(styleTabValues)
             });
         }
-    }, [stylingTheme, sendMessageToFrame]);
-
-    useEffect(() => {
-        if (cssVariables && Object.keys(cssVariables).length > 0) {
-            const cssVarsString = helpers.prepareCssVariables(cssVariables);
-            if (cssVarsString) {
-                sendMessageToFrame("APPLY_CSS_VARIABLES", { css: cssVarsString });
-            } else {
-                // Send empty string to clear CSS variables if none are enabled
-                sendMessageToFrame("APPLY_CSS_VARIABLES", { css: "" });
-            }
-        } else {
-            // Clear CSS variables if cssVariables is empty
-            sendMessageToFrame("APPLY_CSS_VARIABLES", { css: "" });
-        }
-    }, [cssVariables, sendMessageToFrame]);
+    }, [styleTabValues, sendMessageToFrame]);
 
     const getViewportWidth = () => {
         switch (viewport) {

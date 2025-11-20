@@ -1,19 +1,11 @@
 import { produce } from "immer";
 import { ActionTypes } from "./constants";
-import { AppState, StyleField, StyleGroup } from "./types";
+import { AppState, StoredThemeStyles, StyleField, StyleGroup } from "./types";
 import { AppAction } from "./actionTypes";
 
 const initialState: AppState = {
     pages: [],
-    currentPage: null,
-    controlsSchema: null,
-    styleSchema: null,
-    styleSchemaDefaults: {},
-    controlValues: {},
-    stylingTheme: {},
-    cssVariables: {},
-    stylingUIState: { scrollPosition: 0, expandedAccordions: [] },
-    savedTheme: { themeStyles: {}, cssVariableStyles: {} },
+    currentPage: 'components/contained-button.html',
     customCss: "",
     customJs: "",
     zoom: 1,
@@ -21,8 +13,15 @@ const initialState: AppState = {
     direction: "ltr",
     panelDock: "bottom",
     searchQuery: "",
-    loading: false,
-    error: null
+    loading: true,
+    error: null,
+    stylingUIState: { scrollPosition: 0, expandedAccordions: [] },
+    savedTheme: null,
+    componentSchema: null,
+    controlsTabValues: {},
+    controlsTabDefaultValues: {},
+    styleTabValues: {},
+    styleTabDefaultValues: {},
 };
 
 export const appReducer = (
@@ -34,205 +33,221 @@ export const appReducer = (
             case ActionTypes.SET_PAGES:
                 draft.pages = action.payload;
                 break;
+
             case ActionTypes.SET_CURRENT_PAGE:
                 draft.currentPage = action.payload;
-                // Clear styling UI state when switching to a different component
+                // Clear scrolling position and expanded accordions state when switching to a different component
                 draft.stylingUIState = {
                     scrollPosition: 0,
                     expandedAccordions: []
                 };
-
-                // Restore saved data for this page if it exists
-                if (action.payload && draft.savedTheme) {
-                    draft.stylingTheme = JSON.parse(
-                        JSON.stringify(draft.savedTheme.themeStyles || {})
-                    );
-                    draft.cssVariables = JSON.parse(
-                        JSON.stringify(draft.savedTheme.cssVariableStyles || {})
-                    );
-                } else {
-                    draft.stylingTheme = {};
-                    draft.cssVariables = {};
-                }
                 break;
-            case ActionTypes.SET_CONTROLS_SCHEMA:
-                draft.controlsSchema = action.payload;
 
-                for (const field of action.payload?.fields || []) {
+            case ActionTypes.SET_COMPONENT_SCHEMA: {
+                draft.componentSchema = action.payload;
+                draft.controlsTabValues = {},
+                draft.controlsTabDefaultValues = {},
+                draft.styleTabValues = {},
+                draft.styleTabDefaultValues = {};
+
+                for (const field of action.payload?.controls || []) {
                     if (field.defaultValue !== undefined) {
-                        draft.controlValues[field.id] = field.defaultValue;
+                        draft.controlsTabValues[field.id] = field.defaultValue;
+                        draft.controlsTabDefaultValues[field.id] = field.defaultValue;
                     }
                 }
-                break;
-            case ActionTypes.SET_STYLE_SCHEMA: {
-                draft.styleSchema = action.payload;
-                draft.styleSchemaDefaults = {};
 
-                const collectDefaults = (
-                    items: (StyleField | StyleGroup)[]
-                ) => {
+                const collectStyleTabValues = (items?: (StyleField | StyleGroup)[]) => {
+
+                    if (!items || items.length === 0) return;
+
                     items.forEach((item) => {
-                        if (
-                            "id" in item &&
-                            item.type !== "group" &&
-                            item.type !== "sectionTitle"
-                        ) {
-                            const field = item as StyleField;
-                            if (field.defaultValue !== undefined) {
-                                draft.styleSchemaDefaults[field.id] =
-                                    field.defaultValue;
-                            }
+                        const field = item as StyleField;
 
-                            if (
-                                field.themeKey &&
-                                draft.savedTheme?.themeStyles[field.themeKey]
-                            ) {
-                                const valueFromTheme =
-                                    draft.savedTheme.themeStyles[field.themeKey]
-                                        .value;
+                        if ("id" in item && field.cssVariable ) {
+                            const fieldValue = draft.savedTheme?.[field.cssVariable]?.value || field.defaultValue;
 
-                                if (valueFromTheme !== undefined) {
-                                    draft.styleSchemaDefaults[field.id] =
-                                        valueFromTheme;
-                                    draft.styleSchemaDefaults[
-                                        `${field.id}_enabled`
-                                    ] =
-                                        draft.savedTheme.themeStyles[
-                                            field.themeKey
-                                        ].isEnabled;
-                                }
-                            }
-
-                            if (
-                                field.cssVariable &&
-                                draft.savedTheme?.cssVariableStyles[field.cssVariable]
-                            ) {
-                                const valueFromCssVar =
-                                    draft.savedTheme.cssVariableStyles[field.cssVariable]
-                                        .value;
-
-                                if (valueFromCssVar !== undefined) {
-                                    draft.styleSchemaDefaults[field.id] =
-                                        valueFromCssVar;
-                                    draft.styleSchemaDefaults[
-                                        `${field.id}_enabled`
-                                    ] =
-                                        draft.savedTheme.cssVariableStyles[
-                                            field.cssVariable
-                                        ].isEnabled;
-                                }
+                            if (fieldValue !== undefined) {
+                                draft.styleTabDefaultValues[field.id] = fieldValue;
+                                draft.styleTabValues[field.cssVariable] = {
+                                    id: field.id,
+                                    value: fieldValue,
+                                    themeKey: field?.themeKey,
+                                    isEnabled: draft.savedTheme?.[field.cssVariable]?.isEnabled || false
+                                };
+                                draft.styleTabDefaultValues[`${field.id}_enabled`] = draft.styleTabValues[field.cssVariable].isEnabled;
                             }
                         }
+
                         if ("fields" in item && item.fields) {
-                            collectDefaults(item.fields);
+                            collectStyleTabValues(item.fields);
                         }
                     });
                 };
 
-                if (action.payload?.style) {
-                    collectDefaults(action.payload.style);
-                }
+                collectStyleTabValues(draft.componentSchema?.styles);
+
                 break;
             }
-            case ActionTypes.UPDATE_STYLE_SCHEMA_DEFAULTS: {
-                draft.styleSchemaDefaults = {};
 
-                const collectDefaultsFromTheme = (
-                    items: (StyleField | StyleGroup)[]
-                ) => {
-                    items.forEach((item) => {
-                        if (
-                            "id" in item &&
-                            item.type !== "group" &&
-                            item.type !== "sectionTitle"
-                        ) {
-                            const field = item as StyleField;
-
-                            // Start with field's default value
-                            if (field.defaultValue !== undefined) {
-                                draft.styleSchemaDefaults[field.id] =
-                                    field.defaultValue;
-                            }
-
-                            // Override with current styling theme values if they exist
-                            if (
-                                field.themeKey &&
-                                draft.stylingTheme[field.themeKey]
-                            ) {
-                                const themeValue = draft.stylingTheme[field.themeKey];
-
-                                if (themeValue.value !== undefined) {
-                                    draft.styleSchemaDefaults[field.id] = themeValue.value;
-                                    draft.styleSchemaDefaults[`${field.id}_enabled`] = themeValue.isEnabled;
-                                }
-                            }
-
-                            // Override with current CSS variable values if they exist
-                            if (
-                                field.cssVariable &&
-                                draft.cssVariables[field.cssVariable]
-                            ) {
-                                const cssVarValue = draft.cssVariables[field.cssVariable];
-
-                                if (cssVarValue.value !== undefined) {
-                                    draft.styleSchemaDefaults[field.id] = cssVarValue.value;
-                                    draft.styleSchemaDefaults[`${field.id}_enabled`] = cssVarValue.isEnabled;
-                                }
-                            }
-                        }
-                        if ("fields" in item && item.fields) {
-                            collectDefaultsFromTheme(item.fields);
-                        }
-                    });
-                };
-
-                if (draft.styleSchema?.style) {
-                    collectDefaultsFromTheme(draft.styleSchema.style);
-                }
+            case ActionTypes.UPDATE_CONTROLS_TAB_VALUES: {
+                Object.keys(action.payload).forEach((key) => {
+                    draft.controlsTabValues[key] = action.payload[key];
+                });
                 break;
             }
-            case ActionTypes.SET_CONTROL_VALUE:
-                if (!draft.controlValues) {
-                    draft.controlValues = {};
-                }
-                draft.controlValues[action.payload.name] = action.payload.value;
-                break;
-            case ActionTypes.SET_BULK_CONTROLS:
-                draft.controlValues = action.payload;
-                break;
-            case ActionTypes.UPDATE_STYLING_THEME:
-                draft.stylingTheme = {
-                    ...draft.stylingTheme,
-                    ...action.payload
-                };
-                break;
-            case ActionTypes.UPDATE_CSS_VARIABLES:
-                draft.cssVariables = {
-                    ...draft.cssVariables,
-                    ...action.payload
-                };
-                break;
-            case ActionTypes.SET_STYLING_UI_STATE:
-                if (!draft.stylingUIState) {
-                    draft.stylingUIState = {
-                        scrollPosition: 0,
-                        expandedAccordions: []
+
+            case ActionTypes.UPDATE_STYLE_TAB_VALUES: {
+                Object.keys(action.payload).forEach((key) => {
+                    draft.styleTabDefaultValues[key] = action.payload[key].value;
+                    draft.styleTabValues[key] = {
+                        ...draft.styleTabValues[key],
+                        ...action.payload[key]
                     };
-                }
+                    draft.styleTabDefaultValues[`${action.payload[key].id}_enabled`] = action.payload[key].isEnabled;
+                });
+                break;
+            }
+
+            // case ActionTypes.UPDATE_STYLE_TAB_DEFAULT_VALUES: {
+            //     draft.styleTabDefaultValues = {};
+
+            //     const collectStyleTabValues = (items?: (StyleField | StyleGroup)[]) => {
+
+            //         if (!items || items.length === 0) return;
+
+            //         items.forEach((item) => {
+            //             const field = item as StyleField;
+
+            //             if ("id" in item && field.cssVariable ) {
+            //                 const fieldValue = draft.savedTheme?.[field.cssVariable]?.value || field.defaultValue;
+
+            //                 if (fieldValue !== undefined) {
+            //                     draft.styleTabDefaultValues[field.id] = fieldValue;
+            //                     draft.styleTabValues[field.id] = {
+            //                         value: fieldValue,
+            //                         themeKey: field?.themeKey,
+            //                         isEnabled: draft.savedTheme?.[`${field.id}_enabled`]?.isEnabled || false
+            //                     };
+            //                 }
+            //             }
+
+            //             if ("fields" in item && item.fields) {
+            //                 collectStyleTabValues(item.fields);
+            //             }
+            //         });
+            //     };
+
+            //     collectStyleTabValues(draft.componentSchema?.styles);
+
+            //     break;
+            // }
+
+            case ActionTypes.UPDATE_STYLE_TAB_TO_DEFAULT_VALUES: {
+                draft.styleTabValues = {},
+                draft.styleTabDefaultValues = {};
+
+                const collectStyleTabValues = (items?: (StyleField | StyleGroup)[]) => {
+
+                    if (!items || items.length === 0) return;
+
+                    items.forEach((item) => {
+                        const field = item as StyleField;
+
+                        if ("id" in item && field.cssVariable ) {
+                            const fieldValue = field.defaultValue;
+
+                            if (fieldValue !== undefined) {
+                                draft.styleTabDefaultValues[field.id] = fieldValue;
+                                draft.styleTabValues[field.cssVariable] = {
+                                    id: field.id,
+                                    value: fieldValue,
+                                    themeKey: field?.themeKey,
+                                    isEnabled: false
+                                };
+                                draft.styleTabDefaultValues[`${field.id}_enabled`] = false;
+                            }
+                        }
+
+                        if ("fields" in item && item.fields) {
+                            collectStyleTabValues(item.fields);
+                        }
+                    });
+                };
+
+                collectStyleTabValues(draft.componentSchema?.styles);
+
+                break;
+            }
+
+            case ActionTypes.UPDATE_STYLE_TAB_TO_PREVIOUS_VALUES: {
+                if (!draft.savedTheme) return;
+                
+                draft.styleTabValues = {},
+                draft.styleTabDefaultValues = {};
+
+                const collectStyleTabValues = (items?: (StyleField | StyleGroup)[]) => {
+
+                    if (!items || items.length === 0) return;
+
+                    items.forEach((item) => {
+                        const field = item as StyleField;
+
+                        if ("id" in item && field.cssVariable ) {
+                            const fieldValue = draft.savedTheme?.[field.cssVariable]?.value;
+
+                            if (fieldValue !== undefined) {
+                                draft.styleTabDefaultValues[field.id] = fieldValue;
+                                draft.styleTabValues[field.cssVariable] = {
+                                    id: field.id,
+                                    value: fieldValue,
+                                    themeKey: field?.themeKey,
+                                    isEnabled: draft.savedTheme?.[field.cssVariable]?.isEnabled || false
+                                };
+                                draft.styleTabDefaultValues[`${field.id}_enabled`] = draft.styleTabValues[field.cssVariable].isEnabled;
+                            }
+                        }
+
+                        if ("fields" in item && item.fields) {
+                            collectStyleTabValues(item.fields);
+                        }
+                    });
+                };
+
+                collectStyleTabValues(draft.componentSchema?.styles);
+
+                break;
+            }
+
+            case ActionTypes.SET_STYLING_TAB_UI_STATE:
                 draft.stylingUIState = {
                     ...draft.stylingUIState,
                     ...action.payload
                 };
                 break;
-            case ActionTypes.SET_SAVED_THEME:
-                draft.savedTheme = action.payload;
+
+            case ActionTypes.SET_STYLING_THEME: {
+                const themeToSave: StoredThemeStyles = {};
+
+                for (const key in action.payload) {
+                    themeToSave[key] = {
+                        ...action.payload[key]
+                    };
+                }
+
+                draft.savedTheme = themeToSave;
+
                 break;
+
+            }
             case ActionTypes.SET_CUSTOM_CSS:
                 draft.customCss = action.payload;
                 break;
+
             case ActionTypes.SET_CUSTOM_JS:
                 draft.customJs = action.payload;
                 break;
+
             case ActionTypes.SET_ZOOM:
                 draft.zoom = action.payload;
                 break;
