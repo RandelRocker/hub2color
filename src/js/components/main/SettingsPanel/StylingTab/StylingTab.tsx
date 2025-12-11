@@ -17,7 +17,8 @@ import {
     Radio,
     IconButton,
     Menu,
-    Tooltip
+    Tooltip,
+    Popover
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MoreVert, Restore, RestartAlt } from "@mui/icons-material";
@@ -28,7 +29,43 @@ import { RootState } from "../../../../store";
 import { updateStylingTabValues, updateStylingTabValuesWithDefault, setStylingTabUIState, updateStylingTabDefaultValues } from "../../../../store/actions";
 import { StylingTabValues, StyleGroup, StyleField } from "../../../../store/types";
 
-// Debounced color picker component with color square and hex input
+// Helper functions for color conversion
+const hexToRgba = (hex: string, alpha: number = 1): string => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (result) {
+        const r = parseInt(result[1], 16);
+        const g = parseInt(result[2], 16);
+        const b = parseInt(result[3], 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+    return hex;
+};
+
+const rgbaToHex = (rgba: string): string => {
+    const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+    if (match) {
+        const r = parseInt(match[1]).toString(16).padStart(2, "0");
+        const g = parseInt(match[2]).toString(16).padStart(2, "0");
+        const b = parseInt(match[3]).toString(16).padStart(2, "0");
+        return `#${r}${g}${b}`;
+    }
+    return rgba;
+};
+
+const parseColor = (color: string): { hex: string; alpha: number } => {
+    if (color.startsWith("rgba")) {
+        const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+        if (match) {
+            const hex = rgbaToHex(color);
+            const alpha = match[4] ? parseFloat(match[4]) : 1;
+            return { hex, alpha };
+        }
+    }
+    // Default to hex color with full opacity
+    return { hex: color || "#000000", alpha: 1 };
+};
+
+// Debounced color picker component with color square and integrated opacity control in popover
 const DebouncedColorPicker = ({
     value,
     onChange,
@@ -40,13 +77,20 @@ const DebouncedColorPicker = ({
     disabled?: boolean;
     sx?: Record<string, unknown>;
 }) => {
-    const [localValue, setLocalValue] = useState(value || "#000000");
+    const parsedColor = parseColor(value || "#000000");
+    const [localHex, setLocalHex] = useState(parsedColor.hex);
+    const [localAlpha, setLocalAlpha] = useState(parsedColor.alpha);
+    const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const colorInputRef = useRef<HTMLInputElement>(null);
 
-    // Update local value when prop changes
+    const open = Boolean(anchorEl);
+
+    // Update local values when prop changes
     useEffect(() => {
-        setLocalValue(value || "#000000");
+        const parsed = parseColor(value || "#000000");
+        setLocalHex(parsed.hex);
+        setLocalAlpha(parsed.alpha);
     }, [value]);
 
     // Cleanup timeout on unmount
@@ -58,10 +102,9 @@ const DebouncedColorPicker = ({
         };
     }, []);
 
-    const handleColorInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value;
-        setLocalValue(newValue);
-
+    const updateColor = (hex: string, alpha: number) => {
+        const newColor = hexToRgba(hex, alpha);
+        
         // Clear existing timeout
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
@@ -69,59 +112,175 @@ const DebouncedColorPicker = ({
 
         // Debounce the onChange callback
         timeoutRef.current = setTimeout(() => {
-            onChange(newValue);
+            onChange(newColor);
         }, 150);
     };
 
-    const handleColorSquareClick = () => {
-        if (!disabled && colorInputRef.current) {
-            colorInputRef.current.click();
+    const handleColorInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newHex = e.target.value;
+        setLocalHex(newHex);
+        updateColor(newHex, localAlpha);
+    };
+
+    const handleOpacityChange = (_event: React.SyntheticEvent | Event, newValue: number | number[]) => {
+        const newAlpha = typeof newValue === "number" ? newValue / 100 : newValue[0] / 100;
+        setLocalAlpha(newAlpha);
+        updateColor(localHex, newAlpha);
+    };
+
+    const handleColorSquareClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (!disabled) {
+            setAnchorEl(event.currentTarget);
         }
     };
 
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+
+    const displayColor = hexToRgba(localHex, localAlpha);
+
     return (
-        <Box
-            sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                ...sx
-            }}
-        >
-            {/* Color square */}
+        <>
             <Box
-                onClick={handleColorSquareClick}
                 sx={{
-                    width: 30,
-                    height: 30,
-                    minWidth: 30,
-                    backgroundColor: localValue || "#000000",
-                    border: "1px solid #e0e0e0",
-                    borderRadius: 1,
-                    cursor: disabled ? "not-allowed" : "pointer",
-                    opacity: disabled ? 0.5 : 1,
-                    "&:hover": {
-                        opacity: disabled ? 0.5 : 0.8
-                    },
-                    transition: "opacity 0.2s"
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    ...sx
                 }}
-            />
-            {/* Hidden color input */}
-            <input
-                ref={colorInputRef}
-                type="color"
-                value={localValue || "#000000"}
-                onChange={handleColorInputChange}
-                disabled={disabled}
-                style={{
-                    position: "absolute",
-                    width: 0,
-                    height: 0,
-                    opacity: 0,
-                    pointerEvents: "none"
+            >
+                {/* Color square */}
+                <Box
+                    onClick={handleColorSquareClick}
+                    sx={{
+                        width: 30,
+                        height: 30,
+                        minWidth: 30,
+                        backgroundColor: displayColor,
+                        border: "1px solid #e0e0e0",
+                        borderRadius: 1,
+                        cursor: disabled ? "not-allowed" : "pointer",
+                        opacity: disabled ? 0.5 : 1,
+                        "&:hover": {
+                            opacity: disabled ? 0.5 : 0.8
+                        },
+                        transition: "opacity 0.2s"
+                    }}
+                />
+            </Box>
+            {/* Color picker popover */}
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left"
                 }}
-            />
-        </Box>
+                transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left"
+                }}
+            >
+                <Box sx={{ p: 2, minWidth: 250 }}>
+                    <Box sx={{ mb: 2 }}>
+                        <Typography variant="caption" sx={{ mb: 1, display: "block" }}>
+                            Color
+                        </Typography>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1
+                            }}
+                        >
+                            <Box
+                                onClick={() => colorInputRef.current?.click()}
+                                sx={{
+                                    width: 40,
+                                    height: 40,
+                                    backgroundColor: localHex || "#000000",
+                                    border: "1px solid #e0e0e0",
+                                    borderRadius: 1,
+                                    cursor: "pointer",
+                                    "&:hover": {
+                                        opacity: 0.8
+                                    },
+                                    transition: "opacity 0.2s"
+                                }}
+                            />
+                            <input
+                                ref={colorInputRef}
+                                type="color"
+                                value={localHex || "#000000"}
+                                onChange={handleColorInputChange}
+                                disabled={disabled}
+                                style={{
+                                    position: "absolute",
+                                    width: 0,
+                                    height: 0,
+                                    opacity: 0,
+                                    pointerEvents: "none"
+                                }}
+                            />
+                            <TextField
+                                size="small"
+                                value={localHex || "#000000"}
+                                onChange={(e) => {
+                                    const newHex = e.target.value;
+                                    setLocalHex(newHex);
+                                    // Only update color if valid hex
+                                    if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(newHex)) {
+                                        updateColor(newHex, localAlpha);
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    // Validate and fix hex on blur
+                                    let hex = e.target.value.trim();
+                                    if (!hex.startsWith("#")) {
+                                        hex = "#" + hex;
+                                    }
+                                    // Normalize 3-digit hex to 6-digit
+                                    if (/^#([A-Fa-f0-9]{3})$/.test(hex)) {
+                                        hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+                                    }
+                                    // If still invalid, revert to current
+                                    if (!/^#([A-Fa-f0-9]{6})$/.test(hex)) {
+                                        hex = localHex || "#000000";
+                                    }
+                                    setLocalHex(hex);
+                                    updateColor(hex, localAlpha);
+                                }}
+                                disabled={disabled}
+                                sx={{ flex: 1 }}
+                                placeholder="#000000"
+                            />
+                        </Box>
+                    </Box>
+                    <Box>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                            <Typography variant="caption">
+                                Opacity
+                            </Typography>
+                            <Typography variant="caption" sx={{ fontWeight: "medium" }}>
+                                {Math.round(localAlpha * 100)}%
+                            </Typography>
+                        </Box>
+                        <Slider
+                            value={localAlpha * 100}
+                            onChange={handleOpacityChange}
+                            min={0}
+                            max={100}
+                            step={1}
+                            size="small"
+                            disabled={disabled}
+                            valueLabelDisplay="off"
+                        />
+                    </Box>
+                </Box>
+            </Popover>
+        </>
     );
 };
 
