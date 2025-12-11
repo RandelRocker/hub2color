@@ -124,39 +124,16 @@ export const appReducer = (
                 break;
             }
 
-            // case ActionTypes.UPDATE_STYLE_TAB_DEFAULT_VALUES: {
-            //     draft.styleTabDefaultValues = {};
+            case ActionTypes.UPDATE_STYLE_TAB_DEFAULT_VALUES: {
+                draft.styleTabDefaultValues = {};
 
-            //     const collectStyleTabValues = (items?: (StyleField | StyleGroup)[]) => {
+                Object.keys(draft.styleTabValues).forEach((key) => {
+                    draft.styleTabDefaultValues[draft.styleTabValues[key].id] = draft.styleTabValues[key].value;
+                    draft.styleTabDefaultValues[`${draft.styleTabValues[key].id}_enabled`] =draft.styleTabValues[key].isEnabled;
+                });
 
-            //         if (!items || items.length === 0) return;
-
-            //         items.forEach((item) => {
-            //             const field = item as StyleField;
-
-            //             if ("id" in item && field.cssVariable ) {
-            //                 const fieldValue = draft.savedTheme?.[field.cssVariable]?.value || field.defaultValue;
-
-            //                 if (fieldValue !== undefined) {
-            //                     draft.styleTabDefaultValues[field.id] = fieldValue;
-            //                     draft.styleTabValues[field.id] = {
-            //                         value: fieldValue,
-            //                         themeKey: field?.themeKey,
-            //                         isEnabled: draft.savedTheme?.[`${field.id}_enabled`]?.isEnabled || false
-            //                     };
-            //                 }
-            //             }
-
-            //             if ("fields" in item && item.fields) {
-            //                 collectStyleTabValues(item.fields);
-            //             }
-            //         });
-            //     };
-
-            //     collectStyleTabValues(draft.componentSchema?.styles);
-
-            //     break;
-            // }
+                break;
+            }
 
             case ActionTypes.UPDATE_STYLE_TAB_TO_DEFAULT_VALUES: {
                 draft.styleTabValues = {},
