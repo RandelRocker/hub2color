@@ -1,33 +1,37 @@
 [
     {
-        "sectionTitle": "Components",
+        "sectionTitle": "Common components",
         "items": [
             {
                 "title": "Button",
                 "items": [
                     {
                         "title": "Contained Button",
-                        "path": "components/contained-button.html"
+                        "path": "components/button/containedbutton.html"
                     },
                     {
                         "title": "Outlined Button",
-                        "path": "components/outlined-button.html"
+                        "path": "components/button/outlinedbutton.html"
                     },
                     {
                         "title": "Text Button",
-                        "path": "components/text-button.html"
+                        "path": "components/button/textbutton.html"
                     }
                 ]
-            },
-            { "title": "Card", "path": "components/card.html" },
-            { "title": "Input Field", "path": "components/input.html" }
+            }
         ]
     },
     {
-        "sectionTitle": "Layouts",
+        "sectionTitle": "Site settings",
         "items": [
-            { "title": "Hero Section", "path": "layouts/hero.html" },
-            { "title": "Product Grid", "path": "layouts/grid.html" }
+            {
+                "title": "Fonts",
+                "path": "components/button/fonts.html"
+            },
+            {
+                "title": "Main colors",
+                "path": "components/button/colors.html"
+            }
         ]
     }
 ]

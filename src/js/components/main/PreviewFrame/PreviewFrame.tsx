@@ -89,7 +89,7 @@ export const PreviewFrame = () => {
         Object.entries(controlsTabValues).forEach(([name, value]) => {
             processedValues[name] = helpers.removeUnitsFromValue(value);
         });
-
+        
         sendMessageToFrame("CONTROLS_CHANGE", { values: processedValues });
     }, [currentPage, sendMessageToFrame, direction, zoom, customCss, customJs, styleTabValues, controlsTabValues]);
 
@@ -131,6 +131,7 @@ export const PreviewFrame = () => {
 
     useEffect(() => {
         if (styleTabValues) {
+            console.log(helpers.prepareStylingTheme(styleTabValues));
             sendMessageToFrame("STYLING_CHANGE", {
                 styles: helpers.prepareStylingTheme(styleTabValues)
             });
