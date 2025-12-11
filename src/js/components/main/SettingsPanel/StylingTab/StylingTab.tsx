@@ -65,6 +65,44 @@ const parseColor = (color: string): { hex: string; alpha: number } => {
     return { hex: color || "#000000", alpha: 1 };
 };
 
+// Helper functions for padding
+const parsePadding = (value: string): {
+    top: string;
+    right: string;
+    bottom: string;
+    left: string;
+} => {
+    const parts = value.split(/\s+/);
+    return {
+        top: parts[0] || "0px",
+        right: parts[1] || parts[0] || "0px",
+        bottom: parts[2] || parts[0] || "0px",
+        left: parts[3] || parts[1] || parts[0] || "0px"
+    };
+};
+
+const extractNumber = (value: string): string => {
+    const match = value.match(/^(\d*\.?\d*)/);
+    return match?.[1] || "0";
+};
+
+const formatPaddingString = (padding: string): string => {
+    const { top, right, bottom, left } = parsePadding(padding);
+    
+    // All sides equal: "10px 10px 10px 10px" -> "10px"
+    if (top === right && right === bottom && bottom === left) {
+        return top;
+    }
+    
+    // Top=Bottom and Left=Right: "10px 5px 10px 5px" -> "10px 5px"
+    if (top === bottom && left === right) {
+        return `${top} ${right}`;
+    }
+    
+    // No simplification possible
+    return `${top} ${right} ${bottom} ${left}`;
+};
+
 // Debounced color picker component with color square and integrated opacity control in popover
 const DebouncedColorPicker = ({
     value,
@@ -378,6 +416,409 @@ const DebouncedCompositeColorPicker = ({
                 }}
             />
         </Box>
+    );
+};
+
+// Debounced padding picker component with visual diagram and popover
+const DebouncedPaddingPicker = ({
+    value,
+    onChange,
+    disabled,
+    sx
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    disabled?: boolean;
+    sx?: Record<string, unknown>;
+}) => {
+    const parsedPadding = parsePadding(value || "0px 0px 0px 0px");
+    const [localTop, setLocalTop] = useState(extractNumber(parsedPadding.top));
+    const [localRight, setLocalRight] = useState(extractNumber(parsedPadding.right));
+    const [localBottom, setLocalBottom] = useState(extractNumber(parsedPadding.bottom));
+    const [localLeft, setLocalLeft] = useState(extractNumber(parsedPadding.left));
+    const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const lastEmittedValueRef = useRef<string>(value || "0px 0px 0px 0px");
+
+    const open = Boolean(anchorEl);
+
+    // Update local values when prop changes, but only if it's different from what we last emitted
+    useEffect(() => {
+        // Only update if the prop value is different from what we last sent via onChange
+        // This prevents overwriting local state while user is typing
+        if (value !== lastEmittedValueRef.current) {
+            const parsed = parsePadding(value || "0px 0px 0px 0px");
+            setLocalTop(extractNumber(parsed.top));
+            setLocalRight(extractNumber(parsed.right));
+            setLocalBottom(extractNumber(parsed.bottom));
+            setLocalLeft(extractNumber(parsed.left));
+            lastEmittedValueRef.current = value || "0px 0px 0px 0px";
+        }
+    }, [value]);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    const updatePadding = (top: string, right: string, bottom: string, left: string) => {
+        const topPx = top ? `${top}px` : "0px";
+        const rightPx = right ? `${right}px` : "0px";
+        const bottomPx = bottom ? `${bottom}px` : "0px";
+        const leftPx = left ? `${left}px` : "0px";
+        const newValue = `${topPx} ${rightPx} ${bottomPx} ${leftPx}`;
+        
+        // Clear existing timeout
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        // Debounce the onChange callback
+        timeoutRef.current = setTimeout(() => {
+            lastEmittedValueRef.current = newValue;
+            onChange(newValue);
+        }, 150);
+    };
+
+    const handleFieldChange = (field: "top" | "right" | "bottom" | "left", newValue: string) => {
+        // Only allow numeric input with optional decimal
+        const validPattern = /^\d*\.?\d*$/;
+        if (!validPattern.test(newValue)) {
+            return;
+        }
+
+        switch (field) {
+            case "top":
+                setLocalTop(newValue);
+                updatePadding(newValue, localRight, localBottom, localLeft);
+                break;
+            case "right":
+                setLocalRight(newValue);
+                updatePadding(localTop, newValue, localBottom, localLeft);
+                break;
+            case "bottom":
+                setLocalBottom(newValue);
+                updatePadding(localTop, localRight, newValue, localLeft);
+                break;
+            case "left":
+                setLocalLeft(newValue);
+                updatePadding(localTop, localRight, localBottom, newValue);
+                break;
+        }
+    };
+
+    const handleTextClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (!disabled) {
+            setAnchorEl(event.currentTarget);
+        }
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+
+    const displayText = formatPaddingString(value || "0px 0px 0px 0px");
+
+    return (
+        <>
+            <Box
+                onClick={handleTextClick}
+                sx={{
+                    cursor: disabled ? "not-allowed" : "pointer",
+                    opacity: disabled ? 0.5 : 1,
+                    padding: "4px 8px",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 1,
+                    backgroundColor: "#fff",
+                    "&:hover": {
+                        backgroundColor: disabled ? "#fff" : "#f5f5f5",
+                        borderColor: disabled ? "#e0e0e0" : "#bdbdbd"
+                    },
+                    transition: "all 0.2s",
+                    fontSize: "0.875rem",
+                    minWidth: 80,
+                    textAlign: "center",
+                    ...sx
+                }}
+            >
+                {displayText}
+            </Box>
+            {/* Padding picker popover */}
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left"
+                }}
+                transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left"
+                }}
+            >
+                <Box sx={{ p: 1.5, minWidth: 240 }}>
+                    {/* Visual padding diagram */}
+                    <Box sx={{ mb: 1.5 }}>
+                        <Typography variant="subtitle1" sx={{ mb: 0.5, display: "block" }}>
+                            Padding
+                        </Typography>
+                        <Box
+                            sx={{
+                                position: "relative",
+                                border: "2px solid #1976d2",
+                                borderRadius: 1,
+                                backgroundColor: "#e3f2fd",
+                                height: 90,
+                                width: 145,
+                                mx: "auto",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                p: 1
+                            }}
+                        >
+                            {/* Top padding label */}
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    fontSize: "0.7rem",
+                                    color: "#1976d2",
+                                    fontWeight: 600,
+                                    backgroundColor: "#fff",
+                                    padding: "1px 4px",
+                                    borderRadius: "3px",
+                                    border: "1px solid #1976d2",
+                                    whiteSpace: "nowrap"
+                                }}
+                            >
+                                {localTop || "0"}px
+                            </Box>
+                            {/* Right padding label */}
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    right: 0,
+                                    top: "50%",
+                                    transform: "translate(50%, -50%)",
+                                    fontSize: "0.7rem",
+                                    color: "#1976d2",
+                                    fontWeight: 600,
+                                    backgroundColor: "#fff",
+                                    padding: "1px 4px",
+                                    borderRadius: "3px",
+                                    border: "1px solid #1976d2",
+                                    whiteSpace: "nowrap"
+                                }}
+                            >
+                                {localRight || "0"}px
+                            </Box>
+                            {/* Bottom padding label */}
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    bottom: 0,
+                                    left: "50%",
+                                    transform: "translate(-50%, 50%)",
+                                    fontSize: "0.7rem",
+                                    color: "#1976d2",
+                                    fontWeight: 600,
+                                    backgroundColor: "#fff",
+                                    padding: "1px 4px",
+                                    borderRadius: "3px",
+                                    border: "1px solid #1976d2",
+                                    whiteSpace: "nowrap"
+                                }}
+                            >
+                                {localBottom || "0"}px
+                            </Box>
+                            {/* Left padding label */}
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    left: 0,
+                                    top: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    fontSize: "0.7rem",
+                                    color: "#1976d2",
+                                    fontWeight: 600,
+                                    backgroundColor: "#fff",
+                                    padding: "1px 4px",
+                                    borderRadius: "3px",
+                                    border: "1px solid #1976d2",
+                                    whiteSpace: "nowrap"
+                                }}
+                            >
+                                {localLeft || "0"}px
+                            </Box>
+                            {/* Central content box */}
+                            <Box
+                                sx={{
+                                    backgroundColor: "#fff",
+                                    border: "1px dashed #90caf9",
+                                    borderRadius: 1,
+                                    minWidth: 100,
+                                    minHeight: 50,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize: "0.65rem",
+                                    color: "#666"
+                                }}
+                            >
+                                Content
+                            </Box>
+                        </Box>
+                    </Box>
+                    {/* Input fields */}
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: "auto auto",
+                            gap: 1,
+                            justifyContent: "center",
+                            mx: "auto"
+                        }}
+                    >
+                        {/* Top */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Top
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <TextField
+                                    size="small"
+                                    value={localTop || ""}
+                                    onChange={(e) => handleFieldChange("top", e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        ml: 0.5,
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                        {/* Right */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Right
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <TextField
+                                    size="small"
+                                    value={localRight || ""}
+                                    onChange={(e) => handleFieldChange("right", e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        ml: 0.5,
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                        {/* Bottom */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Bottom
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <TextField
+                                    size="small"
+                                    value={localBottom || ""}
+                                    onChange={(e) => handleFieldChange("bottom", e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        ml: 0.5,
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                        {/* Left */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Left
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                                <TextField
+                                    size="small"
+                                    value={localLeft || ""}
+                                    onChange={(e) => handleFieldChange("left", e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        ml: 0.5,
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Box>
+            </Popover>
+        </>
     );
 };
 
@@ -1177,146 +1618,13 @@ export const StylingTab = () => {
                         name={id}
                         control={control}
                         defaultValue={defaultValue || "0px 0px 0px 0px"}
-                        render={({ field: fieldProps }) => {
-                            const parsePadding = (
-                                value: string
-                            ): {
-                                top: string;
-                                right: string;
-                                bottom: string;
-                                left: string;
-                            } => {
-                                const parts = value.split(/\s+/);
-                                return {
-                                    top: parts[0] || "0px",
-                                    right: parts[1] || parts[0] || "0px",
-                                    bottom: parts[2] || parts[0] || "0px",
-                                    left:
-                                        parts[3] ||
-                                        parts[1] ||
-                                        parts[0] ||
-                                        "0px"
-                                };
-                            };
-
-                            const { top, right, bottom, left } = parsePadding(
-                                (fieldProps.value as string) || ""
-                            );
-
-                            const handleFieldChange = (
-                                field: string,
-                                value: string
-                            ) => {
-                                const current = parsePadding(
-                                    (fieldProps.value as string) || ""
-                                );
-                                const updated = { ...current, [field]: value };
-                                const newValue = `${updated.top} ${updated.right} ${updated.bottom} ${updated.left}`;
-                                fieldProps.onChange(newValue);
-                            };
-
-                            const handleNumberFieldChange =
-                                (field: string) =>
-                                (e: React.ChangeEvent<HTMLInputElement>) => {
-                                    const inputValue = e.target.value;
-                                    const validPattern = /^\d*\.?\d*$/;
-
-                                    if (validPattern.test(inputValue)) {
-                                        const valueWithUnit = inputValue
-                                            ? `${inputValue}px`
-                                            : "0px";
-                                        handleFieldChange(field, valueWithUnit);
-                                    }
-                                };
-
-                            const extractNumber = (value: string) => {
-                                const match = value.match(/^(\d*\.?\d*)/);
-                                return match?.[1] || "0";
-                            };
-
-                            return (
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        gap: 1,
-                                        alignItems: "center"
-                                    }}
-                                >
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(top)}
-                                        onChange={handleNumberFieldChange(
-                                            "top"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="T"
-                                        title="Top Padding"
-                                    />
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(right)}
-                                        onChange={handleNumberFieldChange(
-                                            "right"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="R"
-                                        title="Right Padding"
-                                    />
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(bottom)}
-                                        onChange={handleNumberFieldChange(
-                                            "bottom"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="B"
-                                        title="Bottom Padding"
-                                    />
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(left)}
-                                        onChange={handleNumberFieldChange(
-                                            "left"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="L"
-                                        title="Left Padding"
-                                    />
-                                </Box>
-                            );
-                        }}
+                        render={({ field: fieldProps }) => (
+                            <DebouncedPaddingPicker
+                                value={(fieldProps.value as string) || "0px 0px 0px 0px"}
+                                onChange={fieldProps.onChange}
+                                disabled={!isFieldEnabled}
+                            />
+                        )}
                     />
                 );
 
