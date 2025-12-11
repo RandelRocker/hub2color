@@ -39,6 +39,10 @@ export interface UpdateStyleTabToPreviousValuesAction {
     type: ActionTypes.UPDATE_STYLE_TAB_TO_PREVIOUS_VALUES;
 }
 
+export interface UpdateStyleTabDefaultValuesAction {
+    type: ActionTypes.UPDATE_STYLE_TAB_DEFAULT_VALUES;
+}
+
 export interface SetStylingTabUIStateAction {
     type: ActionTypes.SET_STYLING_TAB_UI_STATE;
     payload: { scrollPosition?: number; expandedAccordions?: string[] };
@@ -104,6 +108,7 @@ export type AppAction =
     | SetStylingTabUIStateAction
     | UpdateStyleTabToDefaultValuesAction
     | UpdateStyleTabToPreviousValuesAction
+    | UpdateStyleTabDefaultValuesAction
     | saveStylingThemeAction
     | SetCustomCssAction
     | SetCustomJsAction

@@ -25,7 +25,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
-import { updateStylingTabValues, updateStylingTabValuesWithDefault, setStylingTabUIState } from "../../../../store/actions";
+import { updateStylingTabValues, updateStylingTabValuesWithDefault, setStylingTabUIState, updateStylingTabDefaultValues } from "../../../../store/actions";
 import { StylingTabValues, StyleGroup, StyleField } from "../../../../store/types";
 
 // Debounced color picker component with color square and hex input
@@ -367,6 +367,10 @@ export const StylingTab = () => {
     useEffect(() => {
         reset(styleTabDefaultValues);
     }, [reset, styleTabDefaultValues]);
+
+    useEffect(() => () => {
+            dispatch(updateStylingTabDefaultValues());
+    }, [dispatch]);
 
     // Restore scroll position when component mounts
     useEffect(() => {

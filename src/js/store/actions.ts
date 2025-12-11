@@ -43,6 +43,10 @@ export const updateStylingTabToPreviousValues = () => ({
     type: ActionTypes.UPDATE_STYLE_TAB_TO_PREVIOUS_VALUES,
 });
 
+export const updateStylingTabDefaultValues = () => ({
+    type: ActionTypes.UPDATE_STYLE_TAB_DEFAULT_VALUES,
+});
+
 export const setStylingTabUIState = (uiState: { scrollPosition?: number; expandedAccordions?: string[] }) => ({
     type: ActionTypes.SET_STYLING_TAB_UI_STATE,
     payload: uiState,
