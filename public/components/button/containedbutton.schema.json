@@ -29,6 +29,13 @@
             "type": "radio",
             "defaultValue": "medium",
             "options": ["small", "medium", "large"]
+        },
+        {
+            "id": "loading",
+            "label": "Is loading",
+            "defaultValue": false,
+            "description": "Show loading indicator",
+            "type": "boolean"
         }
     ],
     "styles": [
