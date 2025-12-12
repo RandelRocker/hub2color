@@ -65,7 +65,7 @@ export const PreviewFrame = () => {
         if (!currentPage) return;
 
         sendMessageToFrame("NAVIGATED", { path: currentPage });
-        sendMessageToFrame("SET_DIR", { dir: direction });
+        sendMessageToFrame("DIR_CHANGE", { dir: direction });
         sendMessageToFrame("SET_ZOOM", { scale: zoom });
 
         if (customCss) {
@@ -100,7 +100,7 @@ export const PreviewFrame = () => {
     }, [currentPage, loadComponentSchema]);
 
     useEffect(() => {
-        sendMessageToFrame("SET_DIR", { dir: direction });
+        sendMessageToFrame("DIR_CHANGE", { dir: direction });
     }, [direction, sendMessageToFrame]);
 
     useEffect(() => {
@@ -131,7 +131,6 @@ export const PreviewFrame = () => {
 
     useEffect(() => {
         if (styleTabValues) {
-            console.log(helpers.prepareStylingTheme(styleTabValues));
             sendMessageToFrame("STYLING_CHANGE", {
                 styles: helpers.prepareStylingTheme(styleTabValues)
             });
@@ -147,6 +146,31 @@ export const PreviewFrame = () => {
             default:
                 return "100%";
         }
+    };
+
+    const getViewportHeight = () => {
+        switch (viewport) {
+            case "mobile":
+                return 812;
+            case "tablet":
+                return 1024;
+            default:
+                return "100%";
+        }
+    };
+
+    const getIframeSrc = () => {
+        if (!currentPage) return "";
+        
+        const baseUrl = `/${currentPage}`;
+        
+        if (viewport === "mobile") {
+            return `${baseUrl}?hideAdminControls=1&emulate=mobile`;
+        } else if (viewport === "tablet") {
+            return `${baseUrl}?hideAdminControls=1&emulate=tablet`;
+        }
+        
+        return baseUrl;
     };
 
     if (loading) {
@@ -202,7 +226,7 @@ export const PreviewFrame = () => {
             <Box
                 sx={{
                     width: getViewportWidth(),
-                    height: "100%",
+                    height: getViewportHeight(),
                     bgcolor: "white",
                     overflow: "hidden",
                     transform: `scale(${zoom})`,
@@ -211,7 +235,7 @@ export const PreviewFrame = () => {
             >
                 <iframe
                     ref={iframeRef}
-                    src={`/${currentPage}`}
+                    src={getIframeSrc()}
                     style={{
                         width: "100%",
                         height: "100%",
