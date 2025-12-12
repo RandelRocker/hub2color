@@ -56,7 +56,7 @@ export const CustomCssTab = () => {
                 }}
             >
                 <Typography variant="caption" color="text.secondary">
-                    Add custom CSS styles to inject into the preview
+                    For preview only. If you need to apply custom CSS to the site - create a tag.
                 </Typography>
                 <Button
                     size="small"
@@ -64,7 +64,7 @@ export const CustomCssTab = () => {
                     onClick={handleApply}
                     disabled={localCss === customCss}
                 >
-                    Apply
+                    Create tag
                 </Button>
             </Box>
 
