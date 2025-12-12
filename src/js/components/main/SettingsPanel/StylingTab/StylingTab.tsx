@@ -18,7 +18,8 @@ import {
     IconButton,
     Menu,
     Tooltip,
-    Popover
+    Popover,
+    InputAdornment
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MoreVert, Restore, RestartAlt } from "@mui/icons-material";
@@ -82,7 +83,7 @@ const parsePadding = (value: string): {
 };
 
 const extractNumber = (value: string): string => {
-    const match = value.match(/^(\d*\.?\d*)/);
+    const match = value.match(/^(-?\d*\.?\d*)/);
     return match?.[1] || "0";
 };
 
@@ -101,6 +102,74 @@ const formatPaddingString = (padding: string): string => {
     
     // No simplification possible
     return `${top} ${right} ${bottom} ${left}`;
+};
+
+// Helper functions for borderRadius
+const parseBorderRadius = (value: string): {
+    topLeft: string;
+    topRight: string;
+    bottomRight: string;
+    bottomLeft: string;
+} => {
+    const parts = value.split(/\s+/);
+    return {
+        topLeft: parts[0] || "0px",
+        topRight: parts[1] || parts[0] || "0px",
+        bottomRight: parts[2] || parts[0] || "0px",
+        bottomLeft: parts[3] || parts[1] || parts[0] || "0px"
+    };
+};
+
+const formatBorderRadiusString = (borderRadius: string): string => {
+    const { topLeft, topRight, bottomRight, bottomLeft } = parseBorderRadius(borderRadius);
+    
+    // All corners equal: "10px 10px 10px 10px" -> "10px"
+    if (topLeft === topRight && topRight === bottomRight && bottomRight === bottomLeft) {
+        return topLeft;
+    }
+    
+    // Top corners equal and bottom corners equal: "10px 5px 10px 5px" -> "10px 5px"
+    if (topLeft === topRight && bottomRight === bottomLeft) {
+        return `${topLeft} ${bottomRight}`;
+    }
+    
+    // No simplification possible
+    return `${topLeft} ${topRight} ${bottomRight} ${bottomLeft}`;
+};
+
+// Helper functions for boxShadow
+const parseBoxShadow = (value: string): {
+    horizontalPosition: string;
+    verticalPosition: string;
+    blurRadius: string;
+    spreadRadius: string;
+    color: string;
+} => {
+    const match = value.match(
+        /^(-?\d*\.?\d*px)\s+(-?\d*\.?\d*px)\s+(\d*\.?\d*px)\s+(\d*\.?\d*px)\s+(#[0-9a-fA-F]{6}|rgba?\([^)]+\)|[a-zA-Z]+)$/
+    );
+    return {
+        horizontalPosition: match?.[1] || "0px",
+        verticalPosition: match?.[2] || "0px",
+        blurRadius: match?.[3] || "0px",
+        spreadRadius: match?.[4] || "0px",
+        color: match?.[5] || "rgba(0, 0, 0, 0.5)"
+    };
+};
+
+const formatBoxShadowString = (boxShadow: string): string => {
+    // For boxShadow, we show the values without color (color is shown as a box)
+    const parsed = parseBoxShadow(boxShadow);
+    if (
+        parsed.horizontalPosition === "0px" &&
+        parsed.verticalPosition === "0px" &&
+        parsed.blurRadius === "0px" &&
+        parsed.spreadRadius === "0px"
+    ) {
+        return "none";
+    }
+    // Return only the numeric values, excluding the color
+    return `${parsed.horizontalPosition} ${parsed.verticalPosition} ${parsed.blurRadius} ${parsed.spreadRadius}`;
 };
 
 // Debounced color picker component with color square and integrated opacity control in popover
@@ -564,7 +633,7 @@ const DebouncedPaddingPicker = ({
                 <Box sx={{ p: 1.5, minWidth: 240 }}>
                     {/* Visual padding diagram */}
                     <Box sx={{ mb: 1.5 }}>
-                        <Typography variant="subtitle1" sx={{ mb: 0.5, display: "block" }}>
+                        <Typography variant="subtitle1" sx={{ mb: 1.5, display: "block" }}>
                             Padding
                         </Typography>
                         <Box
@@ -814,6 +883,873 @@ const DebouncedPaddingPicker = ({
                                     px
                                 </Typography>
                             </Box>
+                        </Box>
+                    </Box>
+                </Box>
+            </Popover>
+        </>
+    );
+};
+
+// Debounced border radius picker component with visual diagram and popover
+const DebouncedBorderRadiusPicker = ({
+    value,
+    onChange,
+    disabled,
+    sx
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    disabled?: boolean;
+    sx?: Record<string, unknown>;
+}) => {
+    const parsedBorderRadius = parseBorderRadius(value || "0px 0px 0px 0px");
+    const [localTopLeft, setLocalTopLeft] = useState(extractNumber(parsedBorderRadius.topLeft));
+    const [localTopRight, setLocalTopRight] = useState(extractNumber(parsedBorderRadius.topRight));
+    const [localBottomRight, setLocalBottomRight] = useState(extractNumber(parsedBorderRadius.bottomRight));
+    const [localBottomLeft, setLocalBottomLeft] = useState(extractNumber(parsedBorderRadius.bottomLeft));
+    const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const lastEmittedValueRef = useRef<string>(value || "0px 0px 0px 0px");
+
+    const open = Boolean(anchorEl);
+
+    // Update local values when prop changes
+    useEffect(() => {
+        if (value !== lastEmittedValueRef.current) {
+            const parsed = parseBorderRadius(value || "0px 0px 0px 0px");
+            setLocalTopLeft(extractNumber(parsed.topLeft));
+            setLocalTopRight(extractNumber(parsed.topRight));
+            setLocalBottomRight(extractNumber(parsed.bottomRight));
+            setLocalBottomLeft(extractNumber(parsed.bottomLeft));
+            lastEmittedValueRef.current = value || "0px 0px 0px 0px";
+        }
+    }, [value]);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    const updateBorderRadius = (topLeft: string, topRight: string, bottomRight: string, bottomLeft: string) => {
+        const topLeftPx = topLeft ? `${topLeft}px` : "0px";
+        const topRightPx = topRight ? `${topRight}px` : "0px";
+        const bottomRightPx = bottomRight ? `${bottomRight}px` : "0px";
+        const bottomLeftPx = bottomLeft ? `${bottomLeft}px` : "0px";
+        const newValue = `${topLeftPx} ${topRightPx} ${bottomRightPx} ${bottomLeftPx}`;
+        
+        // Clear existing timeout
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        // Debounce the onChange callback
+        timeoutRef.current = setTimeout(() => {
+            lastEmittedValueRef.current = newValue;
+            onChange(newValue);
+        }, 150);
+    };
+
+    const handleFieldChange = (field: "topLeft" | "topRight" | "bottomRight" | "bottomLeft", newValue: string) => {
+        // Only allow numeric input with optional decimal
+        const validPattern = /^\d*\.?\d*$/;
+        if (!validPattern.test(newValue)) {
+            return;
+        }
+
+        switch (field) {
+            case "topLeft":
+                setLocalTopLeft(newValue);
+                updateBorderRadius(newValue, localTopRight, localBottomRight, localBottomLeft);
+                break;
+            case "topRight":
+                setLocalTopRight(newValue);
+                updateBorderRadius(localTopLeft, newValue, localBottomRight, localBottomLeft);
+                break;
+            case "bottomRight":
+                setLocalBottomRight(newValue);
+                updateBorderRadius(localTopLeft, localTopRight, newValue, localBottomLeft);
+                break;
+            case "bottomLeft":
+                setLocalBottomLeft(newValue);
+                updateBorderRadius(localTopLeft, localTopRight, localBottomRight, newValue);
+                break;
+        }
+    };
+
+    const handleTextClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (!disabled) {
+            setAnchorEl(event.currentTarget);
+        }
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+
+    const displayText = formatBorderRadiusString(value || "0px 0px 0px 0px");
+
+    return (
+        <>
+            <Box
+                onClick={handleTextClick}
+                sx={{
+                    cursor: disabled ? "not-allowed" : "pointer",
+                    opacity: disabled ? 0.5 : 1,
+                    padding: "4px 8px",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 1,
+                    backgroundColor: "#fff",
+                    "&:hover": {
+                        backgroundColor: disabled ? "#fff" : "#f5f5f5",
+                        borderColor: disabled ? "#e0e0e0" : "#bdbdbd"
+                    },
+                    transition: "all 0.2s",
+                    fontSize: "0.875rem",
+                    minWidth: 80,
+                    textAlign: "center",
+                    ...sx
+                }}
+            >
+                {displayText}
+            </Box>
+            {/* Border radius picker popover */}
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left"
+                }}
+                transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left"
+                }}
+            >
+                <Box sx={{ p: 1.5, minWidth: 240 }}>
+                    {/* Visual border radius diagram */}
+                    <Box sx={{ mb: 1.5 }}>
+                        <Typography variant="subtitle1" sx={{ mb: 1.5, display: "block" }}>
+                            Border Radius
+                        </Typography>
+                        <Box
+                            sx={{
+                                position: "relative",
+                                border: "2px solid #1976d2",
+                                borderRadius: `${localTopLeft || "0"}px ${localTopRight || "0"}px ${localBottomRight || "0"}px ${localBottomLeft || "0"}px`,
+                                backgroundColor: "#e3f2fd",
+                                height: 90,
+                                width: 145,
+                                mx: "auto",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                p: 1
+                            }}
+                        >
+                            {/* Top Left label */}
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    transform: "translate(-50%, -50%)",
+                                    fontSize: "0.7rem",
+                                    color: "#1976d2",
+                                    fontWeight: 600,
+                                    backgroundColor: "#fff",
+                                    padding: "1px 4px",
+                                    borderRadius: "3px",
+                                    border: "1px solid #1976d2",
+                                    whiteSpace: "nowrap"
+                                }}
+                            >
+                                {localTopLeft || "0"}px
+                            </Box>
+                            {/* Top Right label */}
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    top: 0,
+                                    right: 0,
+                                    transform: "translate(50%, -50%)",
+                                    fontSize: "0.7rem",
+                                    color: "#1976d2",
+                                    fontWeight: 600,
+                                    backgroundColor: "#fff",
+                                    padding: "1px 4px",
+                                    borderRadius: "3px",
+                                    border: "1px solid #1976d2",
+                                    whiteSpace: "nowrap"
+                                }}
+                            >
+                                {localTopRight || "0"}px
+                            </Box>
+                            {/* Bottom Right label */}
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    bottom: 0,
+                                    right: 0,
+                                    transform: "translate(50%, 50%)",
+                                    fontSize: "0.7rem",
+                                    color: "#1976d2",
+                                    fontWeight: 600,
+                                    backgroundColor: "#fff",
+                                    padding: "1px 4px",
+                                    borderRadius: "3px",
+                                    border: "1px solid #1976d2",
+                                    whiteSpace: "nowrap"
+                                }}
+                            >
+                                {localBottomRight || "0"}px
+                            </Box>
+                            {/* Bottom Left label */}
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    bottom: 0,
+                                    left: 0,
+                                    transform: "translate(-50%, 50%)",
+                                    fontSize: "0.7rem",
+                                    color: "#1976d2",
+                                    fontWeight: 600,
+                                    backgroundColor: "#fff",
+                                    padding: "1px 4px",
+                                    borderRadius: "3px",
+                                    border: "1px solid #1976d2",
+                                    whiteSpace: "nowrap"
+                                }}
+                            >
+                                {localBottomLeft || "0"}px
+                            </Box>
+                        </Box>
+                    </Box>
+                    {/* Input fields */}
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: "auto auto",
+                            gap: 1,
+                            justifyContent: "center",
+                            mx: "auto"
+                        }}
+                    >
+                        {/* Top Left */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Top Left
+                            </Typography>
+                            <TextField
+                                size="small"
+                                value={localTopLeft || ""}
+                                onChange={(e) => handleFieldChange("topLeft", e.target.value)}
+                                disabled={disabled}
+                                sx={{ width: 70 }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    fontSize: "0.875rem",
+                                                    color: "text.secondary",
+                                                    userSelect: "none"
+                                                }}
+                                            >
+                                                px
+                                            </Typography>
+                                        </InputAdornment>
+                                    )
+                                }}
+                                slotProps={{
+                                    input: {
+                                        sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                    }
+                                }}
+                                placeholder="0"
+                            />
+                        </Box>
+                        {/* Top Right */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Top Right
+                            </Typography>
+                            <TextField
+                                size="small"
+                                value={localTopRight || ""}
+                                onChange={(e) => handleFieldChange("topRight", e.target.value)}
+                                disabled={disabled}
+                                sx={{ width: 70 }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    fontSize: "0.875rem",
+                                                    color: "text.secondary",
+                                                    userSelect: "none"
+                                                }}
+                                            >
+                                                px
+                                            </Typography>
+                                        </InputAdornment>
+                                    )
+                                }}
+                                slotProps={{
+                                    input: {
+                                        sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                    }
+                                }}
+                                placeholder="0"
+                            />
+                        </Box>
+                        
+                        {/* Bottom Left */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Bottom Left
+                            </Typography>
+                            <TextField
+                                size="small"
+                                value={localBottomLeft || ""}
+                                onChange={(e) => handleFieldChange("bottomLeft", e.target.value)}
+                                disabled={disabled}
+                                sx={{ width: 70 }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    fontSize: "0.875rem",
+                                                    color: "text.secondary",
+                                                    userSelect: "none"
+                                                }}
+                                            >
+                                                px
+                                            </Typography>
+                                        </InputAdornment>
+                                    )
+                                }}
+                                slotProps={{
+                                    input: {
+                                        sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                    }
+                                }}
+                                placeholder="0"
+                            />
+                        </Box>
+                        {/* Bottom Right */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Bottom Right
+                            </Typography>
+                            <TextField
+                                size="small"
+                                value={localBottomRight || ""}
+                                onChange={(e) => handleFieldChange("bottomRight", e.target.value)}
+                                disabled={disabled}
+                                sx={{ width: 70 }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    fontSize: "0.875rem",
+                                                    color: "text.secondary",
+                                                    userSelect: "none"
+                                                }}
+                                            >
+                                                px
+                                            </Typography>
+                                        </InputAdornment>
+                                    )
+                                }}
+                                slotProps={{
+                                    input: {
+                                        sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                    }
+                                }}
+                                placeholder="0"
+                            />
+                        </Box>
+                    </Box>
+                </Box>
+            </Popover>
+        </>
+    );
+};
+
+// Debounced box shadow picker component with visual diagram and popover
+const DebouncedBoxShadowPicker = ({
+    value,
+    onChange,
+    disabled,
+    sx
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    disabled?: boolean;
+    sx?: Record<string, unknown>;
+}) => {
+    const initialValue = value || "0px 0px 0px 0px rgba(0, 0, 0, 0.5)";
+    const parsedBoxShadow = parseBoxShadow(initialValue);
+    const initialColor = parsedBoxShadow.color || "rgba(0, 0, 0, 0.5)";
+    const initialParsedColor = parseColor(initialColor);
+    const [localHorizontal, setLocalHorizontal] = useState(extractNumber(parsedBoxShadow.horizontalPosition));
+    const [localVertical, setLocalVertical] = useState(extractNumber(parsedBoxShadow.verticalPosition));
+    const [localBlur, setLocalBlur] = useState(extractNumber(parsedBoxShadow.blurRadius));
+    const [localSpread, setLocalSpread] = useState(extractNumber(parsedBoxShadow.spreadRadius));
+    const [localColor, setLocalColor] = useState(initialColor);
+    const [localHex, setLocalHex] = useState(initialParsedColor.hex);
+    const [localAlpha, setLocalAlpha] = useState(initialParsedColor.alpha);
+    const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const lastEmittedValueRef = useRef<string>(initialValue);
+    const colorInputRef = useRef<HTMLInputElement>(null);
+
+    const open = Boolean(anchorEl);
+
+    // Update local values when prop changes
+    useEffect(() => {
+        const currentValue = value || "0px 0px 0px 0px rgba(0, 0, 0, 0.5)";
+        if (currentValue !== lastEmittedValueRef.current) {
+            const parsed = parseBoxShadow(currentValue);
+            setLocalHorizontal(extractNumber(parsed.horizontalPosition));
+            setLocalVertical(extractNumber(parsed.verticalPosition));
+            setLocalBlur(extractNumber(parsed.blurRadius));
+            setLocalSpread(extractNumber(parsed.spreadRadius));
+            setLocalColor(parsed.color);
+            const parsedColorValue = parseColor(parsed.color || "#000000");
+            setLocalHex(parsedColorValue.hex);
+            setLocalAlpha(parsedColorValue.alpha);
+            lastEmittedValueRef.current = currentValue;
+        }
+    }, [value]);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    const updateBoxShadow = (horizontal: string, vertical: string, blur: string, spread: string, color: string) => {
+        const horizontalPx = horizontal ? `${horizontal}px` : "0px";
+        const verticalPx = vertical ? `${vertical}px` : "0px";
+        const blurPx = blur ? `${blur}px` : "0px";
+        const spreadPx = spread ? `${spread}px` : "0px";
+        const newValue = `${horizontalPx} ${verticalPx} ${blurPx} ${spreadPx} ${color}`;
+        
+        // Clear existing timeout
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        // Debounce the onChange callback
+        timeoutRef.current = setTimeout(() => {
+            lastEmittedValueRef.current = newValue;
+            onChange(newValue);
+        }, 150);
+    };
+
+    const handleNumberFieldChange = (field: "horizontalPosition" | "verticalPosition" | "blurRadius" | "spreadRadius", newValue: string) => {
+        // Only allow numeric input with optional decimal and negative sign
+        const validPattern = /^-?\d*\.?\d*$/;
+        if (!validPattern.test(newValue)) {
+            return;
+        }
+
+        switch (field) {
+            case "horizontalPosition":
+                setLocalHorizontal(newValue);
+                updateBoxShadow(newValue, localVertical, localBlur, localSpread, localColor);
+                break;
+            case "verticalPosition":
+                setLocalVertical(newValue);
+                updateBoxShadow(localHorizontal, newValue, localBlur, localSpread, localColor);
+                break;
+            case "blurRadius":
+                setLocalBlur(newValue);
+                updateBoxShadow(localHorizontal, localVertical, newValue, localSpread, localColor);
+                break;
+            case "spreadRadius":
+                setLocalSpread(newValue);
+                updateBoxShadow(localHorizontal, localVertical, localBlur, newValue, localColor);
+                break;
+        }
+    };
+
+    const handleColorChange = (newColor: string) => {
+        setLocalColor(newColor);
+        const parsed = parseColor(newColor);
+        setLocalHex(parsed.hex);
+        setLocalAlpha(parsed.alpha);
+        updateBoxShadow(localHorizontal, localVertical, localBlur, localSpread, newColor);
+    };
+
+    const handleTextClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (!disabled) {
+            setAnchorEl(event.currentTarget);
+        }
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+
+    const currentValue = value || "0px 0px 0px 0px rgba(0, 0, 0, 0.5)";
+    const displayText = formatBoxShadowString(currentValue);
+    const boxShadowValue = `${localHorizontal || "0"}px ${localVertical || "0"}px ${localBlur || "0"}px ${localSpread || "0"}px ${localColor || "rgba(0, 0, 0, 0.5)"}`;
+    
+    // Extract color for display box - use localColor for real-time updates
+    const displayColor = localColor || parsedBoxShadow.color || "rgba(0, 0, 0, 0.5)";
+
+    return (
+        <>
+            <Box
+                onClick={handleTextClick}
+                sx={{
+                    cursor: disabled ? "not-allowed" : "pointer",
+                    opacity: disabled ? 0.5 : 1,
+                    padding: "4px 8px",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 1,
+                    backgroundColor: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    "&:hover": {
+                        backgroundColor: disabled ? "#fff" : "#f5f5f5",
+                        borderColor: disabled ? "#e0e0e0" : "#bdbdbd"
+                    },
+                    transition: "all 0.2s",
+                    fontSize: "0.875rem",
+                    minWidth: 80,
+                    ...sx
+                }}
+            >
+                <Box sx={{ flex: 1, textAlign: "center" }}>
+                    {displayText}
+                </Box>
+                <Box
+                    sx={{
+                        width: 20,
+                        height: 20,
+                        minWidth: 20,
+                        backgroundColor: displayColor,
+                        border: "1px solid #e0e0e0",
+                        borderRadius: 1,
+                        flexShrink: 0
+                    }}
+                />
+            </Box>
+            {/* Box shadow picker popover */}
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left"
+                }}
+                transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left"
+                }}
+            >
+                <Box sx={{ p: 1.5, minWidth: 240 }}>
+                    {/* Visual box shadow diagram */}
+                    <Box sx={{ mb: 1.5 }}>
+                        <Typography variant="subtitle1" sx={{ mb: 1.5, display: "block" }}>
+                            Box Shadow
+                        </Typography>
+                        <Box
+                            sx={{
+                                position: "relative",
+                                height: 90,
+                                width: 145,
+                                mx: "auto",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                p: 1
+                            }}
+                        >
+                            {/* Box with shadow */}
+                            <Box
+                                sx={{
+                                    backgroundColor: "#fff",
+                                    border: "1px solid #e0e0e0",
+                                    borderRadius: 1,
+                                    minWidth: 60,
+                                    minHeight: 50,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize: "0.65rem",
+                                    color: "#666",
+                                    boxShadow: boxShadowValue
+                                }}
+                            >
+                                Content
+                            </Box>
+                        </Box>
+                    </Box>
+                    {/* Input fields */}
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: "auto auto",
+                            gap: 1,
+                            mb: 1,
+                            justifyContent: "center",
+                            mx: "auto"
+                        }}
+                    >
+                        {/* Horizontal */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Horizontal
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <TextField
+                                    size="small"
+                                    value={localHorizontal || ""}
+                                    onChange={(e) => handleNumberFieldChange("horizontalPosition", e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                        {/* Vertical */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Vertical
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <TextField
+                                    size="small"
+                                    value={localVertical || ""}
+                                    onChange={(e) => handleNumberFieldChange("verticalPosition", e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                        {/* Blur */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Blur
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <TextField
+                                    size="small"
+                                    value={localBlur || ""}
+                                    onChange={(e) => handleNumberFieldChange("blurRadius", e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                        {/* Spread */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Spread
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <TextField
+                                    size="small"
+                                    value={localSpread || ""}
+                                    onChange={(e) => handleNumberFieldChange("spreadRadius", e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+                    {/* Color picker */}
+                    <Box sx={{ maxWidth: 185, mx: "auto" }}>
+                        <Typography variant="caption" sx={{ mb: 1, display: "block" }}>
+                            Color
+                        </Typography>
+                        <Box sx={{ mb: 2 }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1
+                                }}
+                            >
+                                <Box
+                                    onClick={() => colorInputRef.current?.click()}
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        backgroundColor: hexToRgba(localHex || "#000000", localAlpha),
+                                        border: "1px solid #e0e0e0",
+                                        borderRadius: 1,
+                                        cursor: disabled ? "not-allowed" : "pointer",
+                                        "&:hover": {
+                                            opacity: disabled ? 1 : 0.8
+                                        },
+                                        transition: "opacity 0.2s"
+                                    }}
+                                />
+                                <input
+                                    ref={colorInputRef}
+                                    type="color"
+                                    value={localHex || "#000000"}
+                                    onChange={(e) => {
+                                        const newHex = e.target.value;
+                                        setLocalHex(newHex);
+                                        handleColorChange(hexToRgba(newHex, localAlpha));
+                                    }}
+                                    disabled={disabled}
+                                    style={{
+                                        position: "absolute",
+                                        width: 0,
+                                        height: 0,
+                                        opacity: 0,
+                                        pointerEvents: "none"
+                                    }}
+                                />
+                                <TextField
+                                    size="small"
+                                    value={localHex || "#000000"}
+                                    onChange={(e) => {
+                                        const newHex = e.target.value;
+                                        setLocalHex(newHex);
+                                        // Only update color if valid hex
+                                        if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(newHex)) {
+                                            handleColorChange(hexToRgba(newHex, localAlpha));
+                                        }
+                                    }}
+                                    onBlur={(e) => {
+                                        // Validate and fix hex on blur
+                                        let hex = e.target.value.trim();
+                                        if (!hex.startsWith("#")) {
+                                            hex = "#" + hex;
+                                        }
+                                        // Normalize 3-digit hex to 6-digit
+                                        if (/^#([A-Fa-f0-9]{3})$/.test(hex)) {
+                                            hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+                                        }
+                                        // If still invalid, revert to current
+                                        if (!/^#([A-Fa-f0-9]{6})$/.test(hex)) {
+                                            hex = localHex || "#000000";
+                                        }
+                                        setLocalHex(hex);
+                                        handleColorChange(hexToRgba(hex, localAlpha));
+                                    }}
+                                    disabled={disabled}
+                                    sx={{ width: 120 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem" }
+                                        }
+                                    }}
+                                    placeholder="#000000"
+                                />
+                            </Box>
+                        </Box>
+                        <Box>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                                <Typography variant="caption">
+                                    Opacity
+                                </Typography>
+                                <Typography variant="caption" sx={{ fontWeight: "medium" }}>
+                                    {Math.round(localAlpha * 100)}%
+                                </Typography>
+                            </Box>
+                            <Slider
+                                value={localAlpha * 100}
+                                onChange={(_event: React.SyntheticEvent | Event, newValue: number | number[]) => {
+                                    const newAlpha = typeof newValue === "number" ? newValue / 100 : newValue[0] / 100;
+                                    setLocalAlpha(newAlpha);
+                                    handleColorChange(hexToRgba(localHex || "#000000", newAlpha));
+                                }}
+                                min={0}
+                                max={100}
+                                step={1}
+                                size="small"
+                                disabled={disabled}
+                                valueLabelDisplay="off"
+                            />
                         </Box>
                     </Box>
                 </Box>
@@ -1461,154 +2397,13 @@ export const StylingTab = () => {
                         defaultValue={
                             defaultValue || "0px 0px 0px 0px rgba(0, 0, 0, 0.5)"
                         }
-                        render={({ field: fieldProps }) => {
-                            const parseBoxShadow = (value: string) => {
-                                const match = value.match(
-                                    /^(-?\d*\.?\d*px)\s+(-?\d*\.?\d*px)\s+(\d*\.?\d*px)\s+(\d*\.?\d*px)\s+(#[0-9a-fA-F]{6}|rgba?\([^)]+\)|[a-zA-Z]+)$/
-                                );
-                                return {
-                                    horizontalPosition: match?.[1] || "0px",
-                                    verticalPosition: match?.[2] || "0px",
-                                    blurRadius: match?.[3] || "0px",
-                                    spreadRadius: match?.[4] || "0px",
-                                    color: match?.[5] || "rgba(0, 0, 0, 0.5)"
-                                };
-                            };
-
-                            const {
-                                horizontalPosition,
-                                verticalPosition,
-                                blurRadius,
-                                spreadRadius,
-                                color
-                            } = parseBoxShadow(
-                                (fieldProps.value as string) || ""
-                            );
-
-                            const handleFieldChange = (
-                                field: string,
-                                value: string
-                            ) => {
-                                const current = parseBoxShadow(
-                                    (fieldProps.value as string) || ""
-                                );
-                                const updated = { ...current, [field]: value };
-                                const newValue = `${updated.horizontalPosition} ${updated.verticalPosition} ${updated.blurRadius} ${updated.spreadRadius} ${updated.color}`;
-                                fieldProps.onChange(newValue);
-                            };
-
-                            const handleNumberFieldChange =
-                                (field: string) =>
-                                (e: React.ChangeEvent<HTMLInputElement>) => {
-                                    const inputValue = e.target.value;
-                                    const validPattern = /^-?\d*\.?\d*$/;
-
-                                    if (validPattern.test(inputValue)) {
-                                        const valueWithUnit = inputValue
-                                            ? `${inputValue}px`
-                                            : "0px";
-                                        handleFieldChange(field, valueWithUnit);
-                                    }
-                                };
-
-                            const extractNumber = (value: string) => {
-                                const match = value.match(/^(-?\d*\.?\d*)/);
-                                return match?.[1] || "0";
-                            };
-
-                            return (
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        gap: 1,
-                                        alignItems: "center"
-                                    }}
-                                >
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(
-                                            horizontalPosition
-                                        )}
-                                        onChange={handleNumberFieldChange(
-                                            "horizontalPosition"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "20%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="H"
-                                        title="Horizontal Position"
-                                    />
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(verticalPosition)}
-                                        onChange={handleNumberFieldChange(
-                                            "verticalPosition"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "20%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="V"
-                                        title="Vertical Position"
-                                    />
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(blurRadius)}
-                                        onChange={handleNumberFieldChange(
-                                            "blurRadius"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "20%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="Blur"
-                                        title="Blur Radius"
-                                    />
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(spreadRadius)}
-                                        onChange={handleNumberFieldChange(
-                                            "spreadRadius"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "20%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="Spread"
-                                        title="Spread Radius"
-                                    />
-                                    <DebouncedCompositeColorPicker
-                                        value={color}
-                                        onColorChange={(newColor) =>
-                                            handleFieldChange("color", newColor)
-                                        }
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "20%" }}
-                                    />
-                                </Box>
-                            );
-                        }}
+                        render={({ field: fieldProps }) => (
+                            <DebouncedBoxShadowPicker
+                                value={(fieldProps.value as string) || "0px 0px 0px 0px rgba(0, 0, 0, 0.5)"}
+                                onChange={fieldProps.onChange}
+                                disabled={!isFieldEnabled}
+                            />
+                        )}
                     />
                 );
 
@@ -1772,151 +2567,13 @@ export const StylingTab = () => {
                         name={id}
                         control={control}
                         defaultValue={defaultValue || "0px 0px 0px 0px"}
-                        render={({ field: fieldProps }) => {
-                            const parseBorderRadius = (
-                                value: string
-                            ): {
-                                topLeft: string;
-                                topRight: string;
-                                bottomRight: string;
-                                bottomLeft: string;
-                            } => {
-                                const parts = value.split(/\s+/);
-                                return {
-                                    topLeft: parts[0] || "0px",
-                                    topRight: parts[1] || parts[0] || "0px",
-                                    bottomRight: parts[2] || parts[0] || "0px",
-                                    bottomLeft:
-                                        parts[3] ||
-                                        parts[1] ||
-                                        parts[0] ||
-                                        "0px"
-                                };
-                            };
-
-                            const {
-                                topLeft,
-                                topRight,
-                                bottomRight,
-                                bottomLeft
-                            } = parseBorderRadius(
-                                (fieldProps.value as string) || ""
-                            );
-
-                            const handleFieldChange = (
-                                field: string,
-                                value: string
-                            ) => {
-                                const current = parseBorderRadius(
-                                    (fieldProps.value as string) || ""
-                                );
-                                const updated = { ...current, [field]: value };
-                                const newValue = `${updated.topLeft} ${updated.topRight} ${updated.bottomRight} ${updated.bottomLeft}`;
-                                fieldProps.onChange(newValue);
-                            };
-
-                            const handleNumberFieldChange =
-                                (field: string) =>
-                                (e: React.ChangeEvent<HTMLInputElement>) => {
-                                    const inputValue = e.target.value;
-                                    const validPattern = /^\d*\.?\d*$/;
-
-                                    if (validPattern.test(inputValue)) {
-                                        const valueWithUnit = inputValue
-                                            ? `${inputValue}px`
-                                            : "0px";
-                                        handleFieldChange(field, valueWithUnit);
-                                    }
-                                };
-
-                            const extractNumber = (value: string) => {
-                                const match = value.match(/^(\d*\.?\d*)/);
-                                return match?.[1] || "0";
-                            };
-
-                            return (
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        gap: 1,
-                                        alignItems: "center"
-                                    }}
-                                >
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(topLeft)}
-                                        onChange={handleNumberFieldChange(
-                                            "topLeft"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="TL"
-                                        title="Top Left Radius"
-                                    />
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(topRight)}
-                                        onChange={handleNumberFieldChange(
-                                            "topRight"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="TR"
-                                        title="Top Right Radius"
-                                    />
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(bottomRight)}
-                                        onChange={handleNumberFieldChange(
-                                            "bottomRight"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="BR"
-                                        title="Bottom Right Radius"
-                                    />
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(bottomLeft)}
-                                        onChange={handleNumberFieldChange(
-                                            "bottomLeft"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="BL"
-                                        title="Bottom Left Radius"
-                                    />
-                                </Box>
-                            );
-                        }}
+                        render={({ field: fieldProps }) => (
+                            <DebouncedBorderRadiusPicker
+                                value={(fieldProps.value as string) || "0px 0px 0px 0px"}
+                                onChange={fieldProps.onChange}
+                                disabled={!isFieldEnabled}
+                            />
+                        )}
                     />
                 );
 

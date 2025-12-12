@@ -100,8 +100,8 @@
                     "id": "fontWeight",
                     "label": "Font weight",
                     "defaultValue": "500",
-                    "themeKey": "button.fontWeight",
-                    "cssVariable": "--button-font-weight",
+                    "themeKey": "button.general.fontWeight",
+                    "cssVariable": "--button-general-font-weight",
                     "type": "number"
                 },
                 {
@@ -109,8 +109,8 @@
                     "label": "Italic",
                     "defaultValue": false,
                     "checkedValue": "italic",
-                    "themeKey": "button.fontStyle",
-                    "cssVariable": "--button-font-style",
+                    "themeKey": "button.general.fontStyle",
+                    "cssVariable": "--button-general-font-style",
                     "type": "boolean"
                 },
                 {
@@ -118,8 +118,8 @@
                     "label": "Uppercase",
                     "defaultValue": "uppercase",
                     "checkedValue": "uppercase",
-                    "themeKey": "button.textTransform",
-                    "cssVariable": "--button-text-transform",
+                    "themeKey": "button.general.textTransform",
+                    "cssVariable": "--button-general-text-transform",
                     "type": "boolean"
                 }
             ]
@@ -133,8 +133,8 @@
                     "id": "borderRadius",
                     "label": "Border Radius",
                     "defaultValue": "4px 4px 4px 4px",
-                    "themeKey": "button.borderRadius",
-                    "cssVariable": "--button-border-radius",
+                    "themeKey": "button.general.borderRadius",
+                    "cssVariable": "--button-general-border-radius",
                     "type": "borderRadius"
                 }
             ]
@@ -148,16 +148,16 @@
                     "id": "buttonShadow",
                     "label": "Button shadow",
                     "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
-                    "themeKey": "button.boxShadow",
-                    "cssVariable": "--button-box-shadow",
+                    "themeKey": "button.general.boxShadow",
+                    "cssVariable": "--button-general-box-shadow",
                     "type": "boxShadow"
                 },
                 {
                     "id": "buttonShadowHover",
                     "label": "Button hover shadow",
                     "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
-                    "themeKey": "button.boxShadow",
-                    "cssVariable": "--button-hover-box-shadow",
+                    "themeKey": "button.general.boxShadow",
+                    "cssVariable": "--button-general-hover-box-shadow",
                     "type": "boxShadow"
                 }
             ]
