@@ -136,7 +136,7 @@
           const data = e.data || {};
           if (data && data.source === SRC) {
             switch (data.type) {
-              case "APPLY_CSS":
+              case "CUSTOM_CSS_CHANGE":
                 ensureStyleTag().textContent = data.payload?.css || "";
                 break;
               case "APPLY_JS":

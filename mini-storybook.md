@@ -128,7 +128,7 @@ All parent → iframe messages use:
 - `PROPS_CHANGE` `{ name: string, value: any }` — individual props change.
 - `CONTROL_CHANGE` `{ name: string, value: any }` — individual control change.
 - `BULK_CONTROLS` `{ values: Record<string, any> }` — when applying defaults/restore/save.
-- `APPLY_CSS` `{ css: string }` — replace injected CSS (`<style id="injected-css">`).
+- `CUSTOM_CSS_CHANGE` `{ css: string }` — replace injected CSS (`<style id="injected-css">`).
 - `APPLY_JS` `{ js: string }` — evaluate/replace injected JS in the iframe.
 - `SET_DIR` `{ dir: "ltr" | "rtl" }` — set `document.documentElement.dir` in the iframe.
 - `SET_VIEWPORT` `{ width: number }` — parent will also set container width.
@@ -166,7 +166,7 @@ Embed before the closing `</body>` or from a shared script:
       const data = e.data || {};
       if (data && data.source === SRC) {
         switch (data.type) {
-          case "APPLY_CSS":
+          case "CUSTOM_CSS_CHANGE":
             ensureStyleTag().textContent = data.payload?.css || "";
             break;
           case "APPLY_JS":

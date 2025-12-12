@@ -69,7 +69,7 @@ export const PreviewFrame = () => {
         sendMessageToFrame("SET_ZOOM", { scale: zoom });
 
         if (customCss) {
-            sendMessageToFrame("APPLY_CSS", { css: customCss });
+            sendMessageToFrame("CUSTOM_CSS_CHANGE", { css: customCss });
         }
 
         if (customJs) {
@@ -109,7 +109,7 @@ export const PreviewFrame = () => {
 
     useEffect(() => {
         if (customCss) {
-            sendMessageToFrame("APPLY_CSS", { css: customCss });
+            sendMessageToFrame("CUSTOM_CSS_CHANGE", { css: customCss });
         }
     }, [customCss, sendMessageToFrame]);
 

@@ -41,6 +41,9 @@ export const appReducer = (
                     scrollPosition: 0,
                     expandedAccordions: []
                 };
+
+                draft.customCss = "";
+                draft.customJs = "";
                 break;
 
             case ActionTypes.SET_COMPONENT_SCHEMA: {

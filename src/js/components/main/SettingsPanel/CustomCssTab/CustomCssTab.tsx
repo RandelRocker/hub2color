@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { useEffect, useState, useRef } from "react";
+import { Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
 import Editor, { loader } from "@monaco-editor/react";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -8,9 +8,13 @@ import { setCustomCss } from "../../../../store/actions";
 
 export const CustomCssTab = () => {
     const dispatch = useDispatch();
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const { customCss } = useSelector((state: RootState) => state.app);
     const [localCss, setLocalCss] = useState(customCss);
-
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [tagName, setTagName] = useState("");
+    const [tagDescription, setTagDescription] = useState("");
+    
     useEffect(() => {
         setLocalCss(customCss);
     }, [customCss]);
@@ -28,12 +32,44 @@ export const CustomCssTab = () => {
         });
     }, []);
 
-    const handleApply = () => {
-        dispatch(setCustomCss(localCss));
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    const handleEditorChange = (value: string = "") => {
+        // Clear existing timeout
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        // Debounce the onChange callback
+        timeoutRef.current = setTimeout(() => {
+            dispatch(setCustomCss(value));
+        }, 500);
+
+        setLocalCss(value);
     };
 
-    const handleEditorChange = (value: string | undefined) => {
-        setLocalCss(value || "");
+    const handleCreateTagClick = () => {
+        setDialogOpen(true);
+    };
+
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+        setTagName("");
+        setTagDescription("");
+    };
+
+    const handleCreateTag = () => {
+        // Here you would typically make an API call to create the tag
+        // For now, we'll just update the store with the CSS
+        dispatch(setCustomCss(localCss));
+        handleDialogClose();
     };
 
     return (
@@ -61,8 +97,7 @@ export const CustomCssTab = () => {
                 <Button
                     size="small"
                     variant="contained"
-                    onClick={handleApply}
-                    disabled={localCss === customCss}
+                    onClick={handleCreateTagClick}
                 >
                     Create tag
                 </Button>
@@ -90,6 +125,55 @@ export const CustomCssTab = () => {
                     }}
                 />
             </Box>
+
+            <Dialog open={dialogOpen} onClose={handleDialogClose} maxWidth="sm" fullWidth>
+                <DialogTitle>Create custom CSS tag</DialogTitle>
+                <DialogContent sx={{ p: 1.5 }}>
+                    <Box sx={{ mb: 1.5 }}>
+                        <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                            Tag name
+                        </Typography>
+                        <TextField
+                            autoFocus
+                            size="small"
+                            fullWidth
+                            variant="outlined"
+                            value={tagName}
+                            onChange={(e) => setTagName(e.target.value)}
+                            slotProps={{
+                                input: {
+                                    sx: { fontSize: "0.875rem" }
+                                }
+                            }}
+                        />
+                    </Box>
+                    <Box>
+                        <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                            Tag description
+                        </Typography>
+                        <TextField
+                            size="small"
+                            fullWidth
+                            variant="outlined"
+                            multiline
+                            rows={3}
+                            value={tagDescription}
+                            onChange={(e) => setTagDescription(e.target.value)}
+                            slotProps={{
+                                input: {
+                                    sx: { fontSize: "0.875rem" }
+                                }
+                            }}
+                        />
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDialogClose}>Cancel</Button>
+                    <Button onClick={handleCreateTag} variant="contained" disabled={!tagName.trim()}>
+                        Create
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
