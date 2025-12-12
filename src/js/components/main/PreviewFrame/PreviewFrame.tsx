@@ -73,7 +73,7 @@ export const PreviewFrame = () => {
         }
 
         if (customJs) {
-            sendMessageToFrame("APPLY_JS", { js: customJs });
+            sendMessageToFrame("CUSTOM_JS_CHANGE", { js: customJs });
         }
 
         // Send styling theme
@@ -115,7 +115,7 @@ export const PreviewFrame = () => {
 
     useEffect(() => {
         if (customJs) {
-            sendMessageToFrame("APPLY_JS", { js: customJs });
+            sendMessageToFrame("CUSTOM_JS_CHANGE", { js: customJs });
         }
     }, [customJs, sendMessageToFrame]);
 

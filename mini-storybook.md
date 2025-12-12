@@ -129,7 +129,7 @@ All parent → iframe messages use:
 - `CONTROL_CHANGE` `{ name: string, value: any }` — individual control change.
 - `BULK_CONTROLS` `{ values: Record<string, any> }` — when applying defaults/restore/save.
 - `CUSTOM_CSS_CHANGE` `{ css: string }` — replace injected CSS (`<style id="injected-css">`).
-- `APPLY_JS` `{ js: string }` — evaluate/replace injected JS in the iframe.
+- `CUSTOM_JS_CHANGE` `{ js: string }` — evaluate/replace injected JS in the iframe.
 - `SET_DIR` `{ dir: "ltr" | "rtl" }` — set `document.documentElement.dir` in the iframe.
 - `SET_VIEWPORT` `{ width: number }` — parent will also set container width.
 - `SET_ZOOM` `{ scale: number }` — parent will also apply CSS transform on iframe body.
@@ -169,7 +169,7 @@ Embed before the closing `</body>` or from a shared script:
           case "CUSTOM_CSS_CHANGE":
             ensureStyleTag().textContent = data.payload?.css || "";
             break;
-          case "APPLY_JS":
+          case "CUSTOM_JS_CHANGE":
             const js = data.payload?.js || "";
             // Replace previous injected script
             const s = ensureScriptTag();
@@ -225,7 +225,7 @@ Embed before the closing `</body>` or from a shared script:
 - **Controls** tab = is intended to change component props like button variant, children etc. Should not be saved to local storage or elsewere. Table layout with columns: _Name_ | _Description_ | _Control_. Render controls from schema using `react-hook-form` with `Controller`. On change, **postMessage** `CONTROL_CHANGE`, and apply immediately if possible. Table width should fit screen width without scrolling
 - **Styling** tab = is intended to change component styling by using material ui sx. Table layout with columns: _Name_ | _Description_ | _Control_. Render controls from schema using `react-hook-form` with `Controller`. On change, update local form state, **postMessage** `CONTROL_CHANGE`, and apply immediately if possible. Table width should fit screen width without scrolling
 - **Custom CSS** tab = Monaco editor (empty by default). Apply button same behavior as Styling.
-- **Custom JS** tab = Monaco editor; Apply button sends `APPLY_JS` and injects/evaluates the code (non‑persisted unless saved to localStorage bundle).
+- **Custom JS** tab = Monaco editor; Apply button sends `CUSTOM_JS_CHANGE` and injects/evaluates the code (non‑persisted unless saved to localStorage bundle).
 
 ### Persistence
 

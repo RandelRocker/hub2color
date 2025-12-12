@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import { Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
+import { Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert } from "@mui/material";
 import Editor, { loader } from "@monaco-editor/react";
+import { editor } from "monaco-editor";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
@@ -14,6 +15,7 @@ export const CustomCssTab = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [tagName, setTagName] = useState("");
     const [tagDescription, setTagDescription] = useState("");
+    const [validationError, setValidationError] = useState<string | null>(null);
     
     useEffect(() => {
         setLocalCss(customCss);
@@ -72,6 +74,15 @@ export const CustomCssTab = () => {
         handleDialogClose();
     };
 
+    const handleValidate = (markers: editor.IMarker[]) => {
+        const errorMarker = markers.find(marker => marker.severity === 8); // 8 = Error severity
+        if (errorMarker) {
+            setValidationError(errorMarker.message);
+        } else {
+            setValidationError(null);
+        }
+    };
+
     return (
         <Box
             sx={{
@@ -81,27 +92,51 @@ export const CustomCssTab = () => {
                 overflow: "hidden"
             }}
         >
-            <Box
-                sx={{
-                    p: 1,
-                    borderBottom: 1,
-                    borderColor: "divider",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between"
-                }}
-            >
-                <Typography variant="caption" color="text.secondary">
-                    For preview only. If you need to apply custom CSS to the site - create a tag.
-                </Typography>
-                <Button
-                    size="small"
-                    variant="contained"
-                    onClick={handleCreateTagClick}
+            {validationError ? (
+                <Alert 
+                    severity="error" 
+                    sx={{ 
+                        p: 1,
+                        py: 1,
+                        borderBottom: 1,
+                        borderColor: "divider",
+                        display: "flex",
+                        alignItems: "center",
+                        height: "48px",
+                        "& .MuiAlert-message": {
+                            py: 0,
+                            display: "flex",
+                            alignItems: "center"
+                        }
+                    }}
                 >
-                    Create tag
-                </Button>
-            </Box>
+                    {validationError}
+                </Alert>
+            ) : (
+                <Box
+                    className="custom-css-tab-header"
+                    sx={{
+                        p: 1,
+                        borderBottom: 1,
+                        borderColor: "divider",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        minHeight: "48px"
+                    }}
+                >
+                    <Typography variant="caption" color="text.secondary">
+                        For preview only. If you need to apply custom CSS to the site - create a tag.
+                    </Typography>
+                    <Button
+                        size="small"
+                        variant="contained"
+                        onClick={handleCreateTagClick}
+                    >
+                        Create tag
+                    </Button>
+                </Box>
+            )}
 
             <Box sx={{ flex: 1, overflow: "hidden" }}>
                 <Editor
@@ -110,6 +145,7 @@ export const CustomCssTab = () => {
                     theme="customTheme"
                     value={localCss}
                     onChange={handleEditorChange}
+                    onValidate={handleValidate}
                     options={{
                         minimap: { enabled: false },
                         fontSize: 12,

@@ -248,7 +248,7 @@
               case "CUSTOM_CSS_CHANGE":
                 ensureStyleTag().textContent = data.payload?.css || "";
                 break;
-              case "APPLY_JS":
+              case "CUSTOM_JS_CHANGE":
                 const js = data.payload?.js || "";
                 const s = ensureScriptTag();
                 s.textContent = js;
