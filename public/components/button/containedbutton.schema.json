@@ -147,7 +147,7 @@
                 {
                     "id": "buttonShadow",
                     "label": "Button shadow",
-                    "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
+                    "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
                     "themeKey": "button.general.boxShadow",
                     "cssVariable": "--button-general-box-shadow",
                     "type": "boxShadow"
@@ -155,7 +155,7 @@
                 {
                     "id": "buttonShadowHover",
                     "label": "Button hover shadow",
-                    "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
+                    "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
                     "themeKey": "button.general.boxShadow",
                     "cssVariable": "--button-general-hover-box-shadow",
                     "type": "boxShadow"

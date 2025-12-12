@@ -172,6 +172,90 @@ const formatBoxShadowString = (boxShadow: string): string => {
     return `${parsed.horizontalPosition} ${parsed.verticalPosition} ${parsed.blurRadius} ${parsed.spreadRadius}`;
 };
 
+// Helper functions for textShadow
+const parseTextShadow = (value: string): {
+    horizontalPosition: string;
+    verticalPosition: string;
+    blurRadius: string;
+    color: string;
+} => {
+    // Handle "none" value
+    if (!value || value.trim() === "none") {
+        return {
+            horizontalPosition: "0px",
+            verticalPosition: "0px",
+            blurRadius: "0px",
+            color: "#000000"
+        };
+    }
+    const match = value.match(
+        /^(-?\d*\.?\d*px)\s+(-?\d*\.?\d*px)\s+(\d*\.?\d*px)\s+(#[0-9a-fA-F]{6}|rgba?\([^)]+\)|[a-zA-Z]+)$/
+    );
+    return {
+        horizontalPosition: match?.[1] || "0px",
+        verticalPosition: match?.[2] || "0px",
+        blurRadius: match?.[3] || "0px",
+        color: match?.[4] || "#000000"
+    };
+};
+
+const formatTextShadowString = (textShadow: string): string => {
+    // For textShadow, we show the values without color (color is shown as a box)
+    const parsed = parseTextShadow(textShadow);
+    if (
+        parsed.horizontalPosition === "0px" &&
+        parsed.verticalPosition === "0px" &&
+        parsed.blurRadius === "0px"
+    ) {
+        return "none";
+    }
+    // Return only the numeric values, excluding the color
+    return `${parsed.horizontalPosition} ${parsed.verticalPosition} ${parsed.blurRadius}`;
+};
+
+// Helper functions for border
+const parseBorder = (value: string): {
+    width: string;
+    style: string;
+    color: string;
+} => {
+    // Handle "none" value
+    if (!value || value.trim() === "none") {
+        return {
+            width: "0px",
+            style: "none",
+            color: "#000000"
+        };
+    }
+    // Match: width style color
+    // Color can be hex, rgba/rgb, or named color
+    const match = value.match(/^(\d*\.?\d*px)\s+(solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden)\s+(.+)$/);
+    if (match) {
+        return {
+            width: match[1] || "1px",
+            style: match[2] || "solid",
+            color: match[3] || "#000000"
+        };
+    }
+    // Fallback: split by spaces (for simple cases)
+    const parts = value.split(/\s+/);
+    return {
+        width: parts[0] || "1px",
+        style: parts[1] || "solid",
+        color: parts.slice(2).join(" ") || "#000000"
+    };
+};
+
+const formatBorderString = (border: string): string => {
+    // For border, we show width and style (color is shown as a box)
+    const parsed = parseBorder(border);
+    if (parsed.width === "0px" || parsed.style === "none") {
+        return "none";
+    }
+    // Return width and style, excluding the color
+    return `${parsed.width} ${parsed.style}`;
+};
+
 // Debounced color picker component with color square and integrated opacity control in popover
 const DebouncedColorPicker = ({
     value,
@@ -391,103 +475,6 @@ const DebouncedColorPicker = ({
     );
 };
 
-// Debounced color picker for composite fields (textShadow, boxShadow, border)
-const DebouncedCompositeColorPicker = ({
-    value,
-    onColorChange,
-    disabled,
-    sx
-}: {
-    value: string;
-    onColorChange: (color: string) => void;
-    disabled?: boolean;
-    sx?: Record<string, unknown>;
-}) => {
-    const [localValue, setLocalValue] = useState(value || "#000000");
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const colorInputRef = useRef<HTMLInputElement>(null);
-
-    // Update local value when prop changes
-    useEffect(() => {
-        setLocalValue(value || "#000000");
-    }, [value]);
-
-    // Cleanup timeout on unmount
-    useEffect(() => {
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
-        };
-    }, []);
-
-    const handleColorInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value;
-        setLocalValue(newValue);
-
-        // Clear existing timeout
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
-
-        // Debounce the onChange callback
-        timeoutRef.current = setTimeout(() => {
-            onColorChange(newValue);
-        }, 150);
-    };
-
-    const handleColorSquareClick = () => {
-        if (!disabled && colorInputRef.current) {
-            colorInputRef.current.click();
-        }
-    };
-
-    return (
-        <Box
-            sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                ...sx
-            }}
-        >
-            {/* Color square */}
-            <Box
-                onClick={handleColorSquareClick}
-                sx={{
-                    width: 30,
-                    height: 30,
-                    minWidth: 30,
-                    backgroundColor: localValue || "#000000",
-                    border: "1px solid #e0e0e0",
-                    borderRadius: 1,
-                    cursor: disabled ? "not-allowed" : "pointer",
-                    opacity: disabled ? 0.5 : 1,
-                    "&:hover": {
-                        opacity: disabled ? 0.5 : 0.8
-                    },
-                    transition: "opacity 0.2s"
-                }}
-            />
-            {/* Hidden color input */}
-            <input
-                ref={colorInputRef}
-                type="color"
-                value={localValue || "#000000"}
-                onChange={handleColorInputChange}
-                disabled={disabled}
-                style={{
-                    position: "absolute",
-                    width: 0,
-                    height: 0,
-                    opacity: 0,
-                    pointerEvents: "none"
-                }}
-            />
-        </Box>
-    );
-};
-
 // Debounced padding picker component with visual diagram and popover
 const DebouncedPaddingPicker = ({
     value,
@@ -633,9 +620,9 @@ const DebouncedPaddingPicker = ({
                 <Box sx={{ p: 1.5, minWidth: 240 }}>
                     {/* Visual padding diagram */}
                     <Box sx={{ mb: 1.5 }}>
-                        <Typography variant="subtitle1" sx={{ mb: 1.5, display: "block" }}>
+                        {/* <Typography variant="subtitle1" sx={{ mb: 1.5, display: "block" }}>
                             Padding
-                        </Typography>
+                        </Typography> */}
                         <Box
                             sx={{
                                 position: "relative",
@@ -1034,9 +1021,9 @@ const DebouncedBorderRadiusPicker = ({
                 <Box sx={{ p: 1.5, minWidth: 240 }}>
                     {/* Visual border radius diagram */}
                     <Box sx={{ mb: 1.5 }}>
-                        <Typography variant="subtitle1" sx={{ mb: 1.5, display: "block" }}>
+                        {/* <Typography variant="subtitle1" sx={{ mb: 1.5, display: "block" }}>
                             Border Radius
-                        </Typography>
+                        </Typography> */}
                         <Box
                             sx={{
                                 position: "relative",
@@ -1471,19 +1458,19 @@ const DebouncedBoxShadowPicker = ({
                 <Box sx={{ p: 1.5, minWidth: 240 }}>
                     {/* Visual box shadow diagram */}
                     <Box sx={{ mb: 1.5 }}>
-                        <Typography variant="subtitle1" sx={{ mb: 1.5, display: "block" }}>
+                        {/* <Typography variant="subtitle1" sx={{ mb: 1.5, display: "block" }}>
                             Box Shadow
-                        </Typography>
+                        </Typography> */}
                         <Box
                             sx={{
                                 position: "relative",
                                 height: 90,
-                                width: 145,
+                                width: '100%',
                                 mx: "auto",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                p: 1
+                                overflow: 'hidden'
                             }}
                         >
                             {/* Box with shadow */}
@@ -1640,6 +1627,824 @@ const DebouncedBoxShadowPicker = ({
                                     px
                                 </Typography>
                             </Box>
+                        </Box>
+                    </Box>
+                    {/* Color picker */}
+                    <Box sx={{ maxWidth: 185, mx: "auto" }}>
+                        <Typography variant="caption" sx={{ mb: 1, display: "block" }}>
+                            Color
+                        </Typography>
+                        <Box sx={{ mb: 2 }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1
+                                }}
+                            >
+                                <Box
+                                    onClick={() => colorInputRef.current?.click()}
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        backgroundColor: hexToRgba(localHex || "#000000", localAlpha),
+                                        border: "1px solid #e0e0e0",
+                                        borderRadius: 1,
+                                        cursor: disabled ? "not-allowed" : "pointer",
+                                        "&:hover": {
+                                            opacity: disabled ? 1 : 0.8
+                                        },
+                                        transition: "opacity 0.2s"
+                                    }}
+                                />
+                                <input
+                                    ref={colorInputRef}
+                                    type="color"
+                                    value={localHex || "#000000"}
+                                    onChange={(e) => {
+                                        const newHex = e.target.value;
+                                        setLocalHex(newHex);
+                                        handleColorChange(hexToRgba(newHex, localAlpha));
+                                    }}
+                                    disabled={disabled}
+                                    style={{
+                                        position: "absolute",
+                                        width: 0,
+                                        height: 0,
+                                        opacity: 0,
+                                        pointerEvents: "none"
+                                    }}
+                                />
+                                <TextField
+                                    size="small"
+                                    value={localHex || "#000000"}
+                                    onChange={(e) => {
+                                        const newHex = e.target.value;
+                                        setLocalHex(newHex);
+                                        // Only update color if valid hex
+                                        if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(newHex)) {
+                                            handleColorChange(hexToRgba(newHex, localAlpha));
+                                        }
+                                    }}
+                                    onBlur={(e) => {
+                                        // Validate and fix hex on blur
+                                        let hex = e.target.value.trim();
+                                        if (!hex.startsWith("#")) {
+                                            hex = "#" + hex;
+                                        }
+                                        // Normalize 3-digit hex to 6-digit
+                                        if (/^#([A-Fa-f0-9]{3})$/.test(hex)) {
+                                            hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+                                        }
+                                        // If still invalid, revert to current
+                                        if (!/^#([A-Fa-f0-9]{6})$/.test(hex)) {
+                                            hex = localHex || "#000000";
+                                        }
+                                        setLocalHex(hex);
+                                        handleColorChange(hexToRgba(hex, localAlpha));
+                                    }}
+                                    disabled={disabled}
+                                    sx={{ width: 120 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem" }
+                                        }
+                                    }}
+                                    placeholder="#000000"
+                                />
+                            </Box>
+                        </Box>
+                        <Box>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                                <Typography variant="caption">
+                                    Opacity
+                                </Typography>
+                                <Typography variant="caption" sx={{ fontWeight: "medium" }}>
+                                    {Math.round(localAlpha * 100)}%
+                                </Typography>
+                            </Box>
+                            <Slider
+                                value={localAlpha * 100}
+                                onChange={(_event: React.SyntheticEvent | Event, newValue: number | number[]) => {
+                                    const newAlpha = typeof newValue === "number" ? newValue / 100 : newValue[0] / 100;
+                                    setLocalAlpha(newAlpha);
+                                    handleColorChange(hexToRgba(localHex || "#000000", newAlpha));
+                                }}
+                                min={0}
+                                max={100}
+                                step={1}
+                                size="small"
+                                disabled={disabled}
+                                valueLabelDisplay="off"
+                            />
+                        </Box>
+                    </Box>
+                </Box>
+            </Popover>
+        </>
+    );
+};
+
+const DebouncedTextShadowPicker = ({
+    value,
+    onChange,
+    disabled,
+    sx
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    disabled?: boolean;
+    sx?: Record<string, unknown>;
+}) => {
+    const initialValue = value || "0px 0px 0px #000000";
+    const parsedTextShadow = parseTextShadow(initialValue);
+    const initialColor = parsedTextShadow.color || "#000000";
+    const initialParsedColor = parseColor(initialColor);
+    const [localHorizontal, setLocalHorizontal] = useState(extractNumber(parsedTextShadow.horizontalPosition));
+    const [localVertical, setLocalVertical] = useState(extractNumber(parsedTextShadow.verticalPosition));
+    const [localBlur, setLocalBlur] = useState(extractNumber(parsedTextShadow.blurRadius));
+    const [localColor, setLocalColor] = useState(initialColor);
+    const [localHex, setLocalHex] = useState(initialParsedColor.hex);
+    const [localAlpha, setLocalAlpha] = useState(initialParsedColor.alpha);
+    const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const lastEmittedValueRef = useRef<string>(initialValue);
+    const colorInputRef = useRef<HTMLInputElement>(null);
+
+    const open = Boolean(anchorEl);
+
+    // Update local values when prop changes
+    useEffect(() => {
+        const currentValue = value || "0px 0px 0px #000000";
+        if (currentValue !== lastEmittedValueRef.current) {
+            const parsed = parseTextShadow(currentValue);
+            setLocalHorizontal(extractNumber(parsed.horizontalPosition));
+            setLocalVertical(extractNumber(parsed.verticalPosition));
+            setLocalBlur(extractNumber(parsed.blurRadius));
+            setLocalColor(parsed.color);
+            const parsedColorValue = parseColor(parsed.color || "#000000");
+            setLocalHex(parsedColorValue.hex);
+            setLocalAlpha(parsedColorValue.alpha);
+            lastEmittedValueRef.current = currentValue;
+        }
+    }, [value]);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    const updateTextShadow = (horizontal: string, vertical: string, blur: string, color: string) => {
+        const horizontalPx = horizontal ? `${horizontal}px` : "0px";
+        const verticalPx = vertical ? `${vertical}px` : "0px";
+        const blurPx = blur ? `${blur}px` : "0px";
+        const newValue = `${horizontalPx} ${verticalPx} ${blurPx} ${color}`;
+        
+        // Clear existing timeout
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        // Debounce the onChange callback
+        timeoutRef.current = setTimeout(() => {
+            lastEmittedValueRef.current = newValue;
+            onChange(newValue);
+        }, 150);
+    };
+
+    const handleNumberFieldChange = (field: "horizontalPosition" | "verticalPosition" | "blurRadius", newValue: string) => {
+        // Only allow numeric input with optional decimal and negative sign
+        const validPattern = /^-?\d*\.?\d*$/;
+        if (!validPattern.test(newValue)) {
+            return;
+        }
+
+        switch (field) {
+            case "horizontalPosition":
+                setLocalHorizontal(newValue);
+                updateTextShadow(newValue, localVertical, localBlur, localColor);
+                break;
+            case "verticalPosition":
+                setLocalVertical(newValue);
+                updateTextShadow(localHorizontal, newValue, localBlur, localColor);
+                break;
+            case "blurRadius":
+                setLocalBlur(newValue);
+                updateTextShadow(localHorizontal, localVertical, newValue, localColor);
+                break;
+        }
+    };
+
+    const handleColorChange = (newColor: string) => {
+        setLocalColor(newColor);
+        const parsed = parseColor(newColor);
+        setLocalHex(parsed.hex);
+        setLocalAlpha(parsed.alpha);
+        updateTextShadow(localHorizontal, localVertical, localBlur, newColor);
+    };
+
+    const handleTextClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (!disabled) {
+            setAnchorEl(event.currentTarget);
+        }
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+
+    const currentValue = value || "0px 0px 0px #000000";
+    const displayText = formatTextShadowString(currentValue);
+    const textShadowValue = `${localHorizontal || "0"}px ${localVertical || "0"}px ${localBlur || "0"}px ${localColor || "#000000"}`;
+    
+    // Extract color for display box - use localColor for real-time updates
+    const displayColor = localColor || parsedTextShadow.color || "#000000";
+
+    return (
+        <>
+            <Box
+                onClick={handleTextClick}
+                sx={{
+                    cursor: disabled ? "not-allowed" : "pointer",
+                    opacity: disabled ? 0.5 : 1,
+                    padding: "4px 8px",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 1,
+                    backgroundColor: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    "&:hover": {
+                        backgroundColor: disabled ? "#fff" : "#f5f5f5",
+                        borderColor: disabled ? "#e0e0e0" : "#bdbdbd"
+                    },
+                    transition: "all 0.2s",
+                    fontSize: "0.875rem",
+                    minWidth: 80,
+                    ...sx
+                }}
+            >
+                <Box sx={{ flex: 1, textAlign: "center" }}>
+                    {displayText}
+                </Box>
+                <Box
+                    sx={{
+                        width: 20,
+                        height: 20,
+                        minWidth: 20,
+                        backgroundColor: displayColor,
+                        border: "1px solid #e0e0e0",
+                        borderRadius: 1,
+                        flexShrink: 0
+                    }}
+                />
+            </Box>
+            {/* Text shadow picker popover */}
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left"
+                }}
+                transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left"
+                }}
+            >
+                <Box sx={{ p: 1.5, minWidth: 240 }}>
+                    {/* Visual text shadow diagram */}
+                    <Box sx={{ mb: 1.5 }}>
+                        {/* <Typography variant="subtitle1" sx={{ mb: 1.5, display: "block" }}>
+                            Text Shadow
+                        </Typography> */}
+                        <Box
+                            sx={{
+                                position: "relative",
+                                height: 50,
+                                width: '100%',
+                                mx: "auto",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                overflow: 'hidden'
+                            }}
+                        >
+                            {/* Text with shadow */}
+                            <Typography
+                                sx={{
+                                    fontSize: "1.5rem",
+                                    fontWeight: "bold",
+                                    color: "#484848",
+                                    fontFamily: 'Arial',
+                                    textShadow: textShadowValue
+                                }}
+                            >
+                                Master of Puppets
+                            </Typography>
+                        </Box>
+                    </Box>
+                    {/* Input fields */}
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: "auto auto",
+                            gap: 1,
+                            mb: 1,
+                            justifyContent: "center",
+                            mx: "auto"
+                        }}
+                    >
+                        {/* Horizontal */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Horizontal
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <TextField
+                                    size="small"
+                                    value={localHorizontal || ""}
+                                    onChange={(e) => handleNumberFieldChange("horizontalPosition", e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                        {/* Vertical */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Vertical
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <TextField
+                                    size="small"
+                                    value={localVertical || ""}
+                                    onChange={(e) => handleNumberFieldChange("verticalPosition", e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                        {/* Blur */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Blur
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <TextField
+                                    size="small"
+                                    value={localBlur || ""}
+                                    onChange={(e) => handleNumberFieldChange("blurRadius", e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+                    {/* Color picker */}
+                    <Box sx={{ maxWidth: 185, mx: "auto" }}>
+                        <Typography variant="caption" sx={{ mb: 1, display: "block" }}>
+                            Color
+                        </Typography>
+                        <Box sx={{ mb: 2 }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1
+                                }}
+                            >
+                                <Box
+                                    onClick={() => colorInputRef.current?.click()}
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        backgroundColor: hexToRgba(localHex || "#000000", localAlpha),
+                                        border: "1px solid #e0e0e0",
+                                        borderRadius: 1,
+                                        cursor: disabled ? "not-allowed" : "pointer",
+                                        "&:hover": {
+                                            opacity: disabled ? 1 : 0.8
+                                        },
+                                        transition: "opacity 0.2s"
+                                    }}
+                                />
+                                <input
+                                    ref={colorInputRef}
+                                    type="color"
+                                    value={localHex || "#000000"}
+                                    onChange={(e) => {
+                                        const newHex = e.target.value;
+                                        setLocalHex(newHex);
+                                        handleColorChange(hexToRgba(newHex, localAlpha));
+                                    }}
+                                    disabled={disabled}
+                                    style={{
+                                        position: "absolute",
+                                        width: 0,
+                                        height: 0,
+                                        opacity: 0,
+                                        pointerEvents: "none"
+                                    }}
+                                />
+                                <TextField
+                                    size="small"
+                                    value={localHex || "#000000"}
+                                    onChange={(e) => {
+                                        const newHex = e.target.value;
+                                        setLocalHex(newHex);
+                                        // Only update color if valid hex
+                                        if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(newHex)) {
+                                            handleColorChange(hexToRgba(newHex, localAlpha));
+                                        }
+                                    }}
+                                    onBlur={(e) => {
+                                        // Validate and fix hex on blur
+                                        let hex = e.target.value.trim();
+                                        if (!hex.startsWith("#")) {
+                                            hex = "#" + hex;
+                                        }
+                                        // Normalize 3-digit hex to 6-digit
+                                        if (/^#([A-Fa-f0-9]{3})$/.test(hex)) {
+                                            hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+                                        }
+                                        // If still invalid, revert to current
+                                        if (!/^#([A-Fa-f0-9]{6})$/.test(hex)) {
+                                            hex = localHex || "#000000";
+                                        }
+                                        setLocalHex(hex);
+                                        handleColorChange(hexToRgba(hex, localAlpha));
+                                    }}
+                                    disabled={disabled}
+                                    sx={{ width: 120 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem" }
+                                        }
+                                    }}
+                                    placeholder="#000000"
+                                />
+                            </Box>
+                        </Box>
+                        <Box>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                                <Typography variant="caption">
+                                    Opacity
+                                </Typography>
+                                <Typography variant="caption" sx={{ fontWeight: "medium" }}>
+                                    {Math.round(localAlpha * 100)}%
+                                </Typography>
+                            </Box>
+                            <Slider
+                                value={localAlpha * 100}
+                                onChange={(_event: React.SyntheticEvent | Event, newValue: number | number[]) => {
+                                    const newAlpha = typeof newValue === "number" ? newValue / 100 : newValue[0] / 100;
+                                    setLocalAlpha(newAlpha);
+                                    handleColorChange(hexToRgba(localHex || "#000000", newAlpha));
+                                }}
+                                min={0}
+                                max={100}
+                                step={1}
+                                size="small"
+                                disabled={disabled}
+                                valueLabelDisplay="off"
+                            />
+                        </Box>
+                    </Box>
+                </Box>
+            </Popover>
+        </>
+    );
+};
+
+const DebouncedBorderPicker = ({
+    value,
+    onChange,
+    disabled,
+    sx
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    disabled?: boolean;
+    sx?: Record<string, unknown>;
+}) => {
+    const initialValue = value || "1px solid #000000";
+    const parsedBorder = parseBorder(initialValue);
+    const initialColor = parsedBorder.color || "#000000";
+    const initialParsedColor = parseColor(initialColor);
+    const [localWidth, setLocalWidth] = useState(extractNumber(parsedBorder.width));
+    const [localStyle, setLocalStyle] = useState(parsedBorder.style);
+    const [localColor, setLocalColor] = useState(initialColor);
+    const [localHex, setLocalHex] = useState(initialParsedColor.hex);
+    const [localAlpha, setLocalAlpha] = useState(initialParsedColor.alpha);
+    const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const lastEmittedValueRef = useRef<string>(initialValue);
+    const colorInputRef = useRef<HTMLInputElement>(null);
+
+    const open = Boolean(anchorEl);
+
+    const borderStyles = [
+        "solid",
+        "dashed",
+        "dotted",
+        "double",
+        "groove",
+        "ridge",
+        "inset",
+        "outset",
+        "none",
+        "hidden"
+    ];
+
+    // Update local values when prop changes
+    useEffect(() => {
+        const currentValue = value || "1px solid #000000";
+        if (currentValue !== lastEmittedValueRef.current) {
+            const parsed = parseBorder(currentValue);
+            setLocalWidth(extractNumber(parsed.width));
+            setLocalStyle(parsed.style);
+            setLocalColor(parsed.color);
+            const parsedColorValue = parseColor(parsed.color || "#000000");
+            setLocalHex(parsedColorValue.hex);
+            setLocalAlpha(parsedColorValue.alpha);
+            lastEmittedValueRef.current = currentValue;
+        }
+    }, [value]);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    const updateBorder = (width: string, style: string, color: string) => {
+        const widthPx = width ? `${width}px` : "1px";
+        const newValue = `${widthPx} ${style} ${color}`;
+        
+        // Clear existing timeout
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        // Debounce the onChange callback
+        timeoutRef.current = setTimeout(() => {
+            lastEmittedValueRef.current = newValue;
+            onChange(newValue);
+        }, 150);
+    };
+
+    const handleWidthChange = (newValue: string) => {
+        // Only allow numeric input with optional decimal
+        const validPattern = /^\d*\.?\d*$/;
+        if (!validPattern.test(newValue)) {
+            return;
+        }
+        setLocalWidth(newValue);
+        updateBorder(newValue, localStyle, localColor);
+    };
+
+    const handleStyleChange = (newStyle: string) => {
+        setLocalStyle(newStyle);
+        updateBorder(localWidth, newStyle, localColor);
+    };
+
+    const handleColorChange = (newColor: string) => {
+        setLocalColor(newColor);
+        const parsed = parseColor(newColor);
+        setLocalHex(parsed.hex);
+        setLocalAlpha(parsed.alpha);
+        updateBorder(localWidth, localStyle, newColor);
+    };
+
+    const handleTextClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (!disabled) {
+            setAnchorEl(event.currentTarget);
+        }
+    };
+
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+
+    const currentValue = value || "1px solid #000000";
+    const displayText = formatBorderString(currentValue);
+    const borderValue = `${localWidth || "1"}px ${localStyle || "solid"} ${localColor || "#000000"}`;
+    
+    // Extract color for display box - use localColor for real-time updates
+    const displayColor = localColor || parsedBorder.color || "#000000";
+
+    return (
+        <>
+            <Box
+                onClick={handleTextClick}
+                sx={{
+                    cursor: disabled ? "not-allowed" : "pointer",
+                    opacity: disabled ? 0.5 : 1,
+                    padding: "4px 8px",
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 1,
+                    backgroundColor: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    "&:hover": {
+                        backgroundColor: disabled ? "#fff" : "#f5f5f5",
+                        borderColor: disabled ? "#e0e0e0" : "#bdbdbd"
+                    },
+                    transition: "all 0.2s",
+                    fontSize: "0.875rem",
+                    minWidth: 80,
+                    ...sx
+                }}
+            >
+                <Box sx={{ flex: 1, textAlign: "center" }}>
+                    {displayText}
+                </Box>
+                <Box
+                    sx={{
+                        width: 20,
+                        height: 20,
+                        minWidth: 20,
+                        backgroundColor: displayColor,
+                        border: "1px solid #e0e0e0",
+                        borderRadius: 1,
+                        flexShrink: 0
+                    }}
+                />
+            </Box>
+            {/* Border picker popover */}
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handlePopoverClose}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left"
+                }}
+                transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left"
+                }}
+            >
+                <Box sx={{ p: 1.5, minWidth: 240 }}>
+                    {/* Visual border diagram */}
+                    <Box sx={{ mb: 1.5 }}>
+                        {/* <Typography variant="subtitle1" sx={{ mb: 1.5, display: "block" }}>
+                            Border
+                        </Typography> */}
+                        <Box
+                            sx={{
+                                position: "relative",
+                                height: 90,
+                                width: '100%',
+                                mx: "auto",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                overflow: 'hidden'
+                            }}
+                        >
+                            {/* Rectangle with border */}
+                            <Box
+                                sx={{
+                                    backgroundColor: "#fff",
+                                    border: borderValue,
+                                    borderRadius: 1,
+                                    minWidth: 100,
+                                    minHeight: 80,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize: "0.75rem",
+                                    color: "#666"
+                                }}
+                            >
+                                Content
+                            </Box>
+                        </Box>
+                    </Box>
+                    {/* Input fields */}
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: "auto auto",
+                            gap: 1,
+                            mb: 1,
+                            justifyContent: "center",
+                            mx: "auto"
+                        }}
+                    >
+                        {/* Width */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Width
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <TextField
+                                    size="small"
+                                    value={localWidth || ""}
+                                    onChange={(e) => handleWidthChange(e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ width: 70 }}
+                                    slotProps={{
+                                        input: {
+                                            sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
+                                        }
+                                    }}
+                                    placeholder="1"
+                                />
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: "0.875rem",
+                                        color: "text.secondary",
+                                        userSelect: "none"
+                                    }}
+                                >
+                                    px
+                                </Typography>
+                            </Box>
+                        </Box>
+                        {/* Style */}
+                        <Box>
+                            <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                Style
+                            </Typography>
+                            <FormControl size="small" sx={{ width: 100 }}>
+                                <Select
+                                    value={localStyle || "solid"}
+                                    onChange={(e) => handleStyleChange(e.target.value)}
+                                    disabled={disabled}
+                                    sx={{ fontSize: "0.875rem" }}
+                                >
+                                    {borderStyles.map((styleOption) => (
+                                        <MenuItem
+                                            key={styleOption}
+                                            value={styleOption}
+                                            sx={{ fontSize: "0.875rem" }}
+                                        >
+                                            {styleOption}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Box>
                     </Box>
                     {/* Color picker */}
@@ -2258,134 +3063,13 @@ export const StylingTab = () => {
                         name={id}
                         control={control}
                         defaultValue={defaultValue || "0px 0px 0px #000000"}
-                        render={({ field: fieldProps }) => {
-                            const parseTextShadow = (value: string) => {
-                                const match = value.match(
-                                    /^(-?\d*\.?\d*px)\s+(-?\d*\.?\d*px)\s+(\d*\.?\d*px)\s+(#[0-9a-fA-F]{6}|rgba?\([^)]+\)|[a-zA-Z]+)$/
-                                );
-                                return {
-                                    horizontalPosition: match?.[1] || "0px",
-                                    verticalPosition: match?.[2] || "0px",
-                                    blurRadius: match?.[3] || "0px",
-                                    color: match?.[4] || "#000000"
-                                };
-                            };
-
-                            const {
-                                horizontalPosition,
-                                verticalPosition,
-                                blurRadius,
-                                color
-                            } = parseTextShadow(
-                                (fieldProps.value as string) || ""
-                            );
-
-                            const handleFieldChange = (
-                                field: string,
-                                value: string
-                            ) => {
-                                const current = parseTextShadow(
-                                    (fieldProps.value as string) || ""
-                                );
-                                const updated = { ...current, [field]: value };
-                                const newValue = `${updated.horizontalPosition} ${updated.verticalPosition} ${updated.blurRadius} ${updated.color}`;
-                                fieldProps.onChange(newValue);
-                            };
-
-                            const handleNumberFieldChange =
-                                (field: string) =>
-                                (e: React.ChangeEvent<HTMLInputElement>) => {
-                                    const inputValue = e.target.value;
-                                    const validPattern = /^-?\d*\.?\d*$/;
-
-                                    if (validPattern.test(inputValue)) {
-                                        const valueWithUnit = inputValue
-                                            ? `${inputValue}px`
-                                            : "0px";
-                                        handleFieldChange(field, valueWithUnit);
-                                    }
-                                };
-
-                            const extractNumber = (value: string) => {
-                                const match = value.match(/^(-?\d*\.?\d*)/);
-                                return match?.[1] || "0";
-                            };
-
-                            return (
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        gap: 1,
-                                        alignItems: "center"
-                                    }}
-                                >
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(
-                                            horizontalPosition
-                                        )}
-                                        onChange={handleNumberFieldChange(
-                                            "horizontalPosition"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="H"
-                                        title="Horizontal Position"
-                                    />
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(verticalPosition)}
-                                        onChange={handleNumberFieldChange(
-                                            "verticalPosition"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="V"
-                                        title="Vertical Position"
-                                    />
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(blurRadius)}
-                                        onChange={handleNumberFieldChange(
-                                            "blurRadius"
-                                        )}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="Blur"
-                                        title="Blur Radius"
-                                    />
-                                    <DebouncedCompositeColorPicker
-                                        value={color}
-                                        onColorChange={(newColor) =>
-                                            handleFieldChange("color", newColor)
-                                        }
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "25%" }}
-                                    />
-                                </Box>
-                            );
-                        }}
+                        render={({ field: fieldProps }) => (
+                            <DebouncedTextShadowPicker
+                                value={(fieldProps.value as string) || "0px 0px 0px #000000"}
+                                onChange={fieldProps.onChange}
+                                disabled={!isFieldEnabled}
+                            />
+                        )}
                     />
                 );
 
@@ -2429,135 +3113,13 @@ export const StylingTab = () => {
                         name={id}
                         control={control}
                         defaultValue={defaultValue || "1px solid #000000"}
-                        render={({ field: fieldProps }) => {
-                            const parseBorder = (
-                                value: string
-                            ): {
-                                width: string;
-                                style: string;
-                                color: string;
-                            } => {
-                                const parts = value.split(/\s+/);
-                                return {
-                                    width: parts[0] || "1px",
-                                    style: parts[1] || "solid",
-                                    color: parts[2] || "#000000"
-                                };
-                            };
-
-                            const { width, style, color } = parseBorder(
-                                (fieldProps.value as string) || ""
-                            );
-
-                            const handleFieldChange = (
-                                field: string,
-                                value: string
-                            ) => {
-                                const current = parseBorder(
-                                    (fieldProps.value as string) || ""
-                                );
-                                const updated = { ...current, [field]: value };
-                                const newValue = `${updated.width} ${updated.style} ${updated.color}`;
-                                fieldProps.onChange(newValue);
-                            };
-
-                            const handleWidthChange = (
-                                e: React.ChangeEvent<HTMLInputElement>
-                            ) => {
-                                const inputValue = e.target.value;
-                                const validPattern = /^\d*\.?\d*$/;
-
-                                if (validPattern.test(inputValue)) {
-                                    const valueWithUnit = inputValue
-                                        ? `${inputValue}px`
-                                        : "0px";
-                                    handleFieldChange("width", valueWithUnit);
-                                }
-                            };
-
-                            const handleStyleChange = (e: {
-                                target: { value: string };
-                            }) => {
-                                handleFieldChange("style", e.target.value);
-                            };
-
-                            const extractNumber = (value: string) => {
-                                const match = value.match(/^(\d*\.?\d*)/);
-                                return match?.[1] || "1";
-                            };
-
-                            const borderStyles = [
-                                "solid",
-                                "dashed",
-                                "dotted",
-                                "double",
-                                "groove",
-                                "ridge",
-                                "inset",
-                                "outset",
-                                "none",
-                                "hidden"
-                            ];
-
-                            return (
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        gap: 1,
-                                        alignItems: "center"
-                                    }}
-                                >
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(width)}
-                                        onChange={handleWidthChange}
-                                        size="small"
-                                        variant="outlined"
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "33%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        placeholder="Width"
-                                        title="Border Width"
-                                    />
-                                    <FormControl
-                                        size="small"
-                                        sx={{ width: "33%" }}
-                                    >
-                                        <Select
-                                            value={style}
-                                            onChange={handleStyleChange}
-                                            variant="outlined"
-                                            disabled={!isFieldEnabled}
-                                            sx={{ fontSize: "0.875rem" }}
-                                        >
-                                            {borderStyles.map((styleOption) => (
-                                                <MenuItem
-                                                    key={styleOption}
-                                                    value={styleOption}
-                                                    sx={{
-                                                        fontSize: "0.875rem"
-                                                    }}
-                                                >
-                                                    {styleOption}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                    <DebouncedCompositeColorPicker
-                                        value={color}
-                                        onColorChange={(newColor) =>
-                                            handleFieldChange("color", newColor)
-                                        }
-                                        disabled={!isFieldEnabled}
-                                        sx={{ width: "33%" }}
-                                    />
-                                </Box>
-                            );
-                        }}
+                        render={({ field: fieldProps }) => (
+                            <DebouncedBorderPicker
+                                value={(fieldProps.value as string) || "1px solid #000000"}
+                                onChange={fieldProps.onChange}
+                                disabled={!isFieldEnabled}
+                            />
+                        )}
                     />
                 );
 
