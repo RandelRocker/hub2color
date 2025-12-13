@@ -25,6 +25,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MoreVert, Restore, RestartAlt } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
+import { RgbaColorPicker } from "react-colorful";
+import type { RgbaColor } from "react-colorful";
 
 import { RootState } from "../../../../store";
 import { updateStylingTabValues, updateStylingTabValuesWithDefault, setStylingTabUIState, updateStylingTabDefaultValues } from "../../../../store/actions";
@@ -64,6 +66,37 @@ const parseColor = (color: string): { hex: string; alpha: number } => {
     }
     // Default to hex color with full opacity
     return { hex: color || "#000000", alpha: 1 };
+};
+
+// Convert rgba string to RgbaColor object
+const rgbaStringToRgbaColor = (rgba: string): RgbaColor => {
+    const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+    if (match) {
+        return {
+            r: parseInt(match[1], 10),
+            g: parseInt(match[2], 10),
+            b: parseInt(match[3], 10),
+            a: match[4] ? parseFloat(match[4]) : 1
+        };
+    }
+    // Fallback: try to parse as hex
+    const parsed = parseColor(rgba);
+    const hexMatch = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(parsed.hex);
+    if (hexMatch) {
+        return {
+            r: parseInt(hexMatch[1], 16),
+            g: parseInt(hexMatch[2], 16),
+            b: parseInt(hexMatch[3], 16),
+            a: parsed.alpha
+        };
+    }
+    // Default fallback
+    return { r: 0, g: 0, b: 0, a: 1 };
+};
+
+// Convert RgbaColor object to rgba string
+const rgbaColorToRgbaString = (color: RgbaColor): string => {
+    return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
 };
 
 // Helper functions for padding
@@ -256,7 +289,7 @@ const formatBorderString = (border: string): string => {
     return `${parsed.width} ${parsed.style}`;
 };
 
-// Debounced color picker component with color square and integrated opacity control in popover
+// Debounced color picker component with color square and integrated opacity control using react-colorful
 const DebouncedColorPicker = ({
     value,
     onChange,
@@ -268,20 +301,17 @@ const DebouncedColorPicker = ({
     disabled?: boolean;
     sx?: Record<string, unknown>;
 }) => {
-    const parsedColor = parseColor(value || "#000000");
-    const [localHex, setLocalHex] = useState(parsedColor.hex);
-    const [localAlpha, setLocalAlpha] = useState(parsedColor.alpha);
+    const [localColor, setLocalColor] = useState<RgbaColor>(() => 
+        rgbaStringToRgbaColor(value || "rgba(0, 0, 0, 1)")
+    );
     const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const colorInputRef = useRef<HTMLInputElement>(null);
 
     const open = Boolean(anchorEl);
 
-    // Update local values when prop changes
+    // Update local color when prop changes
     useEffect(() => {
-        const parsed = parseColor(value || "#000000");
-        setLocalHex(parsed.hex);
-        setLocalAlpha(parsed.alpha);
+        setLocalColor(rgbaStringToRgbaColor(value || "rgba(0, 0, 0, 1)"));
     }, [value]);
 
     // Cleanup timeout on unmount
@@ -293,8 +323,8 @@ const DebouncedColorPicker = ({
         };
     }, []);
 
-    const updateColor = (hex: string, alpha: number) => {
-        const newColor = hexToRgba(hex, alpha);
+    const updateColor = (color: RgbaColor) => {
+        setLocalColor(color);
         
         // Clear existing timeout
         if (timeoutRef.current) {
@@ -303,20 +333,12 @@ const DebouncedColorPicker = ({
 
         // Debounce the onChange callback
         timeoutRef.current = setTimeout(() => {
-            onChange(newColor);
+            onChange(rgbaColorToRgbaString(color));
         }, 150);
     };
 
-    const handleColorInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newHex = e.target.value;
-        setLocalHex(newHex);
-        updateColor(newHex, localAlpha);
-    };
-
-    const handleOpacityChange = (_event: React.SyntheticEvent | Event, newValue: number | number[]) => {
-        const newAlpha = typeof newValue === "number" ? newValue / 100 : newValue[0] / 100;
-        setLocalAlpha(newAlpha);
-        updateColor(localHex, newAlpha);
+    const handleColorChange = (color: RgbaColor) => {
+        updateColor(color);
     };
 
     const handleColorSquareClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -329,7 +351,8 @@ const DebouncedColorPicker = ({
         setAnchorEl(null);
     };
 
-    const displayColor = hexToRgba(localHex, localAlpha);
+    const displayColor = rgbaColorToRgbaString(localColor);
+    const hexColor = `#${localColor.r.toString(16).padStart(2, "0")}${localColor.g.toString(16).padStart(2, "0")}${localColor.b.toString(16).padStart(2, "0")}`;
 
     return (
         <>
@@ -374,7 +397,7 @@ const DebouncedColorPicker = ({
                     horizontal: "left"
                 }}
             >
-                <Box sx={{ p: 2, minWidth: 250 }}>
+                <Box sx={{ p: 2 }}>
                     <Box sx={{ mb: 2 }}>
                         <Typography variant="caption" sx={{ mb: 1, display: "block" }}>
                             Color
@@ -387,43 +410,30 @@ const DebouncedColorPicker = ({
                             }}
                         >
                             <Box
-                                onClick={() => colorInputRef.current?.click()}
                                 sx={{
                                     width: 40,
                                     height: 40,
-                                    backgroundColor: localHex || "#000000",
+                                    backgroundColor: displayColor,
                                     border: "1px solid #e0e0e0",
-                                    borderRadius: 1,
-                                    cursor: "pointer",
-                                    "&:hover": {
-                                        opacity: 0.8
-                                    },
-                                    transition: "opacity 0.2s"
-                                }}
-                            />
-                            <input
-                                ref={colorInputRef}
-                                type="color"
-                                value={localHex || "#000000"}
-                                onChange={handleColorInputChange}
-                                disabled={disabled}
-                                style={{
-                                    position: "absolute",
-                                    width: 0,
-                                    height: 0,
-                                    opacity: 0,
-                                    pointerEvents: "none"
+                                    borderRadius: 1
                                 }}
                             />
                             <TextField
                                 size="small"
-                                value={localHex || "#000000"}
+                                value={hexColor}
                                 onChange={(e) => {
-                                    const newHex = e.target.value;
-                                    setLocalHex(newHex);
+                                    const hex = e.target.value;
                                     // Only update color if valid hex
-                                    if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(newHex)) {
-                                        updateColor(newHex, localAlpha);
+                                    if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex)) {
+                                        const hexMatch = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.length === 4 ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}` : hex);
+                                        if (hexMatch) {
+                                            updateColor({
+                                                r: parseInt(hexMatch[1], 16),
+                                                g: parseInt(hexMatch[2], 16),
+                                                b: parseInt(hexMatch[3], 16),
+                                                a: localColor.a
+                                            });
+                                        }
                                     }
                                 }}
                                 onBlur={(e) => {
@@ -438,10 +448,8 @@ const DebouncedColorPicker = ({
                                     }
                                     // If still invalid, revert to current
                                     if (!/^#([A-Fa-f0-9]{6})$/.test(hex)) {
-                                        hex = localHex || "#000000";
+                                        return;
                                     }
-                                    setLocalHex(hex);
-                                    updateColor(hex, localAlpha);
                                 }}
                                 disabled={disabled}
                                 sx={{ flex: 1 }}
@@ -450,23 +458,12 @@ const DebouncedColorPicker = ({
                         </Box>
                     </Box>
                     <Box>
-                        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                            <Typography variant="caption">
-                                Opacity
-                            </Typography>
-                            <Typography variant="caption" sx={{ fontWeight: "medium" }}>
-                                {Math.round(localAlpha * 100)}%
-                            </Typography>
-                        </Box>
-                        <Slider
-                            value={localAlpha * 100}
-                            onChange={handleOpacityChange}
-                            min={0}
-                            max={100}
-                            step={1}
-                            size="small"
-                            disabled={disabled}
-                            valueLabelDisplay="off"
+                        <RgbaColorPicker
+                            color={localColor}
+                            onChange={handleColorChange}
+                            style={{
+                                width: "100%"
+                            }}
                         />
                     </Box>
                 </Box>
