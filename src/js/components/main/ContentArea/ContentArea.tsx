@@ -7,7 +7,7 @@ import { SettingsPanel } from "../SettingsPanel/SettingsPanel";
 import { RootState } from "../../../store";
 
 export const ContentArea = () => {
-    const { panelDock } = useSelector((state: RootState) => state.app);
+    const { panelDock, componentSchema } = useSelector((state: RootState) => state.app);
 
     const isBottomDock = panelDock === "bottom";
 
@@ -31,7 +31,7 @@ export const ContentArea = () => {
                 <TopBar />
                 <PreviewFrame />
             </Box>
-            <SettingsPanel />
+            {componentSchema && <SettingsPanel />}
         </Box>
     );
 };
