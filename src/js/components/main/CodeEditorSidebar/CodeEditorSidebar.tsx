@@ -9,11 +9,9 @@ import {
     Tooltip,
 } from "@mui/material";
 import { Save, Close } from "@mui/icons-material";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 
-import { RootState } from "../../../store";
 import {
-    saveStylingTheme,
     toggleCodeEditorSidebar
 } from "../../../store/actions";
 import { CustomCssTab } from "./CustomCssTab/CustomCssTab";
@@ -21,29 +19,17 @@ import { CustomJsTab } from "./CustomJsTab/CustomJsTab";
 
 export const CodeEditorSidebar = () => {
     const dispatch = useDispatch();
-    const { currentPage, styleTabValues } = useSelector(
-        (state: RootState) => state.app
-    );
     const [activeTab, setActiveTab] = useState(0);
-
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const handleSave = useCallback(() => {
-        if (!currentPage) return;
+        // Open the create tag dialog based on active tab
+        setDialogOpen(true);
+    }, []);
 
-        try {
-            const filteredEntries = Object.entries(styleTabValues).filter(([, value]) => {
-                return value && value.isEnabled === true;
-              });
-            
-            const stylingTheme = Object.fromEntries(filteredEntries);
-
-            localStorage.setItem("stylingTheme", JSON.stringify(stylingTheme));
-
-            dispatch(saveStylingTheme(stylingTheme));
-        } catch (error) {
-            console.error("Failed to save styling data:", error);
-        }
-    }, [currentPage, styleTabValues, dispatch]);
+    const handleDialogClose = useCallback(() => {
+        setDialogOpen(false);
+    }, []);
 
     const handleClose = () => {
         dispatch(toggleCodeEditorSidebar());
@@ -52,7 +38,7 @@ export const CodeEditorSidebar = () => {
     return (
         <Paper
             sx={{
-                width: 360,
+                width: 420,
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",
@@ -121,8 +107,8 @@ export const CodeEditorSidebar = () => {
 
             {/* Tab Content */}
             <Box sx={{ flex: 1, overflow: "hidden" }}>
-                {activeTab === 0 && <CustomCssTab />}
-                {activeTab === 1 && <CustomJsTab />}
+                {activeTab === 0 && <CustomCssTab dialogOpen={dialogOpen} onDialogClose={handleDialogClose} />}
+                {activeTab === 1 && <CustomJsTab dialogOpen={dialogOpen} onDialogClose={handleDialogClose} />}
             </Box>
         </Paper>
     );

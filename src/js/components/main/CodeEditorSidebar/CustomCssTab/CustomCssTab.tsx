@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert } from "@mui/material";
+import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert, Button } from "@mui/material";
 import Editor, { loader } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,12 +7,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../../store";
 import { setCustomCss } from "../../../../store/actions";
 
-export const CustomCssTab = () => {
+interface CustomCssTabProps {
+    dialogOpen: boolean;
+    onDialogClose: () => void;
+}
+
+export const CustomCssTab = ({ dialogOpen, onDialogClose }: CustomCssTabProps) => {
     const dispatch = useDispatch();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const { customCss } = useSelector((state: RootState) => state.app);
     const [localCss, setLocalCss] = useState(customCss);
-    const [dialogOpen, setDialogOpen] = useState(false);
     const [tagName, setTagName] = useState("");
     const [tagDescription, setTagDescription] = useState("");
     const [validationError, setValidationError] = useState<string | null>(null);
@@ -57,14 +61,10 @@ export const CustomCssTab = () => {
         setLocalCss(value);
     };
 
-    const handleCreateTagClick = () => {
-        setDialogOpen(true);
-    };
-
     const handleDialogClose = () => {
-        setDialogOpen(false);
         setTagName("");
         setTagDescription("");
+        onDialogClose();
     };
 
     const handleCreateTag = () => {
@@ -92,7 +92,7 @@ export const CustomCssTab = () => {
                 overflow: "hidden"
             }}
         >
-            {validationError ? (
+            {validationError && (
                 <Alert 
                     severity="error" 
                     sx={{ 
@@ -112,30 +112,6 @@ export const CustomCssTab = () => {
                 >
                     {validationError}
                 </Alert>
-            ) : (
-                <Box
-                    className="custom-css-tab-header"
-                    sx={{
-                        p: 1,
-                        borderBottom: 1,
-                        borderColor: "divider",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        minHeight: "48px"
-                    }}
-                >
-                    <Typography variant="caption" color="text.secondary">
-                        For preview only. If you need to apply custom CSS to the site - create a tag.
-                    </Typography>
-                    <Button
-                        size="small"
-                        variant="contained"
-                        onClick={handleCreateTagClick}
-                    >
-                        Create tag
-                    </Button>
-                </Box>
             )}
 
             <Box sx={{ flex: 1, overflow: "hidden" }}>
@@ -150,14 +126,10 @@ export const CustomCssTab = () => {
                         minimap: { enabled: false },
                         fontSize: 12,
                         lineNumbers: "on",
-                        // wordWrap: "on",
-                        // automaticLayout: true,
+                        lineNumbersMinChars: 2,
+                        lineDecorationsWidth: 0,
                         scrollBeyondLastLine: false,
                         renderLineHighlight: "gutter"
-                        // folding: false,
-                        // lineDecorationsWidth: 0
-                        // lineNumbersMinChars: 3,
-                        // glyphMargin: false
                     }}
                 />
             </Box>
