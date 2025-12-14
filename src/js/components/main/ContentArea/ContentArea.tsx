@@ -4,19 +4,18 @@ import { useSelector } from "react-redux";
 import { TopBar } from "../TopBar/TopBar";
 import { PreviewFrame } from "../PreviewFrame/PreviewFrame";
 import { SettingsPanel } from "../SettingsPanel/SettingsPanel";
+import { CodeEditorSidebar } from "../CodeEditorSidebar/CodeEditorSidebar";
 import { RootState } from "../../../store";
 
 export const ContentArea = () => {
-    const { panelDock, componentSchema } = useSelector((state: RootState) => state.app);
-
-    const isBottomDock = panelDock === "bottom";
+    const { componentSchema, codeEditorSidebarOpen } = useSelector((state: RootState) => state.app);
 
     return (
         <Box
             sx={{
                 flex: 1,
                 display: "flex",
-                flexDirection: isBottomDock ? "column" : "row",
+                flexDirection: "row",
                 overflow: "hidden"
             }}
         >
@@ -30,8 +29,9 @@ export const ContentArea = () => {
             >
                 <TopBar />
                 <PreviewFrame />
+                {componentSchema && <SettingsPanel />}
             </Box>
-            {componentSchema && <SettingsPanel />}
+            {codeEditorSidebarOpen && <CodeEditorSidebar />}
         </Box>
     );
 };

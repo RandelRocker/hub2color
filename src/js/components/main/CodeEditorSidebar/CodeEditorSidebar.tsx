@@ -7,37 +7,25 @@ import {
     IconButton,
     Toolbar,
     Tooltip,
-    Menu,
-    MenuItem
 } from "@mui/material";
-import { Restore, RestartAlt, Save, MoreVert } from "@mui/icons-material";
+import { Save, Close } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../store";
 import {
     saveStylingTheme,
-    updateStylingTabToDefaultValues,
-    updateStylingTabToPreviousValues,
-    updateStyleSchemaDefaults
+    toggleCodeEditorSidebar
 } from "../../../store/actions";
-import { ControlsTab } from "./ControlsTab/ControlsTab";
-import { StylingTab } from "./StylingTab/StylingTab";
+import { CustomCssTab } from "./CustomCssTab/CustomCssTab";
+import { CustomJsTab } from "./CustomJsTab/CustomJsTab";
 
-export const SettingsPanel = () => {
+export const CodeEditorSidebar = () => {
     const dispatch = useDispatch();
     const { currentPage, styleTabValues } = useSelector(
         (state: RootState) => state.app
     );
     const [activeTab, setActiveTab] = useState(0);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-    const handleResetToPreviousSaved = useCallback(() => {
-        dispatch(updateStylingTabToPreviousValues());
-    }, [dispatch]);
-
-    const handleResetToDefault = useCallback(() => {
-       dispatch(updateStylingTabToDefaultValues());
-    }, [dispatch]);
 
     const handleSave = useCallback(() => {
         if (!currentPage) return;
@@ -57,35 +45,21 @@ export const SettingsPanel = () => {
         }
     }, [currentPage, styleTabValues, dispatch]);
 
-    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleMenuResetToPreviousSaved = useCallback(() => {
-        handleResetToPreviousSaved();
-        handleMenuClose();
-    }, [handleResetToPreviousSaved]);
-
-    const handleMenuResetToDefault = () => {
-        handleResetToDefault();
-        handleMenuClose();
+    const handleClose = () => {
+        dispatch(toggleCodeEditorSidebar());
     };
 
     return (
         <Paper
             sx={{
-                width: "100%",
-                height: 320,
+                width: 360,
+                height: "100%",
                 display: "flex",
                 flexDirection: "column",
                 bgcolor: "white",
                 borderRadius: 0,
-                borderTop: 1,
-                borderLeft: 0,
+                borderTop: 0,
+                borderLeft: 1,
                 borderColor: "divider",
                 overflow: "hidden",
                 boxShadow: "none"
@@ -111,13 +85,12 @@ export const SettingsPanel = () => {
                         value={activeTab}
                         onChange={(_, newValue) => {
                             setActiveTab(newValue);
-                            dispatch(updateStyleSchemaDefaults());
                         }}
                         variant="scrollable"
                         scrollButtons={false}
                         sx={{
                             minHeight: 36,
-                            width: "auto",
+                            width: "230px",
                             "& .MuiTab-root": {
                                 minHeight: 36,
                                 fontSize: 12,
@@ -127,8 +100,8 @@ export const SettingsPanel = () => {
                             }
                         }}
                     >
-                        <Tab label="Controls" />
-                        <Tab label="Styling" />
+                        <Tab label="Custom CSS" />
+                        <Tab label="Custom JS" />
                     </Tabs>
                 </Box>
 
@@ -138,47 +111,20 @@ export const SettingsPanel = () => {
                             <Save fontSize="small" />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Reset Options">
-                        <IconButton size="small" onClick={handleMenuOpen}>
-                            <MoreVert fontSize="small" />
+                    <Tooltip title="Close">
+                        <IconButton size="small" onClick={handleClose}>
+                            <Close fontSize="small" />
                         </IconButton>
                     </Tooltip>
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleMenuClose}
-                        transformOrigin={{
-                            vertical: "top",
-                            horizontal: "right"
-                        }}
-                        anchorOrigin={{
-                            vertical: "bottom",
-                            horizontal: "right"
-                        }}
-                    >
-                        <MenuItem
-                            onClick={handleMenuResetToPreviousSaved}
-                            sx={{ fontSize: "0.875rem" }}
-                        >
-                            <Restore sx={{ mr: 1, fontSize: "1rem" }} />
-                            Reset to Previous Saved
-                        </MenuItem>
-                        <MenuItem
-                            onClick={handleMenuResetToDefault}
-                            sx={{ fontSize: "0.875rem" }}
-                        >
-                            <RestartAlt sx={{ mr: 1, fontSize: "1rem" }} />
-                            Reset to Default
-                        </MenuItem>
-                    </Menu>
                 </Box>
             </Toolbar>
 
             {/* Tab Content */}
             <Box sx={{ flex: 1, overflow: "hidden" }}>
-                {activeTab === 0 && <ControlsTab />}
-                {activeTab === 1 && <StylingTab />}
+                {activeTab === 0 && <CustomCssTab />}
+                {activeTab === 1 && <CustomJsTab />}
             </Box>
         </Paper>
     );
 };
+

@@ -82,9 +82,13 @@ export const setDirection = (direction: "ltr" | "rtl") => ({
     payload: direction,
 });
 
-export const setPanelDock = (dock: "bottom" | "right") => ({
+export const setPanelDock = (dock: "bottom") => ({
     type: ActionTypes.SET_PANEL_DOCK,
     payload: dock,
+});
+
+export const toggleCodeEditorSidebar = () => ({
+    type: ActionTypes.TOGGLE_CODE_EDITOR_SIDEBAR,
 });
 
 export const setSearchQuery = (query: string) => ({

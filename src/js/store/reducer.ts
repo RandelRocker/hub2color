@@ -12,6 +12,7 @@ const initialState: AppState = {
     viewport: "desktop",
     direction: "ltr",
     panelDock: "bottom",
+    codeEditorSidebarOpen: false,
     searchQuery: "",
     loading: true,
     error: null,
@@ -41,9 +42,6 @@ export const appReducer = (
                     scrollPosition: 0,
                     expandedAccordions: []
                 };
-
-                draft.customCss = "";
-                draft.customJs = "";
                 break;
 
             case ActionTypes.SET_COMPONENT_SCHEMA: {
@@ -254,6 +252,9 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_PANEL_DOCK:
                 draft.panelDock = action.payload;
+                break;
+            case ActionTypes.TOGGLE_CODE_EDITOR_SIDEBAR:
+                draft.codeEditorSidebarOpen = !draft.codeEditorSidebarOpen;
                 break;
             case ActionTypes.SET_SEARCH_QUERY:
                 draft.searchQuery = action.payload;

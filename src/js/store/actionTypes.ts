@@ -80,7 +80,11 @@ export interface SetDirectionAction {
 
 export interface SetPanelDockAction {
     type: ActionTypes.SET_PANEL_DOCK;
-    payload: "bottom" | "right";
+    payload: "bottom";
+}
+
+export interface ToggleCodeEditorSidebarAction {
+    type: ActionTypes.TOGGLE_CODE_EDITOR_SIDEBAR;
 }
 
 export interface SetSearchQueryAction {
@@ -116,6 +120,7 @@ export type AppAction =
     | SetViewportAction
     | SetDirectionAction
     | SetPanelDockAction
+    | ToggleCodeEditorSidebarAction
     | SetSearchQueryAction
     | SetLoadingAction
     | SetErrorAction;

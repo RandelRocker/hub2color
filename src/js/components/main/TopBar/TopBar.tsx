@@ -4,6 +4,7 @@ import {
     Divider,
     Tooltip
 } from "@mui/material";
+import { Code } from "@mui/icons-material";
 import IonIcon from "@reacticons/ionicons";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -11,12 +12,13 @@ import { RootState } from "../../../store";
 import {
     setZoom,
     setViewport,
-    setDirection
+    setDirection,
+    toggleCodeEditorSidebar
 } from "../../../store/actions";
 
 export const TopBar = () => {
     const dispatch = useDispatch();
-    const { zoom, viewport, direction } =
+    const { zoom, viewport, direction, codeEditorSidebarOpen } =
         useSelector((state: RootState) => state.app);
 
     const handleZoomIn = () => {
@@ -39,6 +41,10 @@ export const TopBar = () => {
 
     const handleDirectionToggle = () => {
         dispatch(setDirection(direction === "ltr" ? "rtl" : "ltr"));
+    };
+
+    const handleCodeEditorToggle = () => {
+        dispatch(toggleCodeEditorSidebar());
     };
 
     return (
@@ -225,6 +231,26 @@ export const TopBar = () => {
                             alignItems: "center"
                         }}
                     />
+                </IconButton>
+            </Tooltip>
+
+            <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ alignSelf: "center", height: "60%", mx: 1 }}
+            />
+
+            {/* Code Editor Toggle */}
+            <Tooltip title="Code Editor">
+                <IconButton
+                    size="small"
+                    onClick={handleCodeEditorToggle}
+                    sx={{
+                        color: codeEditorSidebarOpen ? "primary.main" : "inherit",
+                        bgcolor: codeEditorSidebarOpen ? "primary.50" : "transparent"
+                    }}
+                >
+                    <Code fontSize="small" />
                 </IconButton>
             </Tooltip>
         </Box>

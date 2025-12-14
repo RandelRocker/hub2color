@@ -107,7 +107,8 @@ export interface AppState {
     zoom: number;
     viewport: "desktop" | "tablet" | "mobile";
     direction: "ltr" | "rtl";
-    panelDock: "bottom" | "right";
+    panelDock: "bottom";
+    codeEditorSidebarOpen: boolean;
     searchQuery: string;
     loading: boolean;
     error: string | null;
