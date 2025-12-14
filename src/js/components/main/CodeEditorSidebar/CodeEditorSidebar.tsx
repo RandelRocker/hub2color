@@ -195,7 +195,7 @@ export const CodeEditorSidebar = () => {
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                    <Tooltip title="Save">
+                    <Tooltip title={activeTab === 0 ? "Create CSS Tag" : "Create JS Tag"}>
                         <IconButton size="small" onClick={handleSave}>
                             <Save fontSize="small" />
                         </IconButton>

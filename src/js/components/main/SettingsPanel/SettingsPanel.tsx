@@ -237,7 +237,7 @@ export const SettingsPanel = () => {
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                    <Tooltip title="Save">
+                    <Tooltip title="Save Styling">
                         <IconButton size="small" onClick={handleSave}>
                             <Save fontSize="small" />
                         </IconButton>

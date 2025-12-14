@@ -241,7 +241,7 @@ export const TopBar = () => {
             />
 
             {/* Code Editor Toggle */}
-            <Tooltip title="Code Editor">
+            <Tooltip title="Custom CSS / JS">
                 <IconButton
                     size="small"
                     onClick={handleCodeEditorToggle}
