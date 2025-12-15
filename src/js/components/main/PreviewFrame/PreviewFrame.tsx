@@ -117,15 +117,11 @@ export const PreviewFrame = () => {
     }, [zoom, sendMessageToFrame]);
 
     useEffect(() => {
-        if (customCss) {
-            sendMessageToFrame("CUSTOM_CSS_CHANGE", { css: customCss });
-        }
+        sendMessageToFrame("CUSTOM_CSS_CHANGE", { css: customCss || '' });
     }, [customCss, sendMessageToFrame]);
 
     useEffect(() => {
-        if (customJs) {
-            sendMessageToFrame("CUSTOM_JS_CHANGE", { js: customJs });
-        }
+        sendMessageToFrame("CUSTOM_JS_CHANGE", { js: customJs || '' });
     }, [customJs, sendMessageToFrame]);
 
     useEffect(() => {
