@@ -252,26 +252,6 @@ export const TopBar = () => {
                 sx={{ alignSelf: "center", height: "60%", mx: 1 }}
             />
 
-            {/* Code Editor Toggle */}
-            <Tooltip title="Custom CSS / JS">
-                <IconButton
-                    size="small"
-                    onClick={handleCodeEditorToggle}
-                    sx={{
-                        color: codeEditorSidebarOpen ? "primary.main" : "inherit",
-                        bgcolor: codeEditorSidebarOpen ? "primary.50" : "transparent"
-                    }}
-                >
-                    <Code fontSize="small" />
-                </IconButton>
-            </Tooltip>
-
-            <Divider
-                orientation="vertical"
-                flexItem
-                sx={{ alignSelf: "center", height: "60%", mx: 1 }}
-            />
-
             {/* Portal Tags Controls */}
             <Box 
                 sx={{ 
@@ -310,6 +290,26 @@ export const TopBar = () => {
                     </IconButton>
                 </Tooltip>
             </Box>
+
+            <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ alignSelf: "center", height: "60%", mx: 1 }}
+            />
+
+            {/* Code Editor Toggle */}
+            <Tooltip title="Custom CSS / JS">
+                <IconButton
+                    size="small"
+                    onClick={handleCodeEditorToggle}
+                    sx={{
+                        color: codeEditorSidebarOpen ? "primary.main" : "inherit",
+                        bgcolor: codeEditorSidebarOpen ? "primary.50" : "transparent"
+                    }}
+                >
+                    <Code fontSize="small" />
+                </IconButton>
+            </Tooltip>
 
             <TagsDialog
                 open={tagsDialogOpen}
