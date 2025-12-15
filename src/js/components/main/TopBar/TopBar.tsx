@@ -4,8 +4,9 @@ import {
     Divider,
     Tooltip
 } from "@mui/material";
-import { Code } from "@mui/icons-material";
+import { Code, SellOutlined, EditOutlined } from "@mui/icons-material";
 import IonIcon from "@reacticons/ionicons";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../store";
@@ -13,13 +14,16 @@ import {
     setZoom,
     setViewport,
     setDirection,
-    toggleCodeEditorSidebar
+    toggleCodeEditorSidebar,
+    setPortalTagsEnabled
 } from "../../../store/actions";
+import { TagsDialog } from "./TagsDialog/TagsDialog";
 
 export const TopBar = () => {
     const dispatch = useDispatch();
-    const { zoom, viewport, direction, codeEditorSidebarOpen } =
+    const { zoom, viewport, direction, codeEditorSidebarOpen, portalTags, portalTagsEnabled } =
         useSelector((state: RootState) => state.app);
+    const [tagsDialogOpen, setTagsDialogOpen] = useState(false);
 
     const handleZoomIn = () => {
         dispatch(setZoom(Math.min(zoom * 1.2, 3)));
@@ -45,6 +49,14 @@ export const TopBar = () => {
 
     const handleCodeEditorToggle = () => {
         dispatch(toggleCodeEditorSidebar());
+    };
+
+    const handlePortalTagsToggle = () => {
+        dispatch(setPortalTagsEnabled(!portalTagsEnabled));
+    };
+
+    const handleOpenTagsDialog = () => {
+        setTagsDialogOpen(true);
     };
 
     return (
@@ -253,6 +265,57 @@ export const TopBar = () => {
                     <Code fontSize="small" />
                 </IconButton>
             </Tooltip>
+
+            <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ alignSelf: "center", height: "60%", mx: 1 }}
+            />
+
+            {/* Portal Tags Controls */}
+            <Box 
+                sx={{ 
+                    display: "flex", 
+                    alignItems: "center",
+                    border: 1,
+                    borderColor: "divider",
+                    borderRadius: 1,
+                    overflow: "hidden"
+                }}
+            >
+                <Tooltip title={portalTagsEnabled ? "Disable Portal Tags" : "Enable Portal Tags"}>
+                    <IconButton
+                        size="small"
+                        onClick={handlePortalTagsToggle}
+                        sx={{
+                            color: portalTagsEnabled ? "primary.main" : "inherit",
+                            bgcolor: portalTagsEnabled ? "primary.50" : "transparent",
+                            borderRadius: 0,
+                            borderRight: 1,
+                            borderColor: "divider"
+                        }}
+                    >
+                        <SellOutlined fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Edit Portal Tags">
+                    <IconButton
+                        size="small"
+                        onClick={handleOpenTagsDialog}
+                        sx={{
+                            borderRadius: 0
+                        }}
+                    >
+                        <EditOutlined fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+            </Box>
+
+            <TagsDialog
+                open={tagsDialogOpen}
+                onClose={() => setTagsDialogOpen(false)}
+                portalTags={portalTags}
+            />
         </Box>
     );
 };

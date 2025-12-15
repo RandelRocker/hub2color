@@ -92,6 +92,34 @@ export interface ComponentSchema {
     styles: (StyleField | StyleGroup)[];
 }
 
+export interface PortalTagCondition {
+    conditionId: string;
+    conditionTypeId: string;
+    name: string;
+    description: string;
+    config: {
+        launch: string;
+    };
+}
+
+export interface PortalTag {
+    tagId: string;
+    tagTypeId: string;
+    name: string;
+    description: string;
+    config: Record<string, unknown>;
+    conditions: PortalTagCondition[];
+}
+
+export interface PortalTagRaw {
+    tagId: string;
+    tagTypeId: string;
+    name: string;
+    description: string;
+    config: Record<string, unknown>;
+    conditionIds: string[];
+}
+
 export interface AppState {
     pages: PageSection[];
     currentPage: string | null;
@@ -112,4 +140,6 @@ export interface AppState {
     searchQuery: string;
     loading: boolean;
     error: string | null;
+    portalTags: PortalTag[];
+    portalTagsEnabled: boolean;
 }

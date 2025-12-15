@@ -1,0 +1,321 @@
+/*!*********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./app-react/js/components/common/Fields/Select/Select.scss ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************/
+.Select__content--foB {
+  justify-content: flex-end;
+}
+.Select__content--foB.Select__disabled--qXb select {
+  opacity: 0.6;
+  background: var(--input-field-background-disabled);
+  color: var(--input-field-disabled-font-color);
+}
+
+/*
+TODO:
+1. update these styles with relevant values (since some of them might not be required at all, some don't work)
+2. create small library of default native elements styles, which will contain only css and which should be used by our components.
+*/
+.Select__select--3w2 {
+  font-family: inherit;
+  position: absolute;
+  -moz-appearance: window;
+  -webkit-appearance: none;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 2.45em;
+  padding: 0;
+  border: none;
+  line-height: normal;
+  background: none;
+  color: var(--input-field-font-color);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.Select__select--3w2::-ms-expand {
+  display: none;
+}
+.Select__select--3w2.Select__empty--11G {
+  color: var(--input-field-placeholder-font-color);
+}
+.Select__select--3w2 option {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: initial;
+}
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./app-react/js/components/common/Fields/Checkbox/components/CheckboxShallow/CheckboxShallow.scss ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************/
+.CheckboxShallow__checkbox--1PR {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  cursor: pointer;
+  -webkit-user-select: none;
+          user-select: none;
+}
+.CheckboxShallow__checkbox--1PR.CheckboxShallow__disabledCheckbox--3uH {
+  cursor: auto;
+}
+
+.mobile .CheckboxShallow__checkbox--1PR,
+.tablet .CheckboxShallow__checkbox--1PR {
+  outline: none;
+}
+
+.CheckboxShallow__checkMark--G42 {
+  position: relative;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
+}
+.CheckboxShallow__checkMark--G42::before {
+  content: "";
+  position: absolute;
+  flex: 0 0 auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  left: -0.65rem;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  font-size: 0.91rem;
+  background-repeat: no-repeat;
+  background-image: url("../../images/ic_WL_sprite.png");
+  background-size: 400%;
+  background-position: 0 -87.5rem;
+}
+
+.CheckboxShallow__input--1WB {
+  position: absolute;
+  /* do not use
+   display:none, visibility:hidden or similar
+   or input won't receive focus and won't trigger required events
+   `z-index:-1` technique will break on creating new local stacking context
+   `left:-9999px` technique may put input somewhere on a page where you could never it expect to be
+   Also, there're strange bugs when using flex-direction: reverse
+   */
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+}
+.CheckboxShallow__input--1WB:active ~ .CheckboxShallow__checkMark--G42::before {
+  background-position: -2.5rem -87.5rem;
+}
+.CheckboxShallow__input--1WB:checked ~ .CheckboxShallow__checkMark--G42::before {
+  background-position: 0 -90rem;
+}
+.CheckboxShallow__input--1WB:checked:active ~ .CheckboxShallow__checkMark--G42::before {
+  background-position: -2.5rem -90rem;
+}
+.CheckboxShallow__input--1WB:indeterminate ~ .CheckboxShallow__checkMark--G42::before {
+  background-position: -5rem -90rem;
+}
+.CheckboxShallow__input--1WB:indeterminate:active ~ .CheckboxShallow__checkMark--G42::before {
+  background-position: -7.5rem -90rem;
+}
+.CheckboxShallow__input--1WB:disabled ~ .CheckboxShallow__checkMark--G42::before, .CheckboxShallow__input--1WB.CheckboxShallow__readOnly--2M1 ~ .CheckboxShallow__checkMark--G42::before {
+  opacity: 0.5;
+  cursor: auto;
+}
+.CheckboxShallow__input--1WB.CheckboxShallow__indeterminateIcon--3mt ~ .CheckboxShallow__checkMark--G42::before {
+  opacity: 1;
+  background-position: -5rem -90rem;
+}
+.CheckboxShallow__input--1WB.CheckboxShallow__indeterminateIcon--3mt:active ~ .CheckboxShallow__checkMark--G42::before {
+  opacity: 1;
+  background-position-x: -7.55rem;
+}
+
+.CheckboxShallow__label--1DO {
+  position: relative;
+  color: var(--input-field-font-color);
+  flex: 0 1 auto;
+  margin-left: 0.6rem;
+}
+
+.CheckboxShallow__disabledLabel--3BG {
+  opacity: 0.6;
+  background: var(--input-field-background-disabled);
+  color: var(--input-field-disabled-font-color);
+}
+
+.CheckboxShallow__hint--3iu {
+  font-size: 0.82rem;
+  margin: -1rem 0 1.65rem 0;
+  padding-left: 0.3rem;
+  color: var(--valid-font-color);
+}
+
+/* Options */
+.CheckboxShallow__wrapText--1XO {
+  white-space: normal;
+}
+
+.CheckboxShallow__reverse--10f {
+  flex-direction: row-reverse;
+}
+.CheckboxShallow__reverse--10f .CheckboxShallow__label--1DO {
+  margin-left: 0;
+}
+
+.CheckboxShallow__stretch--H3a {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.ie .CheckboxShallow__stretch--H3a {
+  position: relative;
+}
+
+/* Toggle Styling */
+.CheckboxShallow__toggleMark--1ZP {
+  position: relative;
+  width: 2.8rem;
+  height: 1.2rem;
+  margin: 0 0.3rem;
+  border-radius: 1rem;
+  background-color: var(--toogle-bg-color);
+  transition: background 0.4s;
+  cursor: pointer;
+  outline: none;
+  -webkit-user-select: none;
+          user-select: none;
+  flex-shrink: 0;
+}
+.CheckboxShallow__toggleMark--1ZP::before, .CheckboxShallow__toggleMark--1ZP::after {
+  position: absolute;
+  display: block;
+  content: "";
+}
+.CheckboxShallow__toggleMark--1ZP::before {
+  /* need exact pixels to avoid rendering bugs */
+  top: 2px;
+  left: 2px;
+  bottom: 2px;
+  right: 2px;
+  border-radius: 1rem;
+  background-color: #fff;
+  transition: background 0.4s;
+}
+.CheckboxShallow__toggleMark--1ZP::after {
+  top: -0.15rem;
+  left: -0.15rem;
+  bottom: -0.15rem;
+  width: 1.5rem;
+  border-radius: 50%;
+  background-color: var(--toogle-bg-color);
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.6);
+  transition: margin 0.2s, background 0.2s;
+}
+
+.ie .CheckboxShallow__toggleMark--1ZP {
+  position: absolute;
+  right: 0;
+}
+
+.CheckboxShallow__buttonMark--vlv ~ .CheckboxShallow__label--1DO {
+  box-shadow: 0 0 0 1px #b9b9b9;
+  border-radius: 2rem;
+  padding: 0 1.5rem;
+  margin: 0;
+  opacity: 0.7;
+  height: 2.8rem;
+  display: flex;
+  align-items: center;
+}
+
+.CheckboxShallow__input--1WB:checked ~ .CheckboxShallow__toggleMark--1ZP {
+  background-color: var(--toogle-active-bg-color);
+}
+.CheckboxShallow__input--1WB:checked ~ .CheckboxShallow__toggleMark--1ZP:after {
+  margin-left: 1.6rem;
+  background-color: var(--toogle-active-bg-color);
+}
+.CheckboxShallow__input--1WB:checked ~ .CheckboxShallow__buttonMark--vlv ~ .CheckboxShallow__label--1DO {
+  box-shadow: 0 0 0 2px #6ecd8d;
+  opacity: 1;
+}
+.CheckboxShallow__input--1WB:disabled ~ .CheckboxShallow__toggleMark--1ZP {
+  opacity: 0.5;
+  cursor: auto;
+}
+
+.CheckboxShallow__fieldLabelAsterisk--Qtz {
+  color: var(--field-label-asterisk-color);
+}
+/*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./app-react/js/components/common/Fields/Checkbox/Checkbox.scss ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************/
+.Checkbox__control--24B {
+  overflow: visible;
+}
+
+.Checkbox__content--5FE {
+  border: none;
+}
+
+.Checkbox__hint--13Q {
+  color: var(--secondary-light-font-color);
+}
+/*!**************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./app-react/js/components/hocs/withComponent/withComponent.scss ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************/
+.withComponent__messageContainer--2K5 {
+  text-align: center;
+  padding: 1.5rem;
+}
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./app-react/js/components/main/GamblingSessionLimits/GamblingSessionLimits.scss ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************/
+.GamblingSessionLimits__container--2sQ {
+  margin: 0 auto;
+  padding-bottom: 4rem;
+  max-width: 48rem;
+}
+.GamblingSessionLimits__container--2sQ.GamblingSessionLimits__inPopup--1VR {
+  padding-bottom: 1rem;
+}
+.desktop .GamblingSessionLimits__container--2sQ .GamblingSessionLimits__field--xr-,
+.desktop .GamblingSessionLimits__container--2sQ .GamblingSessionLimits__controls--1x0, .tablet .GamblingSessionLimits__container--2sQ .GamblingSessionLimits__field--xr-,
+.tablet .GamblingSessionLimits__container--2sQ .GamblingSessionLimits__controls--1x0, .mobile.landscape .GamblingSessionLimits__container--2sQ .GamblingSessionLimits__field--xr-,
+.mobile.landscape .GamblingSessionLimits__container--2sQ .GamblingSessionLimits__controls--1x0 {
+  width: 23rem;
+}
+.mobile.portrait .GamblingSessionLimits__container--2sQ .GamblingSessionLimits__field--xr-,
+.mobile.portrait .GamblingSessionLimits__container--2sQ .GamblingSessionLimits__controls--1x0 {
+  width: 100%;
+}
+.mobile.portrait .GamblingSessionLimits__container--2sQ.GamblingSessionLimits__inPopup--1VR {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.GamblingSessionLimits__container--2sQ .GamblingSessionLimits__form--1pI {
+  display: flex;
+  flex-direction: column;
+}
+.GamblingSessionLimits__container--2sQ .GamblingSessionLimits__field--xr- {
+  margin-left: auto;
+  margin-right: auto;
+}
+.GamblingSessionLimits__container--2sQ .GamblingSessionLimits__checkbox--OH0 {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+.GamblingSessionLimits__container--2sQ .GamblingSessionLimits__controls--1x0 {
+  display: flex;
+  margin: 0 auto;
+}
+.GamblingSessionLimits__container--2sQ .GamblingSessionLimits__controls--1x0 .GamblingSessionLimits__btn--1SJ {
+  flex: 1;
+  margin-top: 1rem;
+}
+.GamblingSessionLimits__container--2sQ .GamblingSessionLimits__controls--1x0 .GamblingSessionLimits__btn--1SJ:nth-child(2) {
+  margin-left: 0.8rem;
+}

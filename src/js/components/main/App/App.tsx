@@ -9,8 +9,10 @@ import {
     setPages,
     setLoading,
     setError,
-    saveStylingTheme
+    saveStylingTheme,
+    setPortalTags
 } from "../../../store/actions";
+import { PortalTag, PortalTagRaw } from "../../../store/types";
 
 export const App = () => {
     const dispatch = useDispatch();
@@ -54,8 +56,44 @@ export const App = () => {
             }
         };
 
+        const loadPortalTag = async () => {
+            try {
+                const response = await fetch("/api/tags.json");
+                if (!response.ok) {
+                    throw new Error(
+                        `Failed to fetch tags: ${response.status}`
+                    );
+                }
+                const data = await response.json();
+                const tags = data.tags || [];
+                
+                // Transform tags: remove conditionIds, add conditions property
+                const transformedTags: PortalTag[] = tags.map((tag: PortalTagRaw) => {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { conditionIds, ...tagWithoutConditionIds } = tag;
+                    return {
+                        ...tagWithoutConditionIds,
+                        conditions: [{
+                            conditionId: "onAppInit",
+                            conditionTypeId: "basic_condition",
+                            name: "hub2color on app init",
+                            description: "hub2color on app init",
+                            config: {
+                                launch: "onAppInit"
+                            }
+                        }]
+                    };
+                });
+                
+                dispatch(setPortalTags(transformedTags));
+            } catch (error) {
+                console.error("Failed to load portal tags:", error);
+            }
+        };
+
         loadPages();
         loadSavedStylingTheme();
+        loadPortalTag();
     }, [dispatch]);
 
     return (

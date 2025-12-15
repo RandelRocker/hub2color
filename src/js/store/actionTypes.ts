@@ -1,4 +1,4 @@
-import { PageSection, ComponentSchema, StylingTabValues, StoredThemeStyles, ControlsTabValues } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, StoredThemeStyles, ControlsTabValues, PortalTag } from "./types";
 import { ActionTypes } from "./constants";
 
 export interface SetPagesAction {
@@ -102,6 +102,16 @@ export interface SetErrorAction {
     payload: string | null;
 }
 
+export interface SetPortalTagsAction {
+    type: ActionTypes.SET_PORTAL_TAGS;
+    payload: PortalTag[];
+}
+
+export interface SetPortalTagsEnabledAction {
+    type: ActionTypes.SET_PORTAL_TAGS_ENABLED;
+    payload: boolean;
+}
+
 export type AppAction =
     | SetPagesAction
     | SetCurrentPageAction
@@ -123,4 +133,6 @@ export type AppAction =
     | ToggleCodeEditorSidebarAction
     | SetSearchQueryAction
     | SetLoadingAction
-    | SetErrorAction;
+    | SetErrorAction
+    | SetPortalTagsAction
+    | SetPortalTagsEnabledAction;

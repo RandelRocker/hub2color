@@ -23,6 +23,8 @@ const initialState: AppState = {
     controlsTabDefaultValues: {},
     styleTabValues: {},
     styleTabDefaultValues: {},
+    portalTags: [],
+    portalTagsEnabled: false,
 };
 
 export const appReducer = (
@@ -264,6 +266,12 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_ERROR:
                 draft.error = action.payload;
+                break;
+            case ActionTypes.SET_PORTAL_TAGS:
+                draft.portalTags = action.payload;
+                break;
+            case ActionTypes.SET_PORTAL_TAGS_ENABLED:
+                draft.portalTagsEnabled = action.payload;
                 break;
         }
     });

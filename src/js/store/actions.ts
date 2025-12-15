@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ComponentSchema, StylingTabValues, StoredThemeStyles, ControlsTabValues } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, StoredThemeStyles, ControlsTabValues, PortalTag } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -104,4 +104,14 @@ export const setLoading = (loading: boolean) => ({
 export const setError = (error: string | null) => ({
     type: ActionTypes.SET_ERROR,
     payload: error,
+});
+
+export const setPortalTags = (tags: PortalTag[]) => ({
+    type: ActionTypes.SET_PORTAL_TAGS,
+    payload: tags,
+});
+
+export const setPortalTagsEnabled = (enabled: boolean) => ({
+    type: ActionTypes.SET_PORTAL_TAGS_ENABLED,
+    payload: enabled,
 });

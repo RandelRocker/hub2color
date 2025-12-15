@@ -18,7 +18,9 @@ export const PreviewFrame = () => {
         customJs,
         loading,
         styleTabValues,
-        controlsTabValues
+        controlsTabValues,
+        portalTags,
+        portalTagsEnabled
     } = useSelector((state: RootState) => state.app);
 
     const sendMessageToFrame = useCallback(
@@ -91,7 +93,14 @@ export const PreviewFrame = () => {
         });
         
         sendMessageToFrame("CONTROLS_CHANGE", { values: processedValues });
-    }, [currentPage, sendMessageToFrame, direction, zoom, customCss, customJs, styleTabValues, controlsTabValues]);
+
+        // Send portal tags if enabled
+        if (portalTagsEnabled) {
+            sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: portalTags });
+        } else {
+            sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: [] });
+        }
+    }, [currentPage, sendMessageToFrame, direction, zoom, customCss, customJs, styleTabValues, controlsTabValues, portalTags, portalTagsEnabled]);
 
     useEffect(() => {
         if (currentPage) {
@@ -136,6 +145,14 @@ export const PreviewFrame = () => {
             });
         }
     }, [styleTabValues, sendMessageToFrame]);
+
+    useEffect(() => {
+        if (portalTagsEnabled) {
+            sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: portalTags });
+        } else {
+            sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: [] });
+        }
+    }, [portalTags, portalTagsEnabled, sendMessageToFrame]);
 
     const getViewportWidth = () => {
         switch (viewport) {
