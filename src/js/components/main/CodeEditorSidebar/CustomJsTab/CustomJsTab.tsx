@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, forwardRef, useImperativeHandle } from "react";
 import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert, Button } from "@mui/material";
 import Editor, { loader } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
@@ -12,7 +12,11 @@ interface CustomJsTabProps {
     onDialogClose: () => void;
 }
 
-export const CustomJsTab = ({ dialogOpen, onDialogClose }: CustomJsTabProps) => {
+export interface CustomJsTabHandle {
+    loadTag: (value: string) => void;
+}
+
+export const CustomJsTab = forwardRef<CustomJsTabHandle, CustomJsTabProps>(({ dialogOpen, onDialogClose }, ref) => {
     const dispatch = useDispatch();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const { customJs } = useSelector((state: RootState) => state.app);
@@ -24,6 +28,13 @@ export const CustomJsTab = ({ dialogOpen, onDialogClose }: CustomJsTabProps) => 
     useEffect(() => {
         setLocalJs(customJs);
     }, [customJs]);
+
+    useImperativeHandle(ref, () => ({
+        loadTag: (value: string) => {
+            setLocalJs(value);
+            dispatch(setCustomJs(value));
+        }
+    }), [dispatch]);
 
     useEffect(() => {
         loader.init().then((monaco) => {
@@ -184,4 +195,6 @@ export const CustomJsTab = ({ dialogOpen, onDialogClose }: CustomJsTabProps) => 
             </Dialog>
         </Box>
     );
-};
+});
+
+CustomJsTab.displayName = "CustomJsTab";

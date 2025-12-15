@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, forwardRef, useImperativeHandle } from "react";
 import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert, Button } from "@mui/material";
 import Editor, { loader } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
@@ -12,7 +12,11 @@ interface CustomCssTabProps {
     onDialogClose: () => void;
 }
 
-export const CustomCssTab = ({ dialogOpen, onDialogClose }: CustomCssTabProps) => {
+export interface CustomCssTabHandle {
+    loadTag: (value: string) => void;
+}
+
+export const CustomCssTab = forwardRef<CustomCssTabHandle, CustomCssTabProps>(({ dialogOpen, onDialogClose }, ref) => {
     const dispatch = useDispatch();
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const { customCss } = useSelector((state: RootState) => state.app);
@@ -24,6 +28,13 @@ export const CustomCssTab = ({ dialogOpen, onDialogClose }: CustomCssTabProps) =
     useEffect(() => {
         setLocalCss(customCss);
     }, [customCss]);
+
+    useImperativeHandle(ref, () => ({
+        loadTag: (value: string) => {
+            setLocalCss(value);
+            dispatch(setCustomCss(value));
+        }
+    }), [dispatch]);
 
     useEffect(() => {
         loader.init().then((monaco) => {
@@ -184,4 +195,6 @@ export const CustomCssTab = ({ dialogOpen, onDialogClose }: CustomCssTabProps) =
             </Dialog>
         </Box>
     );
-};
+});
+
+CustomCssTab.displayName = "CustomCssTab";
