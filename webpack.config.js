@@ -10,6 +10,7 @@ module.exports = (env, argv) => {
         output: {
             path: path.resolve(__dirname, "dist"),
             filename: isProduction ? "[name].[contenthash].js" : "[name].js",
+            chunkFilename: isProduction ? "[name].[contenthash].chunk.js" : "[name].chunk.js",
             clean: true
         },
         resolve: {
@@ -52,6 +53,43 @@ module.exports = (env, argv) => {
             hot: true,
             historyApiFallback: true
         },
-        devtool: isProduction ? "source-map" : "eval-source-map"
+        devtool: isProduction ? "source-map" : "eval-source-map",
+        optimization: {
+            splitChunks: {
+                chunks: "all",
+                cacheGroups: {
+                    vendorReact: {
+                        test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+                        name: "vendor-react",
+                        priority: 20,
+                        reuseExistingChunk: true
+                    },
+                    vendorRedux: {
+                        test: /[\\/]node_modules[\\/](@reduxjs|redux|react-redux|immer|reselect)[\\/]/,
+                        name: "vendor-redux",
+                        priority: 15,
+                        reuseExistingChunk: true
+                    },
+                    vendorMui: {
+                        test: /[\\/]node_modules[\\/](@mui|@emotion)[\\/]/,
+                        name: "vendor-mui",
+                        priority: 10,
+                        reuseExistingChunk: true
+                    },
+                    monaco: {
+                        test: /[\\/]node_modules[\\/](@monaco-editor|monaco-editor)[\\/]/,
+                        name: "monaco-editor",
+                        priority: 5,
+                        reuseExistingChunk: true
+                    },
+                    default: {
+                        minChunks: 2,
+                        priority: -10,
+                        reuseExistingChunk: true
+                    }
+                }
+            },
+            runtimeChunk: "single"
+        }
     };
 };

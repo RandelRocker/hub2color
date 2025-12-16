@@ -50,14 +50,14 @@
             "type": "boolean"
         },
         {
-            "id": "startIcon",
+            "id": "startAdornment",
             "label": "Start icon",
             "defaultValue": false,
             "description": "Show icon at the start of the input",
             "type": "boolean"
         },
         {
-            "id": "endIcon",
+            "id": "startAdornment",
             "label": "End icon",
             "defaultValue": false,
             "description": "Show icon at the end of the input",

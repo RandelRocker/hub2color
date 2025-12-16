@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, lazy, Suspense } from "react";
 import {
     Box,
     Paper,
@@ -8,7 +8,8 @@ import {
     Toolbar,
     Tooltip,
     Menu,
-    MenuItem
+    MenuItem,
+    CircularProgress
 } from "@mui/material";
 import { Restore, RestartAlt, Save, MoreVert } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
@@ -20,8 +21,17 @@ import {
     updateStylingTabToPreviousValues,
     updateStyleSchemaDefaults
 } from "../../../store/actions";
-import { ControlsTab } from "./ControlsTab/ControlsTab";
-import { StylingTab } from "./StylingTab/StylingTab";
+
+const ControlsTab = lazy(() => 
+    import(/* webpackChunkName: "controls-tab" */ "./ControlsTab/ControlsTab").then(module => {
+        return { default: module.ControlsTab };
+    })
+);
+const StylingTab = lazy(() => 
+    import(/* webpackChunkName: "styling-tab" */ "./StylingTab/StylingTab").then(module => {
+        return { default: module.StylingTab };
+    })
+);
 
 const MIN_HEIGHT = 320;
 const MAX_HEIGHT = 600;
@@ -280,8 +290,23 @@ export const SettingsPanel = () => {
 
                 {/* Tab Content */}
                 <Box sx={{ flex: 1, overflow: "hidden" }}>
-                    {activeTab === 0 && <ControlsTab />}
-                    {activeTab === 1 && <StylingTab />}
+                    <Suspense
+                        fallback={
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    height: "100%"
+                                }}
+                            >
+                                <CircularProgress size={24} />
+                            </Box>
+                        }
+                    >
+                        {activeTab === 0 && <ControlsTab />}
+                        {activeTab === 1 && <StylingTab />}
+                    </Suspense>
                 </Box>
             </Paper>
         </>
