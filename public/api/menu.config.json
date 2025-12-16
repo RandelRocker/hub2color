@@ -6,6 +6,10 @@
                 "title": "Button",
                 "items": [
                     {
+                        "title": "Description",
+                        "path": "components/button/basicbuttons.html"
+                    },
+                    {
                         "title": "Contained Button",
                         "path": "components/button/containedbutton.html"
                     },

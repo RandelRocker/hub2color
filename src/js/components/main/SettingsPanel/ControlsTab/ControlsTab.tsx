@@ -1206,7 +1206,12 @@ export const ControlsTab = () => {
                         </TableHead>
                         <TableBody>
                             {componentSchema.controls.map((field) => (
-                                <TableRow key={field.id}>
+                                <TableRow 
+                                    key={field.id}
+                                    sx={{
+                                        height: 50
+                                    }}
+                                >
                                     <TableCell>
                                         <Typography
                                             variant="body2"

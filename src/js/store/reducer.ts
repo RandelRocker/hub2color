@@ -5,7 +5,7 @@ import { AppAction } from "./actionTypes";
 
 const initialState: AppState = {
     pages: [],
-    currentPage: 'components/button/containedbutton.html',
+    currentPage: 'components/button/basicbuttons.html',
     customCss: "",
     customJs: "",
     zoom: 1,

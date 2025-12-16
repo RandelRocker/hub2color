@@ -1,4 +1,4 @@
-import { StylingTabValues } from "@/js/store/types";
+import { StoredThemeStyles } from "@/js/store/types";
 
 type FlatInput = {
     [path: string]: {
@@ -70,7 +70,7 @@ export const removeUnitsFromValue = (value: unknown) => {
     return typeof value === "string" && units.some((unit) => value === unit) ? undefined : value;
 };
 
-export const prepareStylingTheme = (stylingTheme: StylingTabValues) => {
+export const prepareStylingTheme = (stylingTheme: StoredThemeStyles) => {
   const filteredEntries = Object.entries(stylingTheme).filter(([, value]) => {
     return value && value.isEnabled === true;
   });

@@ -594,6 +594,7 @@ const DebouncedPaddingPicker = ({
                     transition: "all 0.2s",
                     fontSize: "0.875rem",
                     minWidth: 80,
+                    maxWidth: 200,
                     textAlign: "center",
                     ...sx
                 }}
@@ -995,6 +996,7 @@ const DebouncedBorderRadiusPicker = ({
                     transition: "all 0.2s",
                     fontSize: "0.875rem",
                     minWidth: 80,
+                    maxWidth: 200,
                     textAlign: "center",
                     ...sx
                 }}
@@ -1420,6 +1422,7 @@ const DebouncedBoxShadowPicker = ({
                     transition: "all 0.2s",
                     fontSize: "0.875rem",
                     minWidth: 80,
+                    maxWidth: 200,
                     ...sx
                 }}
             >
@@ -1882,6 +1885,7 @@ const DebouncedTextShadowPicker = ({
                     transition: "all 0.2s",
                     fontSize: "0.875rem",
                     minWidth: 80,
+                    maxWidth: 200,
                     ...sx
                 }}
             >
@@ -2308,6 +2312,7 @@ const DebouncedBorderPicker = ({
                     transition: "all 0.2s",
                     fontSize: "0.875rem",
                     minWidth: 80,
+                    maxWidth: 200,
                     ...sx
                 }}
             >

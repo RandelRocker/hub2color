@@ -18,6 +18,7 @@ export const PreviewFrame = () => {
         customJs,
         loading,
         styleTabValues,
+        savedTheme,
         controlsTabValues,
         portalTags,
         portalTagsEnabled
@@ -52,11 +53,6 @@ export const PreviewFrame = () => {
                     dispatch(setComponentSchema(null));
                 }
             } catch (error) {
-                console.warn(
-                    "Failed to load style schema for",
-                    pagePath,
-                    error
-                );
                 dispatch(setComponentSchema(null));
             }
         },
@@ -79,9 +75,9 @@ export const PreviewFrame = () => {
         }
 
         // Send styling theme
-        if (styleTabValues) {
+        if (savedTheme) {
             sendMessageToFrame("STYLING_CHANGE", {
-                styles: helpers.prepareStylingTheme(styleTabValues)
+                styles: helpers.prepareStylingTheme(savedTheme)
             });
         }
 
@@ -100,7 +96,7 @@ export const PreviewFrame = () => {
         } else {
             sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: [] });
         }
-    }, [currentPage, sendMessageToFrame, direction, zoom, customCss, customJs, styleTabValues, controlsTabValues, portalTags, portalTagsEnabled]);
+    }, [currentPage, sendMessageToFrame, direction, zoom, customCss, customJs, savedTheme, controlsTabValues, portalTagsEnabled, portalTags]);
 
     useEffect(() => {
         if (currentPage) {
@@ -137,10 +133,10 @@ export const PreviewFrame = () => {
     useEffect(() => {
         if (styleTabValues) {
             sendMessageToFrame("STYLING_CHANGE", {
-                styles: helpers.prepareStylingTheme(styleTabValues)
+                styles: helpers.prepareStylingTheme({ ...savedTheme, ...styleTabValues })
             });
         }
-    }, [styleTabValues, sendMessageToFrame]);
+    }, [styleTabValues, sendMessageToFrame, savedTheme]);
 
     useEffect(() => {
         if (portalTagsEnabled) {
@@ -149,6 +145,25 @@ export const PreviewFrame = () => {
             sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: [] });
         }
     }, [portalTags, portalTagsEnabled, sendMessageToFrame]);
+
+    // Listen for PORTAL_READY message from iframe
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            // Verify message is from our iframe
+            if (
+                iframeRef.current?.contentWindow &&
+                event.source === iframeRef.current.contentWindow &&
+                event.data?.type === "PORTAL_READY"
+            ) {
+                handleIframeLoad();
+            }
+        };
+
+        window.addEventListener("message", handleMessage);
+        return () => {
+            window.removeEventListener("message", handleMessage);
+        };
+    }, [handleIframeLoad]);
 
     const getViewportWidth = () => {
         switch (viewport) {
@@ -255,7 +270,6 @@ export const PreviewFrame = () => {
                         border: "none",
                         display: "block"
                     }}
-                    onLoad={handleIframeLoad}
                     title="Component Preview"
                 />
             </Box>
