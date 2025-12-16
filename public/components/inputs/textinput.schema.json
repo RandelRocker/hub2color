@@ -1,0 +1,18 @@
+{
+    "controls": [
+         {
+            "id": "label",
+            "label": "Label",
+            "description": "Text input label",
+            "defaultValue": "Input label",
+            "type": "text"
+        },
+        {
+            "id": "placeholder",
+            "label": "Placeholder",
+            "description": "Text input placeholder",
+            "defaultValue": "Input placeholder",
+            "type": "text"
+        }
+    ]
+}

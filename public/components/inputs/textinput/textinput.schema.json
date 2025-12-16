@@ -1,0 +1,67 @@
+{
+    "controls": [
+         {
+            "id": "label",
+            "label": "Label",
+            "description": "Text input label",
+            "defaultValue": "Input label",
+            "type": "text"
+        },
+        {
+            "id": "placeholder",
+            "label": "Placeholder",
+            "description": "Text input placeholder",
+            "defaultValue": "Input placeholder",
+            "type": "text"
+        },
+        {
+            "id": "helperText",
+            "label": "Hint",
+            "description": "Text input hint text",
+            "defaultValue": "Input hint",
+            "type": "text"
+        },
+        {
+            "id": "disabled",
+            "label": "Disabled",
+            "description": "Shows field in disabled state",
+            "defaultValue": false,
+            "type": "boolean"
+        },
+        {
+            "id": "required",
+            "label": "Required",
+            "description": "Shows field in required state",
+            "defaultValue": false,
+            "type": "boolean"
+        },
+        {
+            "id": "isLoadingAndDisabled",
+            "label": "Is loading",
+            "description": "Show loading indicator",
+            "defaultValue": false,
+            "type": "boolean"
+        },
+        {
+            "id": "error",
+            "label": "Invalid",
+            "description": "Shows field in invalid state",
+            "defaultValue": false,
+            "type": "boolean"
+        },
+        {
+            "id": "startIcon",
+            "label": "Start icon",
+            "defaultValue": false,
+            "description": "Show icon at the start of the input",
+            "type": "boolean"
+        },
+        {
+            "id": "endIcon",
+            "label": "End icon",
+            "defaultValue": false,
+            "description": "Show icon at the end of the input",
+            "type": "boolean"
+        }
+    ]
+}

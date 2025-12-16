@@ -7,19 +7,28 @@
                 "items": [
                     {
                         "title": "Description",
-                        "path": "components/button/basicbuttons.html"
+                        "path": "components/button/basicbuttons/basicbuttons.html"
                     },
                     {
                         "title": "Contained Button",
-                        "path": "components/button/containedbutton.html"
+                        "path": "components/button/containedbutton/containedbutton.html"
                     },
                     {
                         "title": "Outlined Button",
-                        "path": "components/button/outlinedbutton.html"
+                        "path": "components/button/outlinedbutton/outlinedbutton.html"
                     },
                     {
                         "title": "Text Button",
-                        "path": "components/button/textbutton.html"
+                        "path": "components/button/textbutton/textbutton.html"
+                    }
+                ]
+            },
+            {
+                "title": "Inputs",
+                "items": [
+                    {
+                        "title": "Text Input",
+                        "path": "components/inputs/textinput/textinput.html"
                     }
                 ]
             }

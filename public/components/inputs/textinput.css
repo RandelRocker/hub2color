@@ -1111,3 +1111,44 @@ h3 {
 .cms-global-flags-sprite {
   background-image: var(--site-flags-sprite);
 }
+/*!***************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./hub2color/styles/main.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************/
+.h1 {
+  font-size: 2.28rem;
+  padding-top: 2.85rem;
+  padding-bottom: 1.71rem;
+  text-align: center;
+}
+
+.h2 {
+  padding: 0;
+}
+
+.component-container-row {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  border: 1px solid #e8eaee;
+  border-radius: 12px;
+  align-items: center;
+  gap: 16px;
+}
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./app-react/js/components/common/MUI/formFields/components/inputs/PhoneField/PhoneField.scss ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************/
+.PhoneField__phoneCodeContainer--3qv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./hub2color/js/components/ComponentLayout/ComponentLayout.scss ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************/
+.ComponentLayout__container--1vA {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
