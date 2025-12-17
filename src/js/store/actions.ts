@@ -91,6 +91,10 @@ export const toggleCodeEditorSidebar = () => ({
     type: ActionTypes.TOGGLE_CODE_EDITOR_SIDEBAR,
 });
 
+export const toggleTestSidebar = () => ({
+    type: ActionTypes.TOGGLE_TEST_SIDEBAR,
+});
+
 export const setSearchQuery = (query: string) => ({
     type: ActionTypes.SET_SEARCH_QUERY,
     payload: query,

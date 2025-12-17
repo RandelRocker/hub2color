@@ -87,6 +87,10 @@ export interface ToggleCodeEditorSidebarAction {
     type: ActionTypes.TOGGLE_CODE_EDITOR_SIDEBAR;
 }
 
+export interface ToggleTestSidebarAction {
+    type: ActionTypes.TOGGLE_TEST_SIDEBAR;
+}
+
 export interface SetSearchQueryAction {
     type: ActionTypes.SET_SEARCH_QUERY;
     payload: string;
@@ -131,6 +135,7 @@ export type AppAction =
     | SetDirectionAction
     | SetPanelDockAction
     | ToggleCodeEditorSidebarAction
+    | ToggleTestSidebarAction
     | SetSearchQueryAction
     | SetLoadingAction
     | SetErrorAction

@@ -16,9 +16,14 @@ const CodeEditorSidebar = lazy(() =>
         return { default: module.CodeEditorSidebar };
     })
 );
+const TestSidebar = lazy(() => 
+    import(/* webpackChunkName: "test-sidebar" */ "../TestSidebar/TestSidebar").then(module => {
+        return { default: module.TestSidebar };
+    })
+);
 
 export const ContentArea = () => {
-    const { componentSchema, codeEditorSidebarOpen } = useSelector((state: RootState) => state.app);
+    const { componentSchema, codeEditorSidebarOpen, testSidebarOpen } = useSelector((state: RootState) => state.app);
 
     return (
         <Box
@@ -80,6 +85,27 @@ export const ContentArea = () => {
                     }
                 >
                     <CodeEditorSidebar />
+                </Suspense>
+            )}
+            {testSidebarOpen && (
+                <Suspense
+                    fallback={
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                width: 420,
+                                bgcolor: "white",
+                                borderLeft: 1,
+                                borderColor: "divider"
+                            }}
+                        >
+                            <CircularProgress size={24} />
+                        </Box>
+                    }
+                >
+                    <TestSidebar />
                 </Suspense>
             )}
         </Box>

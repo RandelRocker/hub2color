@@ -137,6 +137,7 @@ export interface AppState {
     direction: "ltr" | "rtl";
     panelDock: "bottom";
     codeEditorSidebarOpen: boolean;
+    testSidebarOpen: boolean;
     searchQuery: string;
     loading: boolean;
     error: string | null;

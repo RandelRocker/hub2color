@@ -13,6 +13,7 @@ const initialState: AppState = {
     direction: "ltr",
     panelDock: "bottom",
     codeEditorSidebarOpen: false,
+    testSidebarOpen: false,
     searchQuery: "",
     loading: true,
     error: null,
@@ -257,6 +258,17 @@ export const appReducer = (
                 break;
             case ActionTypes.TOGGLE_CODE_EDITOR_SIDEBAR:
                 draft.codeEditorSidebarOpen = !draft.codeEditorSidebarOpen;
+                // Close test sidebar when code editor sidebar opens
+                if (draft.codeEditorSidebarOpen) {
+                    draft.testSidebarOpen = false;
+                }
+                break;
+            case ActionTypes.TOGGLE_TEST_SIDEBAR:
+                draft.testSidebarOpen = !draft.testSidebarOpen;
+                // Close code editor sidebar when test sidebar opens
+                if (draft.testSidebarOpen) {
+                    draft.codeEditorSidebarOpen = false;
+                }
                 break;
             case ActionTypes.SET_SEARCH_QUERY:
                 draft.searchQuery = action.payload;

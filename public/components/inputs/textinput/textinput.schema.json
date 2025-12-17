@@ -57,7 +57,7 @@
             "type": "boolean"
         },
         {
-            "id": "startAdornment",
+            "id": "endAdornment",
             "label": "End icon",
             "defaultValue": false,
             "description": "Show icon at the end of the input",

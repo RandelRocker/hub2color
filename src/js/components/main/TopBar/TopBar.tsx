@@ -4,7 +4,7 @@ import {
     Divider,
     Tooltip
 } from "@mui/material";
-import { Code, SellOutlined, EditOutlined } from "@mui/icons-material";
+import { Code, SellOutlined, EditOutlined, BiotechRounded } from "@mui/icons-material";
 import IonIcon from "@reacticons/ionicons";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,13 +15,14 @@ import {
     setViewport,
     setDirection,
     toggleCodeEditorSidebar,
+    toggleTestSidebar,
     setPortalTagsEnabled
 } from "../../../store/actions";
 import { TagsDialog } from "./TagsDialog/TagsDialog";
 
 export const TopBar = () => {
     const dispatch = useDispatch();
-    const { zoom, viewport, direction, codeEditorSidebarOpen, portalTags, portalTagsEnabled } =
+    const { zoom, viewport, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled } =
         useSelector((state: RootState) => state.app);
     const [tagsDialogOpen, setTagsDialogOpen] = useState(false);
 
@@ -49,6 +50,10 @@ export const TopBar = () => {
 
     const handleCodeEditorToggle = () => {
         dispatch(toggleCodeEditorSidebar());
+    };
+
+    const handleTestSidebarToggle = () => {
+        dispatch(toggleTestSidebar());
     };
 
     const handlePortalTagsToggle = () => {
@@ -308,6 +313,26 @@ export const TopBar = () => {
                     }}
                 >
                     <Code fontSize="small" />
+                </IconButton>
+            </Tooltip>
+
+            <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ alignSelf: "center", height: "60%", mx: 1 }}
+            />
+
+            {/* Test Sidebar Toggle */}
+            <Tooltip title="Testing Tools">
+                <IconButton
+                    size="small"
+                    onClick={handleTestSidebarToggle}
+                    sx={{
+                        color: testSidebarOpen ? "primary.main" : "inherit",
+                        bgcolor: testSidebarOpen ? "primary.50" : "transparent"
+                    }}
+                >
+                    <BiotechRounded fontSize="small" />
                 </IconButton>
             </Tooltip>
 
