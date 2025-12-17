@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Box } from "@mui/material";
 import { useDispatch } from "react-redux";
 
-import { StoredThemeStyles } from "../../../store/types";
+import { TStoredThemeStyles } from "../../../store/types";
 import { Sidebar } from "../Sidebar/Sidebar";
 import { ContentArea } from "../ContentArea/ContentArea";
 import {
@@ -46,7 +46,7 @@ export const App = () => {
                 // here will be request to backend to get saved styling theme
                 const savedStylingThemeJson = localStorage.getItem("stylingTheme");
                 if (savedStylingThemeJson) {
-                    const savedTheme: StoredThemeStyles =
+                    const savedTheme: TStoredThemeStyles =
                         JSON.parse(savedStylingThemeJson);
 
                     dispatch(saveStylingTheme(savedTheme));

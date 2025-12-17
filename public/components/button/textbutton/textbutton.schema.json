@@ -52,7 +52,6 @@
                     "id": "paddingSmall",
                     "label": "Small button padding",
                     "defaultValue": "4px 10px",
-                    "themeKey": "button.sizeSmall.padding",
                     "cssVariable": "--button-size-small-padding",
                     "type": "padding"
                 },
@@ -60,7 +59,6 @@
                     "id": "paddingMedium",
                     "label": "Medium button padding",
                     "defaultValue": "6px 16px",
-                    "themeKey": "button.sizeMedium.padding",
                     "cssVariable": "--button-size-medium-padding",
                     "type": "padding"
                 },
@@ -68,7 +66,6 @@
                     "id": "paddingLarge",
                     "label": "Large button padding",
                     "defaultValue": "8px 22px",
-                    "themeKey": "button.sizeLarge.padding",
                     "cssVariable": "--button-size-large-padding",
                     "type": "padding"
                 }
@@ -83,7 +80,6 @@
                     "id": "fontSizeSmall",
                     "label": "Small button font size",
                     "defaultValue": "1rem",
-                    "themeKey": "button.sizeSmall.fontSize",
                     "cssVariable": "--button-size-small-font-size",
                     "type": "units"
                 },
@@ -91,7 +87,6 @@
                     "id": "fontSizeMedium",
                     "label": "Medium button font size",
                     "defaultValue": "1.29rem",
-                    "themeKey": "button.sizeMedium.fontSize",
                     "cssVariable": "--button-size-medium-font-size",
                     "type": "units"
                 },
@@ -99,7 +94,6 @@
                     "id": "fontSizeLarge",
                     "label": "Large button font size",
                     "defaultValue": "1.5rem",
-                    "themeKey": "button.sizeLarge.fontSize",
                     "cssVariable": "--button-size-large-font-size",
                     "type": "units"
                 },
@@ -107,7 +101,6 @@
                     "id": "fontWeight",
                     "label": "Font weight",
                     "defaultValue": "500",
-                    "themeKey": "button.general.fontWeight",
                     "cssVariable": "--button-general-font-weight",
                     "type": "number"
                 },
@@ -116,7 +109,6 @@
                     "label": "Italic",
                     "defaultValue": false,
                     "checkedValue": "italic",
-                    "themeKey": "button.general.fontStyle",
                     "cssVariable": "--button-general-font-style",
                     "type": "boolean"
                 },
@@ -125,7 +117,6 @@
                     "label": "Uppercase",
                     "defaultValue": "uppercase",
                     "checkedValue": "uppercase",
-                    "themeKey": "button.general.textTransform",
                     "cssVariable": "--button-general-text-transform",
                     "type": "boolean"
                 }
@@ -140,7 +131,6 @@
                     "id": "borderRadius",
                     "label": "Border Radius",
                     "defaultValue": "4px 4px 4px 4px",
-                    "themeKey": "button.general.borderRadius",
                     "cssVariable": "--button-general-border-radius",
                     "type": "borderRadius"
                 }
@@ -155,7 +145,6 @@
                     "id": "buttonShadow",
                     "label": "Button shadow",
                     "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
-                    "themeKey": "button.general.boxShadow",
                     "cssVariable": "--button-general-box-shadow",
                     "type": "boxShadow"
                 },
@@ -163,7 +152,6 @@
                     "id": "buttonShadowHover",
                     "label": "Button hover shadow",
                     "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
-                    "themeKey": "button.general.boxShadow",
                     "cssVariable": "--button-general-hover-box-shadow",
                     "type": "boxShadow"
                 }
@@ -187,7 +175,6 @@
                             "id": "primaryButtonBackgroundColor",
                             "label": "Primary background color",
                             "defaultValue": "rgba(0, 0, 0, 0)",
-                            "themeKey": "button.textPrimary.backgroundColor",
                             "cssVariable": "--button-text-primary-background-color",
                             "type": "color"
                         },
@@ -195,7 +182,6 @@
                             "id": "primaryButtonHoverBackgroundColor",
                             "label": "Primary background hover color",
                             "defaultValue": "rgba(110, 205, 141, 0.04)",
-                            "themeKey": "button.textPrimaryHover.backgroundColor",
                             "cssVariable": "--button-text-primary-hover-background-color",
                             "type": "color"
                         }
@@ -210,7 +196,6 @@
                             "id": "primaryButtonTextColor",
                             "label": "Primary text color",
                             "defaultValue": "#6ECD8D",
-                            "themeKey": "button.textPrimary.color",
                             "cssVariable": "--button-text-primary-color",
                             "type": "color"
                         },
@@ -218,7 +203,6 @@
                             "id": "primaryButtonHoverTextColor",
                             "label": "Primary text hover color",
                             "defaultValue": "#6ECD8D",
-                            "themeKey": "button.textPrimaryHover.color",
                             "cssVariable": "--button-text-primary-hover-color",
                             "type": "color"
                         },
@@ -226,7 +210,6 @@
                             "id": "primaryButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textPrimary.textShadow",
                             "cssVariable": "--button-text-primary-text-shadow",
                             "type": "textShadow"
                         },
@@ -234,7 +217,6 @@
                             "id": "primaryButtonHoverTextShadow",
                             "label": "Text hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textPrimaryHover.textShadow",
                             "cssVariable": "--button-text-primary-hover-text-shadow",
                             "type": "textShadow"
                         }
@@ -249,7 +231,6 @@
                             "id": "primaryButtonBorder",
                             "label": "Border",
                             "defaultValue": "1px solid rgba(110, 205, 141, 0.5)",
-                            "themeKey": "button.textPrimary.border",
                             "cssVariable": "--button-text-primary-border",
                             "type": "border"
                         },
@@ -257,7 +238,6 @@
                             "id": "primaryButtonHoverBorder",
                             "label": "Border hover",
                             "defaultValue": "1px solid #6ECD8D",
-                            "themeKey": "button.textPrimaryHover.border",
                             "cssVariable": "--button-text-primary-hover-border",
                             "type": "border"
                         }
@@ -272,7 +252,6 @@
                             "id": "primaryButtonShadow",
                             "label": "Button shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textPrimary.boxShadow",
                             "cssVariable": "--button-text-primary-box-shadow",
                             "type": "boxShadow"
                         },
@@ -280,7 +259,6 @@
                             "id": "primaryButtonHoverShadow",
                             "label": "Button hover shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textPrimaryHover.boxShadow",
                             "cssVariable": "--button-text-primary-hover-box-shadow",
                             "type": "boxShadow"
                         }
@@ -302,7 +280,6 @@
                             "id": "secondaryButtonBackgroundColor",
                             "label": "Secondary background color",
                             "defaultValue": "rgba(0, 0, 0, 0)",
-                            "themeKey": "button.textSecondary.backgroundColor",
                             "cssVariable": "--button-text-secondary-background-color",
                             "type": "color"
                         },
@@ -310,7 +287,6 @@
                             "id": "secondaryButtonHoverBackgroundColor",
                             "label": "Secondary background hover color",
                             "defaultValue": "rgba(33, 150, 243, 0.04);",
-                            "themeKey": "button.textSecondaryHover.backgroundColor",
                             "cssVariable": "--button-text-secondary-hover-background-color",
                             "type": "color"
                         }
@@ -325,7 +301,6 @@
                             "id": "secondaryButtonTextColor",
                             "label": "Secondary text color",
                             "defaultValue": "#2196f3",
-                            "themeKey": "button.textSecondary.color",
                             "cssVariable": "--button-text-secondary-color",
                             "type": "color"
                         },
@@ -333,7 +308,6 @@
                             "id": "secondaryButtonHoverTextColor",
                             "label": "Secondary text hover color",
                             "defaultValue": "#2196f3",
-                            "themeKey": "button.textSecondaryHover.color",
                             "cssVariable": "--button-text-secondary-hover-color",
                             "type": "color"
                         },
@@ -341,7 +315,6 @@
                             "id": "secondaryButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textSecondary.textShadow",
                             "cssVariable": "--button-text-secondary-text-shadow",
                             "type": "textShadow"
                         },
@@ -349,7 +322,6 @@
                             "id": "secondaryButtonHoverTextShadow",
                             "label": "Text hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textSecondaryHover.textShadow",
                             "cssVariable": "--button-text-secondary-hover-text-shadow",
                             "type": "textShadow"
                         }
@@ -364,7 +336,6 @@
                             "id": "secondaryButtonBorder",
                             "label": "Border",
                             "defaultValue": "1px solid rgba(33, 150, 243, 0.5)",
-                            "themeKey": "button.textSecondary.border",
                             "cssVariable": "--button-text-secondary-border",
                             "type": "border"
                         },
@@ -372,7 +343,6 @@
                             "id": "secondaryButtonHoverBorder",
                             "label": "Border hover",
                             "defaultValue": "1px solid #2196f3",
-                            "themeKey": "button.textSecondaryHover.border",
                             "cssVariable": "--button-text-secondary-hover-border",
                             "type": "border"
                         }
@@ -387,7 +357,6 @@
                             "id": "secondaryButtonShadow",
                             "label": "Button shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textSecondary.boxShadow",
                             "cssVariable": "--button-text-secondary-box-shadow",
                             "type": "boxShadow"
                         },
@@ -395,7 +364,6 @@
                             "id": "secondaryButtonHoverShadow",
                             "label": "Button hover shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textSecondaryHover.boxShadow",
                             "cssVariable": "--button-text-secondary-hover-box-shadow",
                             "type": "boxShadow"
                         }
@@ -417,7 +385,6 @@
                             "id": "errorButtonBackgroundColor",
                             "label": "Error background color",
                             "defaultValue": "rgba(0, 0, 0, 0)",
-                            "themeKey": "button.textError.backgroundColor",
                             "cssVariable": "--button-text-error-background-color",
                             "type": "color"
                         },
@@ -425,7 +392,6 @@
                             "id": "errorButtonHoverBackgroundColor",
                             "label": "Error background hover color",
                             "defaultValue": "rgba(236, 50, 56, 0.04)",
-                            "themeKey": "button.textErrorHover.backgroundColor",
                             "cssVariable": "--button-text-error-hover-background-color",
                             "type": "color"
                         }
@@ -440,7 +406,6 @@
                             "id": "errorButtonTextColor",
                             "label": "Error text color",
                             "defaultValue": "#ec3238",
-                            "themeKey": "button.textError.color",
                             "cssVariable": "--button-text-error-color",
                             "type": "color"
                         },
@@ -448,7 +413,6 @@
                             "id": "errorButtonHoverTextColor",
                             "label": "Error text hover color",
                             "defaultValue": "#ec3238",
-                            "themeKey": "button.textErrorHover.color",
                             "cssVariable": "--button-text-error-hover-color",
                             "type": "color"
                         },
@@ -456,7 +420,6 @@
                             "id": "errorButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textError.textShadow",
                             "cssVariable": "--button-text-error-text-shadow",
                             "type": "textShadow"
                         },
@@ -464,7 +427,6 @@
                             "id": "errorButtonHoverTextShadow",
                             "label": "Text hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textErrorHover.textShadow",
                             "cssVariable": "--button-text-error-hover-text-shadow",
                             "type": "textShadow"
                         }
@@ -479,7 +441,6 @@
                             "id": "errorButtonBorder",
                             "label": "Border",
                             "defaultValue": "1px solid rgba(236, 50, 56, 0.5)",
-                            "themeKey": "button.textError.border",
                             "cssVariable": "--button-text-error-border",
                             "type": "border"
                         },
@@ -487,7 +448,6 @@
                             "id": "errorButtonHoverBorder",
                             "label": "Border hover",
                             "defaultValue": "1px solid #ec3238",
-                            "themeKey": "button.textErrorHover.border",
                             "cssVariable": "--button-text-error-hover-border",
                             "type": "border"
                         }
@@ -502,7 +462,6 @@
                             "id": "errorButtonShadow",
                             "label": "Button shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textError.boxShadow",
                             "cssVariable": "--button-text-error-box-shadow",
                             "type": "boxShadow"
                         },
@@ -510,7 +469,6 @@
                             "id": "errorButtonHoverShadow",
                             "label": "Button hover shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textErrorHover.boxShadow",
                             "cssVariable": "--button-text-error-hover-box-shadow",
                             "type": "boxShadow"
                         }
@@ -532,7 +490,6 @@
                             "id": "disabledButtonBackgroundColor",
                             "label": "Disabled background color",
                             "defaultValue": "rgba(0,0,0,0)",
-                            "themeKey": "button.textDisabled.backgroundColor",
                             "cssVariable": "--button-text-disabled-background-color",
                             "type": "color"
                         }
@@ -547,7 +504,6 @@
                             "id": "disabledButtonTextColor",
                             "label": "Disabled text color",
                             "defaultValue": "rgba(0,0,0,0.26)",
-                            "themeKey": "button.textDisabled.color",
                             "cssVariable": "--button-text-disabled-color",
                             "type": "color"
                         },
@@ -555,7 +511,6 @@
                             "id": "disabledButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
-                            "themeKey": "button.textDisabled.textShadow",
                             "cssVariable": "--button-text-disabled-text-shadow",
                             "type": "textShadow"
                         }
@@ -570,7 +525,6 @@
                             "id": "disabledButtonBorder",
                             "label": "Border",
                             "defaultValue": "1px solid rgba(0, 0, 0, 0.12)",
-                            "themeKey": "button.textDisabled.border",
                             "cssVariable": "--button-text-disabled-border",
                             "type": "border"
                         }

@@ -43,13 +43,7 @@ export interface ControlsTabValues {
     [name: string]: unknown
 }
 
-export interface StoredThemeStyles {
-    [cssVariable: string]: {
-        isEnabled: boolean;
-        value: unknown;
-        themeKey?: string;
-    }
-}
+export type TStoredThemeStyles = Record<string, string>;
 
 export interface ControlsSchemaProps {
     fields: ControlField[];
@@ -128,7 +122,7 @@ export interface AppState {
     controlsTabDefaultValues: ControlsTabValues;
     styleTabValues: StylingTabValues;
     styleTabDefaultValues: Record<string, unknown>;
-    savedTheme: StoredThemeStyles | null;
+    savedTheme: TStoredThemeStyles | null;
     stylingUIState: { scrollPosition?: number; expandedAccordions?: string[] };
     customCss: string;
     customJs: string;

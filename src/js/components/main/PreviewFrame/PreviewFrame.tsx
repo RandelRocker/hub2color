@@ -77,7 +77,7 @@ export const PreviewFrame = () => {
         // Send styling theme
         if (savedTheme) {
             sendMessageToFrame("STYLING_CHANGE", {
-                styles: helpers.prepareStylingTheme(savedTheme)
+                styles: savedTheme
             });
         }
 
@@ -133,7 +133,7 @@ export const PreviewFrame = () => {
     useEffect(() => {
         if (styleTabValues) {
             sendMessageToFrame("STYLING_CHANGE", {
-                styles: helpers.prepareStylingTheme({ ...savedTheme, ...styleTabValues })
+                styles: helpers.prepareStylingTheme({ savedTheme, styleTabValues })
             });
         }
     }, [styleTabValues, sendMessageToFrame, savedTheme]);

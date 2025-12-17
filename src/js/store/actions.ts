@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ComponentSchema, StylingTabValues, StoredThemeStyles, ControlsTabValues, PortalTag } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -52,7 +52,7 @@ export const setStylingTabUIState = (uiState: { scrollPosition?: number; expande
     payload: uiState,
 });
 
-export const saveStylingTheme = (stylingTheme: StoredThemeStyles) => ({
+export const saveStylingTheme = (stylingTheme: TStoredThemeStyles) => ({
     type: ActionTypes.SET_STYLING_THEME,
     payload: stylingTheme,
 });

@@ -1,4 +1,4 @@
-import { PageSection, ComponentSchema, StylingTabValues, StoredThemeStyles, ControlsTabValues, PortalTag } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag } from "./types";
 import { ActionTypes } from "./constants";
 
 export interface SetPagesAction {
@@ -50,7 +50,7 @@ export interface SetStylingTabUIStateAction {
 
 export interface saveStylingThemeAction {
     type: ActionTypes.SET_STYLING_THEME;
-    payload: StoredThemeStyles;
+    payload: TStoredThemeStyles;
 }
 
 export interface SetCustomCssAction {

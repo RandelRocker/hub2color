@@ -2619,14 +2619,14 @@ export const StylingTab = () => {
             return;
         }
 
-        const savedField = savedTheme[field.cssVariable];
+        const savedFieldValue = savedTheme[field.cssVariable];
         const schemaField = findFieldById(componentSchema?.styles || [], field.id);
 
         dispatch(updateStylingTabValuesWithDefault({
             [field.cssVariable]: {
                 id: field.id,
-                value: savedField?.value ?? schemaField?.defaultValue,
-                isEnabled: savedField?.isEnabled ?? false,
+                value: savedFieldValue ?? schemaField?.defaultValue,
+                isEnabled: Boolean(savedFieldValue !== undefined) ?? false,
                 themeKey: field?.themeKey
             }
         }));

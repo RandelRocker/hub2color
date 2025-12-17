@@ -1,6 +1,6 @@
 import { produce } from "immer";
 import { ActionTypes } from "./constants";
-import { AppState, StoredThemeStyles, StyleField, StyleGroup } from "./types";
+import { AppState, TStoredThemeStyles, StyleField, StyleGroup } from "./types";
 import { AppAction } from "./actionTypes";
 
 const initialState: AppState = {
@@ -69,7 +69,7 @@ export const appReducer = (
                         const field = item as StyleField;
 
                         if ("id" in item && field.cssVariable ) {
-                            const fieldValue = draft.savedTheme?.[field.cssVariable]?.value || field.defaultValue;
+                            const fieldValue = draft.savedTheme?.[field.cssVariable] ?? field.defaultValue;
 
                             if (fieldValue !== undefined) {
                                 draft.styleTabDefaultValues[field.id] = fieldValue;
@@ -77,7 +77,7 @@ export const appReducer = (
                                     id: field.id,
                                     value: fieldValue,
                                     themeKey: field?.themeKey,
-                                    isEnabled: draft.savedTheme?.[field.cssVariable]?.isEnabled || false
+                                    isEnabled: Boolean(draft.savedTheme?.[field.cssVariable] !== undefined) || false
                                 };
                                 draft.styleTabDefaultValues[`${field.id}_enabled`] = draft.styleTabValues[field.cssVariable].isEnabled;
                             }
@@ -190,7 +190,7 @@ export const appReducer = (
                         const field = item as StyleField;
 
                         if ("id" in item && field.cssVariable ) {
-                            const fieldValue = draft.savedTheme?.[field.cssVariable]?.value;
+                            const fieldValue = draft.savedTheme?.[field.cssVariable];
 
                             if (fieldValue !== undefined) {
                                 draft.styleTabDefaultValues[field.id] = fieldValue;
@@ -198,7 +198,7 @@ export const appReducer = (
                                     id: field.id,
                                     value: fieldValue,
                                     themeKey: field?.themeKey,
-                                    isEnabled: draft.savedTheme?.[field.cssVariable]?.isEnabled || false
+                                    isEnabled: Boolean(draft.savedTheme?.[field.cssVariable] !== undefined) || false
                                 };
                                 draft.styleTabDefaultValues[`${field.id}_enabled`] = draft.styleTabValues[field.cssVariable].isEnabled;
                             }
@@ -223,12 +223,10 @@ export const appReducer = (
                 break;
 
             case ActionTypes.SET_STYLING_THEME: {
-                const themeToSave: StoredThemeStyles = {};
+                const themeToSave: TStoredThemeStyles = {};
 
                 for (const key in action.payload) {
-                    themeToSave[key] = {
-                        ...action.payload[key]
-                    };
+                    themeToSave[key] = action.payload[key];
                 }
 
                 draft.savedTheme = themeToSave;

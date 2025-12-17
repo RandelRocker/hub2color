@@ -1,4 +1,4 @@
-import { StoredThemeStyles } from "@/js/store/types";
+import { TStoredThemeStyles, StylingTabValues } from "@/js/store/types";
 
 type FlatInput = {
     [path: string]: {
@@ -33,12 +33,12 @@ export const prepareThemeData = <T extends FlatInput>(
     return result;
 };
 
-export const prepareCssVariables = (
-    cssVariables: FlatInput
-): string => {
+export const prepareCssVariables = (cssVariables: FlatInput): string => {
     const variables: string[] = [];
 
-    for (const [cssVarName, { isEnabled, value }] of Object.entries(cssVariables)) {
+    for (const [cssVarName, { isEnabled, value }] of Object.entries(
+        cssVariables
+    )) {
         if (!isEnabled) continue;
 
         // Format the CSS variable value
@@ -54,7 +54,9 @@ export const prepareCssVariables = (
         }
 
         // Ensure CSS variable name starts with --
-        const varName = cssVarName.startsWith("--") ? cssVarName : `--${cssVarName}`;
+        const varName = cssVarName.startsWith("--")
+            ? cssVarName
+            : `--${cssVarName}`;
         variables.push(`  ${varName}: ${formattedValue};`);
     }
 
@@ -67,13 +69,27 @@ export const prepareCssVariables = (
 
 export const removeUnitsFromValue = (value: unknown) => {
     const units = ["px", "rem", "em", "%", "pt"];
-    return typeof value === "string" && units.some((unit) => value === unit) ? undefined : value;
+    return typeof value === "string" && units.some((unit) => value === unit)
+        ? undefined
+        : value;
 };
 
-export const prepareStylingTheme = (stylingTheme: StoredThemeStyles) => {
-  const filteredEntries = Object.entries(stylingTheme).filter(([, value]) => {
-    return value && value.isEnabled === true;
-  });
+export const prepareStylingTheme = ({
+    savedTheme,
+    styleTabValues
+}: {
+    savedTheme: TStoredThemeStyles | null;
+    styleTabValues: StylingTabValues;
+}) => {
+    const result: Record<string, unknown> = { ...savedTheme };
 
-  return Object.fromEntries(filteredEntries);
-}
+    Object.entries(styleTabValues).forEach(([key, value]) => {
+        if (value && value.isEnabled === true) {
+            result[key] = value.value;
+        } else {
+            delete result[key];
+        }
+    });
+
+    return result;
+};

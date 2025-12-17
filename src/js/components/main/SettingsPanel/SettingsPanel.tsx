@@ -21,6 +21,7 @@ import {
     updateStylingTabToPreviousValues,
     updateStyleSchemaDefaults
 } from "../../../store/actions";
+import { TStoredThemeStyles } from "../../../store/types";
 
 const ControlsTab = lazy(() => 
     import(/* webpackChunkName: "controls-tab" */ "./ControlsTab/ControlsTab").then(module => {
@@ -39,7 +40,7 @@ const DEFAULT_HEIGHT = MIN_HEIGHT;
 
 export const SettingsPanel = () => {
     const dispatch = useDispatch();
-    const { currentPage, styleTabValues } = useSelector(
+    const { currentPage, styleTabValues, savedTheme } = useSelector(
         (state: RootState) => state.app
     );
     const [activeTab, setActiveTab] = useState(0);
@@ -110,19 +111,22 @@ export const SettingsPanel = () => {
         if (!currentPage) return;
 
         try {
-            const filteredEntries = Object.entries(styleTabValues).filter(([, value]) => {
-                return value && value.isEnabled === true;
-              });
-            
-            const stylingTheme = Object.fromEntries(filteredEntries);
+            const stylingTheme: TStoredThemeStyles = { ...savedTheme };
+
+            Object.entries(styleTabValues).forEach(([key, value]) => {
+                if (value && value.isEnabled === true) {
+                    stylingTheme[key] = String(value.value);
+                } else {
+                    delete stylingTheme[key];
+                }
+            });
 
             localStorage.setItem("stylingTheme", JSON.stringify(stylingTheme));
-
             dispatch(saveStylingTheme(stylingTheme));
         } catch (error) {
             console.error("Failed to save styling data:", error);
         }
-    }, [currentPage, styleTabValues, dispatch]);
+    }, [currentPage, savedTheme, styleTabValues, dispatch]);
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
