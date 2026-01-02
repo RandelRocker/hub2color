@@ -5,7 +5,7 @@ import { AppAction } from "./actionTypes";
 
 const initialState: AppState = {
     pages: [],
-    currentPage: 'components/inputs/textinput/textinput.html',
+    currentPage: 'components/inputs/selectfield/selectfield.html',
     customCss: "",
     customJs: "",
     zoom: 1,

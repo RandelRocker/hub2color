@@ -3,21 +3,21 @@
          {
             "id": "label",
             "label": "Label",
-            "description": "Text input label",
+            "description": "Select input label",
             "defaultValue": "Input label",
             "type": "text"
         },
         {
             "id": "placeholder",
             "label": "Placeholder",
-            "description": "Text input placeholder",
+            "description": "Select input placeholder",
             "defaultValue": "Input placeholder",
             "type": "text"
         },
         {
             "id": "helperText",
             "label": "Hint",
-            "description": "Text input hint text",
+            "description": "Select input hint text",
             "defaultValue": "Input hint",
             "type": "text"
         },
@@ -27,6 +27,14 @@
             "description": "Shows icon with label with additional information",
             "defaultValue": "",
             "type": "text"
+        },
+        {
+            "id": "size",
+            "label": "Size",
+            "description": "Input size",
+            "type": "radio",
+            "defaultValue": "medium",
+            "options": ["small", "medium"]
         },
         {
             "id": "disabled",
@@ -176,6 +184,13 @@
                             "defaultValue": "3.429rem",
                             "cssVariable": "--form-input-field-height",
                             "type": "units"
+                        },
+                        {
+                            "id": "inputFieldSmallHeight",
+                            "label": "Input field small height",
+                            "defaultValue": "2.285rem",
+                            "cssVariable": "--form-input-field-small-height",
+                            "type": "units"
                         }
                     ]
                 },
@@ -202,7 +217,7 @@
                             "id": "inputFieldPlaceholderFontColor",
                             "label": "Input field placeholder font color",
                             "defaultValue": "rgba(0, 0, 0, 0.82)",
-                            "cssVariable": "--form-input-field-placeholder-font-color",
+                            "cssVariable": "--form-input-placeholder-font-color",
                             "type": "color"
                         },
                         {
@@ -237,41 +252,41 @@
                 },
                 {
                     "type": "group",
-                    "id": "inputFieldHoverGroup",
+                    "id": "inputFieldBackgroundGroup",
                     "label": "Input background",
                     "fields": [
                         {
                             "id": "inputFieldBackgroundColor",
                             "label": "Input field background color",
-                            "defaultValue": "rgba(0, 0, 0, 0.06)",
+                            "defaultValue": "rgba(0, 0, 0, 0)",
                             "cssVariable": "--form-input-field-background-color",
                             "type": "color"
                         },
                         {
                             "id": "inputFieldHoverBackgroundColor",
                             "label": "Input field hover background color",
-                            "defaultValue": "rgba(0, 0, 0, 0.09)",
+                            "defaultValue": "rgba(0, 0, 0, 0)",
                             "cssVariable": "--form-input-field-hover-background-color",
                             "type": "color"
                         },
                         {
                             "id": "inputFieldFocusedBackgroundColor",
                             "label": "Input field focused background color",
-                            "defaultValue": "rgba(0, 0, 0, 0.06)",
+                            "defaultValue": "rgba(0, 0, 0, 0)",
                             "cssVariable": "--form-input-field-focused-background-color",
                             "type": "color"
                         },
                         {
                             "id": "inputFieldErrorBackgroundColor",
                             "label": "Input field error background color",
-                            "defaultValue": "rgba(0, 0, 0, 0.06)",
+                            "defaultValue": "rgba(0, 0, 0, 0)",
                             "cssVariable": "--form-input-field-error-background-color",
                             "type": "color"
                         },
                         {
                             "id": "inputFieldDisabledBackgroundColor",
                             "label": "Input field disabled background color",
-                            "defaultValue": "rgba(0, 0, 0, 0.12)",
+                            "defaultValue": "rgba(0, 0, 0, 0.9)",
                             "cssVariable": "--form-input-field-disabled-background-color",
                             "type": "color"
                         }
@@ -285,7 +300,7 @@
                         {
                             "id": "inputFieldBorder",
                             "label": "Input field border",
-                            "defaultValue": "1px solid rgba(0, 0, 0, 0.3)",
+                            "defaultValue": "1px solid rgba(0, 0, 0, 0.23)",
                             "cssVariable": "--form-input-field-border",
                             "type": "border"
                         },
@@ -299,7 +314,7 @@
                         {
                             "id": "inputFieldHoverBorderColor",
                             "label": "Input field border color hover",
-                            "defaultValue": "rgba(0, 0, 0, 0.3)",
+                            "defaultValue": "rgb(0, 0, 0)",
                             "cssVariable": "--form-input-field-hover-border-color",
                             "type": "color"
                         },
@@ -320,7 +335,7 @@
                         {
                             "id": "inputFieldDisabledBorderColor",
                             "label": "Input field border color disabled",
-                            "defaultValue": "rgba(0, 0, 0, 0.3)",
+                            "defaultValue": "rgba(0, 0, 0, 0)",
                             "cssVariable": "--form-input-field-disabled-border-color",
                             "type": "color"
                         }
@@ -372,7 +387,7 @@
                     "id": "hintMargin",
                     "label": "Hint margin",
                     "defaultValue": "4px 0 0 0",
-                    "cssVariable": "--form-input-text-helper-text-margin",
+                    "cssVariable": "--form-input-helper-text-margin",
                     "type": "padding"
                 },
                 {
@@ -408,6 +423,66 @@
                     "label": "Hint font disabled color",
                     "defaultValue": "rgba(0, 0, 0, 0.38)",
                     "cssVariable": "--form-input-helper-text-disabled-color",
+                    "type": "color"
+                }
+            ]
+        },
+        {
+            "type": "sectionTitle",
+            "label": "Common dropdown styles"
+        },
+        {
+            "type": "group",
+            "id": "inputDropdownIconGroup",
+            "label": "Input Dropdown icon",
+            "fields": [
+                {
+                    "id": "inputDropdownIconColor",
+                    "label": "Input dropdown icon color",
+                    "defaultValue": "rgba(0, 0, 0, 0.54)",
+                    "cssVariable": "--form-input-dropdown-icon-color",
+                    "type": "color"
+                }
+            ]
+        },
+        {
+            "type": "group",
+            "id": "inputDropdownListGroup",
+            "label": "Input Dropdown list",
+            "fields": [
+                {
+                    "id": "inputDropdownListMaxHeight",
+                    "label": "Input dropdown list max height",
+                    "defaultValue": "240px",
+                    "cssVariable": "--form-input-dropdown-list-max-height",
+                    "type": "units"
+                },
+                {
+                    "id": "inputDropdownListBackgroundColor",
+                    "label": "Input dropdown list background color",
+                    "defaultValue": "#ffffff",
+                    "cssVariable": "--form-input-dropdown-list-background-color",
+                    "type": "color"
+                },
+                {
+                    "id": "inputDropdownListItemHoverBackgroundColor",
+                    "label": "Input dropdown list item hover background color",
+                    "defaultValue": "rgba(0, 0, 0, 0.04);",
+                    "cssVariable": "--form-input-dropdown-list-hover-background-color",
+                    "type": "color"
+                },
+                {
+                    "id": "inputDropdownListItemActiveBackgroundColor",
+                    "label": "Input dropdown list item active background color",
+                    "defaultValue": "rgba(0, 0, 0, 0.08);",
+                    "cssVariable": "--form-input-dropdown-list-active-background-color",
+                    "type": "color"
+                },
+                {
+                    "id": "inputDropdownListItemFontColor",
+                    "label": "Input dropdown list item font color",
+                    "defaultValue": "rgba(0, 0, 0, 0.85)",
+                    "cssVariable": "--form-input-dropdown-list-item-font-color",
                     "type": "color"
                 }
             ]

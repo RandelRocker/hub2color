@@ -28,7 +28,11 @@
                 "items": [
                     {
                         "title": "Text Input",
-                        "path": "components/inputs/textinput/textinput.html"
+                        "path": "components/inputs/textfield/textfield.html"
+                    },
+                    {
+                        "title": "Select Field",
+                        "path": "components/inputs/selectfield/selectfield.html"
                     }
                 ]
             }
