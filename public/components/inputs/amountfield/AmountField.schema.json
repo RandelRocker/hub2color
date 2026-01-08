@@ -1,0 +1,45 @@
+{
+    "controls": [
+        {
+            "id": "currencySymbol",
+            "label": "Currency symbol",
+            "defaultValue": "USD",
+            "description": "Currency symbol",
+            "type": "text"
+        },
+        {
+            "id": "isCurrencySymbolAtTheLeft",
+            "label": "Show currency symbol at left",
+            "defaultValue": true,
+            "description": "Show currency symbol at left",
+            "type": "boolean"
+        },
+        {
+            "id": "adornment",
+            "label": "Show field icon",
+            "defaultValue": false,
+            "description": "Shows field adornment",
+            "type": "boolean"
+        }
+    ],
+    "styles": [
+        {
+            "type": "sectionTitle",
+            "label": "Common input styles"
+        },
+        {
+            "type": "group",
+            "id": "inputFieldIconsGroup",
+            "label": "Currency symbol",
+            "fields": [
+                {
+                    "id": "inputCurrencySymbolColor",
+                    "label": "Currency symbol color",
+                    "defaultValue": "rgba(0, 0, 0, 0.54)",
+                    "cssVariable": "--form-input-amount-field-currency-color",
+                    "type": "color"
+                }
+            ]
+        }
+    ]
+}

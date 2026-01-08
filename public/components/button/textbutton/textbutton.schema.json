@@ -1,162 +1,6 @@
 {
-    "controls": [
-         {
-            "id": "label",
-            "label": "Label",
-            "description": "Button text",
-            "defaultValue": "Button",
-            "type": "text"
-        },
-        {
-            "id": "color",
-            "label": "Color",
-            "description": "Button colors",
-            "type": "select",
-            "defaultValue": "primary",
-            "options": ["primary", "secondary", "error"]
-        },
-        {
-            "id": "disabled",
-            "label": "Disabled",
-            "defaultValue": false,
-            "description": "Disable button",
-            "type": "boolean"
-        },
-        {
-            "id": "size",
-            "label": "Size",
-            "description": "Button size",
-            "type": "radio",
-            "defaultValue": "medium",
-            "options": ["small", "medium", "large"]
-        },
-        {
-            "id": "loading",
-            "label": "Is loading",
-            "defaultValue": false,
-            "description": "Show loading indicator",
-            "type": "boolean"
-        }
-    ],
+    "controls": [],
     "styles": [
-        {
-            "type": "sectionTitle",
-            "label": "Common button styles"
-        },
-        {
-            "type": "group",
-            "id": "buttonSizeGroup",
-            "label": "Button size",
-            "fields": [
-                {
-                    "id": "paddingSmall",
-                    "label": "Small button padding",
-                    "defaultValue": "4px 10px",
-                    "cssVariable": "--button-size-small-padding",
-                    "type": "padding"
-                },
-                {
-                    "id": "paddingMedium",
-                    "label": "Medium button padding",
-                    "defaultValue": "6px 16px",
-                    "cssVariable": "--button-size-medium-padding",
-                    "type": "padding"
-                },
-                {
-                    "id": "paddingLarge",
-                    "label": "Large button padding",
-                    "defaultValue": "8px 22px",
-                    "cssVariable": "--button-size-large-padding",
-                    "type": "padding"
-                }
-            ]
-        },
-        {
-            "type": "group",
-            "id": "buttonTextGroup",
-            "label": "Button text",
-            "fields": [
-                {
-                    "id": "fontSizeSmall",
-                    "label": "Small button font size",
-                    "defaultValue": "1rem",
-                    "cssVariable": "--button-size-small-font-size",
-                    "type": "units"
-                },
-                {
-                    "id": "fontSizeMedium",
-                    "label": "Medium button font size",
-                    "defaultValue": "1.29rem",
-                    "cssVariable": "--button-size-medium-font-size",
-                    "type": "units"
-                },
-                {
-                    "id": "fontSizeLarge",
-                    "label": "Large button font size",
-                    "defaultValue": "1.5rem",
-                    "cssVariable": "--button-size-large-font-size",
-                    "type": "units"
-                },
-                {
-                    "id": "fontWeight",
-                    "label": "Font weight",
-                    "defaultValue": "500",
-                    "cssVariable": "--button-general-font-weight",
-                    "type": "number"
-                },
-                {
-                    "id": "italic",
-                    "label": "Italic",
-                    "defaultValue": false,
-                    "checkedValue": "italic",
-                    "cssVariable": "--button-general-font-style",
-                    "type": "boolean"
-                },
-                {
-                    "id": "uppercase",
-                    "label": "Uppercase",
-                    "defaultValue": "uppercase",
-                    "checkedValue": "uppercase",
-                    "cssVariable": "--button-general-text-transform",
-                    "type": "boolean"
-                }
-            ]
-        },
-        {
-            "type": "group",
-            "id": "buttonBorderGroup",
-            "label": "Button border",
-            "fields": [
-                {
-                    "id": "borderRadius",
-                    "label": "Border Radius",
-                    "defaultValue": "4px 4px 4px 4px",
-                    "cssVariable": "--button-general-border-radius",
-                    "type": "borderRadius"
-                }
-            ]
-        },
-        {
-            "type": "group",
-            "id": "buttonShadowGroup",
-            "label": "Button shadow",
-            "fields": [
-                {
-                    "id": "buttonShadow",
-                    "label": "Button shadow",
-                    "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
-                    "cssVariable": "--button-general-box-shadow",
-                    "type": "boxShadow"
-                },
-                {
-                    "id": "buttonShadowHover",
-                    "label": "Button hover shadow",
-                    "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
-                    "cssVariable": "--button-general-hover-box-shadow",
-                    "type": "boxShadow"
-                }
-            ]
-        },
         {
             "type": "sectionTitle",
             "label": "Outlined button styles"
@@ -168,18 +12,18 @@
             "fields": [
                 {
                     "type": "group",
-                    "id": "primaryButtonBackgroundColorsGroup",
+                    "id": "primaryTextButtonBackgroundColorsGroup",
                     "label": "Background Colors",
                     "fields": [
                         {
-                            "id": "primaryButtonBackgroundColor",
+                            "id": "primaryTextButtonBackgroundColor",
                             "label": "Primary background color",
                             "defaultValue": "rgba(0, 0, 0, 0)",
                             "cssVariable": "--button-text-primary-background-color",
                             "type": "color"
                         },
                         {
-                            "id": "primaryButtonHoverBackgroundColor",
+                            "id": "primaryTextButtonHoverBackgroundColor",
                             "label": "Primary background hover color",
                             "defaultValue": "rgba(110, 205, 141, 0.04)",
                             "cssVariable": "--button-text-primary-hover-background-color",
@@ -189,32 +33,32 @@
                 },
                 {
                     "type": "group",
-                    "id": "primaryButtonTextGroup",
+                    "id": "primaryTextButtonTextGroup",
                     "label": "Button text",
                     "fields": [
                         {
-                            "id": "primaryButtonTextColor",
+                            "id": "primaryTextButtonTextColor",
                             "label": "Primary text color",
                             "defaultValue": "#6ECD8D",
                             "cssVariable": "--button-text-primary-color",
                             "type": "color"
                         },
                         {
-                            "id": "primaryButtonHoverTextColor",
+                            "id": "primaryTextButtonHoverTextColor",
                             "label": "Primary text hover color",
                             "defaultValue": "#6ECD8D",
                             "cssVariable": "--button-text-primary-hover-color",
                             "type": "color"
                         },
                         {
-                            "id": "primaryButtonTextShadow",
+                            "id": "primaryTextButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-primary-text-shadow",
                             "type": "textShadow"
                         },
                         {
-                            "id": "primaryButtonHoverTextShadow",
+                            "id": "primaryTextButtonHoverTextShadow",
                             "label": "Text hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-primary-hover-text-shadow",
@@ -224,18 +68,18 @@
                 },
                 {
                     "type": "group",
-                    "id": "primaryButtonBorderGroup",
+                    "id": "primaryTextButtonBorderGroup",
                     "label": "Button border",
                     "fields": [
                         {
-                            "id": "primaryButtonBorder",
+                            "id": "primaryTextButtonBorder",
                             "label": "Border",
                             "defaultValue": "1px solid rgba(110, 205, 141, 0.5)",
                             "cssVariable": "--button-text-primary-border",
                             "type": "border"
                         },
                         {
-                            "id": "primaryButtonHoverBorder",
+                            "id": "primaryTextButtonHoverBorder",
                             "label": "Border hover",
                             "defaultValue": "1px solid #6ECD8D",
                             "cssVariable": "--button-text-primary-hover-border",
@@ -245,18 +89,18 @@
                 },
                 {
                     "type": "group",
-                    "id": "primaryButtonShadowGroup",
+                    "id": "primaryTextButtonShadowGroup",
                     "label": "Button shadow",
                     "fields": [
                         {
-                            "id": "primaryButtonShadow",
+                            "id": "primaryTextButtonShadow",
                             "label": "Button shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-primary-box-shadow",
                             "type": "boxShadow"
                         },
                         {
-                            "id": "primaryButtonHoverShadow",
+                            "id": "primaryTextButtonHoverShadow",
                             "label": "Button hover shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-primary-hover-box-shadow",
@@ -268,23 +112,23 @@
         },
         {
             "type": "group",
-            "id": "secondaryButtonGroup",
+            "id": "secondaryTextButtonGroup",
             "label": "Secondary color",
             "fields": [
                 {
                     "type": "group",
-                    "id": "secondaryButtonBackgroundColorsGroup",
+                    "id": "secondaryTextButtonBackgroundColorsGroup",
                     "label": "Background Colors",
                     "fields": [
                         {
-                            "id": "secondaryButtonBackgroundColor",
+                            "id": "secondaryTextButtonBackgroundColor",
                             "label": "Secondary background color",
                             "defaultValue": "rgba(0, 0, 0, 0)",
                             "cssVariable": "--button-text-secondary-background-color",
                             "type": "color"
                         },
                         {
-                            "id": "secondaryButtonHoverBackgroundColor",
+                            "id": "secondaryTextButtonHoverBackgroundColor",
                             "label": "Secondary background hover color",
                             "defaultValue": "rgba(33, 150, 243, 0.04);",
                             "cssVariable": "--button-text-secondary-hover-background-color",
@@ -294,32 +138,32 @@
                 },
                 {
                     "type": "group",
-                    "id": "secondaryButtonTextGroup",
+                    "id": "secondaryTextButtonTextGroup",
                     "label": "Button text",
                     "fields": [
                         {
-                            "id": "secondaryButtonTextColor",
+                            "id": "secondaryTextButtonTextColor",
                             "label": "Secondary text color",
                             "defaultValue": "#2196f3",
                             "cssVariable": "--button-text-secondary-color",
                             "type": "color"
                         },
                         {
-                            "id": "secondaryButtonHoverTextColor",
+                            "id": "secondaryTextButtonHoverTextColor",
                             "label": "Secondary text hover color",
                             "defaultValue": "#2196f3",
                             "cssVariable": "--button-text-secondary-hover-color",
                             "type": "color"
                         },
                         {
-                            "id": "secondaryButtonTextShadow",
+                            "id": "secondaryTextButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-secondary-text-shadow",
                             "type": "textShadow"
                         },
                         {
-                            "id": "secondaryButtonHoverTextShadow",
+                            "id": "secondaryTextButtonHoverTextShadow",
                             "label": "Text hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-secondary-hover-text-shadow",
@@ -329,18 +173,18 @@
                 },
                 {
                     "type": "group",
-                    "id": "secondaryButtonBorderGroup",
+                    "id": "secondaryTextButtonBorderGroup",
                     "label": "Button border",
                     "fields": [
                         {
-                            "id": "secondaryButtonBorder",
+                            "id": "secondaryTextButtonBorder",
                             "label": "Border",
                             "defaultValue": "1px solid rgba(33, 150, 243, 0.5)",
                             "cssVariable": "--button-text-secondary-border",
                             "type": "border"
                         },
                         {
-                            "id": "secondaryButtonHoverBorder",
+                            "id": "secondaryTextButtonHoverBorder",
                             "label": "Border hover",
                             "defaultValue": "1px solid #2196f3",
                             "cssVariable": "--button-text-secondary-hover-border",
@@ -350,18 +194,18 @@
                 },
                 {
                     "type": "group",
-                    "id": "secondaryButtonShadowGroup",
+                    "id": "secondaryTextButtonShadowGroup",
                     "label": "Button shadow",
                     "fields": [
                         {
-                            "id": "secondaryButtonShadow",
+                            "id": "secondaryTextButtonShadow",
                             "label": "Button shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-secondary-box-shadow",
                             "type": "boxShadow"
                         },
                         {
-                            "id": "secondaryButtonHoverShadow",
+                            "id": "secondaryTextButtonHoverShadow",
                             "label": "Button hover shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-secondary-hover-box-shadow",
@@ -373,23 +217,23 @@
         },
         {
             "type": "group",
-            "id": "errorButtonGroup",
+            "id": "errorTextButtonGroup",
             "label": "Error color",
             "fields": [
                 {
                     "type": "group",
-                    "id": "errorButtonBackgroundColorsGroup",
+                    "id": "errorTextButtonBackgroundColorsGroup",
                     "label": "Background Colors",
                     "fields": [
                         {
-                            "id": "errorButtonBackgroundColor",
+                            "id": "errorTextButtonBackgroundColor",
                             "label": "Error background color",
                             "defaultValue": "rgba(0, 0, 0, 0)",
                             "cssVariable": "--button-text-error-background-color",
                             "type": "color"
                         },
                         {
-                            "id": "errorButtonHoverBackgroundColor",
+                            "id": "errorTextButtonHoverBackgroundColor",
                             "label": "Error background hover color",
                             "defaultValue": "rgba(236, 50, 56, 0.04)",
                             "cssVariable": "--button-text-error-hover-background-color",
@@ -399,32 +243,32 @@
                 },
                 {
                     "type": "group",
-                    "id": "errorButtonTextGroup",
+                    "id": "errorTextButtonTextGroup",
                     "label": "Button text",
                     "fields": [
                         {
-                            "id": "errorButtonTextColor",
+                            "id": "errorTextButtonTextColor",
                             "label": "Error text color",
                             "defaultValue": "#ec3238",
                             "cssVariable": "--button-text-error-color",
                             "type": "color"
                         },
                         {
-                            "id": "errorButtonHoverTextColor",
+                            "id": "errorTextButtonHoverTextColor",
                             "label": "Error text hover color",
                             "defaultValue": "#ec3238",
                             "cssVariable": "--button-text-error-hover-color",
                             "type": "color"
                         },
                         {
-                            "id": "errorButtonTextShadow",
+                            "id": "errorTextButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-error-text-shadow",
                             "type": "textShadow"
                         },
                         {
-                            "id": "errorButtonHoverTextShadow",
+                            "id": "errorTextButtonHoverTextShadow",
                             "label": "Text hover shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-error-hover-text-shadow",
@@ -434,18 +278,18 @@
                 },
                 {
                     "type": "group",
-                    "id": "errorButtonBorderGroup",
+                    "id": "errorTextButtonBorderGroup",
                     "label": "Button border",
                     "fields": [
                         {
-                            "id": "errorButtonBorder",
+                            "id": "errorTextButtonBorder",
                             "label": "Border",
                             "defaultValue": "1px solid rgba(236, 50, 56, 0.5)",
                             "cssVariable": "--button-text-error-border",
                             "type": "border"
                         },
                         {
-                            "id": "errorButtonHoverBorder",
+                            "id": "errorTextButtonHoverBorder",
                             "label": "Border hover",
                             "defaultValue": "1px solid #ec3238",
                             "cssVariable": "--button-text-error-hover-border",
@@ -455,18 +299,18 @@
                 },
                 {
                     "type": "group",
-                    "id": "errorButtonShadowGroup",
+                    "id": "errorTextButtonShadowGroup",
                     "label": "Button shadow",
                     "fields": [
                         {
-                            "id": "errorButtonShadow",
+                            "id": "errorTextButtonShadow",
                             "label": "Button shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-error-box-shadow",
                             "type": "boxShadow"
                         },
                         {
-                            "id": "errorButtonHoverShadow",
+                            "id": "errorTextButtonHoverShadow",
                             "label": "Button hover shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-error-hover-box-shadow",
@@ -478,16 +322,16 @@
         },
         {
             "type": "group",
-            "id": "disabledButtonGroup",
+            "id": "disabledTextButtonGroup",
             "label": "Disabled color",
             "fields": [
                 {
                     "type": "group",
-                    "id": "disabledButtonBackgroundColors",
+                    "id": "disabledTextButtonBackgroundColors",
                     "label": "Background Colors",
                     "fields": [
                         {
-                            "id": "disabledButtonBackgroundColor",
+                            "id": "disabledTextButtonBackgroundColor",
                             "label": "Disabled background color",
                             "defaultValue": "rgba(0,0,0,0)",
                             "cssVariable": "--button-text-disabled-background-color",
@@ -497,18 +341,18 @@
                 },
                 {
                     "type": "group",
-                    "id": "disabledButtonTextGroup",
+                    "id": "disabledTextButtonTextGroup",
                     "label": "Button text",
                     "fields": [
                         {
-                            "id": "disabledButtonTextColor",
+                            "id": "disabledTextButtonTextColor",
                             "label": "Disabled text color",
                             "defaultValue": "rgba(0,0,0,0.26)",
                             "cssVariable": "--button-text-disabled-color",
                             "type": "color"
                         },
                         {
-                            "id": "disabledButtonTextShadow",
+                            "id": "disabledTextButtonTextShadow",
                             "label": "Text shadow",
                             "defaultValue": "1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "cssVariable": "--button-text-disabled-text-shadow",
@@ -518,11 +362,11 @@
                 },
                 {
                     "type": "group",
-                    "id": "disabledButtonBorderGroup",
+                    "id": "disabledTextButtonBorderGroup",
                     "label": "Button border",
                     "fields": [
                         {
-                            "id": "disabledButtonBorder",
+                            "id": "disabledTextButtonBorder",
                             "label": "Border",
                             "defaultValue": "1px solid rgba(0, 0, 0, 0.12)",
                             "cssVariable": "--button-text-disabled-border",
@@ -532,11 +376,11 @@
                 },
                 {
                     "type": "group",
-                    "id": "disabledButtonShadowGroup",
+                    "id": "disabledTextButtonShadowGroup",
                     "label": "Button shadow",
                     "fields": [
                         {
-                            "id": "disabledButtonShadow",
+                            "id": "disabledTextButtonShadow",
                             "label": "Button shadow",
                             "defaultValue": "1px 1px 1px 1px rgba(0, 0, 0, 0.5)",
                             "themeKey": "button.textDisabled.boxShadow",

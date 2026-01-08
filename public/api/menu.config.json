@@ -11,15 +11,21 @@
                     },
                     {
                         "title": "Contained Button",
-                        "path": "components/button/containedbutton/containedbutton.html"
+                        "path": "components/button/containedbutton/containedbutton.html",
+                        "schemaPath": [
+                            "components/button/ButtonCommon.schema.json",
+                            "components/button/containedbutton/ContainedButton.schema.json"
+                        ]
                     },
                     {
                         "title": "Outlined Button",
-                        "path": "components/button/outlinedbutton/outlinedbutton.html"
+                        "path": "components/button/outlinedbutton/outlinedbutton.html",
+                        "schemaPath": "components/button/outlinedbutton/outlinedbutton.schema.json"
                     },
                     {
                         "title": "Text Button",
-                        "path": "components/button/textbutton/textbutton.html"
+                        "path": "components/button/textbutton/textbutton.html",
+                        "schemaPath": "components/button/textbutton/textbutton.schema.json"
                     }
                 ]
             },
@@ -28,11 +34,32 @@
                 "items": [
                     {
                         "title": "Text Input",
-                        "path": "components/inputs/textfield/textfield.html"
+                        "path": "components/inputs/textfield/textfield.html",
+                        "schemaPath": "components/inputs/InputCommon.schema.json"
+                    },
+                    {
+                        "title": "Password Input",
+                        "path": "components/inputs/passwordfield/passwordfield.html",
+                        "schemaPath": [
+                            "components/inputs/InputCommon.schema.json",
+                            "components/inputs/passwordfield/PasswordField.schema.json"
+                        ]
+                    },
+                    {
+                        "title": "Amount Input",
+                        "path": "components/inputs/amountfield/amountfield.html",
+                        "schemaPath": [
+                            "components/inputs/InputCommon.schema.json",
+                            "components/inputs/amountfield/AmountField.schema.json"
+                        ]
                     },
                     {
                         "title": "Select Field",
-                        "path": "components/inputs/selectfield/selectfield.html"
+                        "path": "components/inputs/selectfield/selectfield.html",
+                        "schemaPath": [
+                            "components/inputs/InputCommon.schema.json",
+                            "components/inputs/selectfield/SelectField.schema.json"
+                        ]
                     }
                 ]
             }

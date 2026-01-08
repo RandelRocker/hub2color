@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import IonIcon from "@reacticons/ionicons";
 import {
     Box,
@@ -22,6 +22,19 @@ import { RootState } from "../../../store";
 import { setCurrentPage, setSearchQuery } from "../../../store/actions";
 import { PageItem } from "../../../store/types";
 
+// Unified helper: recursively checks if a page path exists in an item's subtree
+const itemContainsPage = (
+    item: PageItem,
+    targetPath: string | null
+): boolean => {
+    if (!targetPath) return false;
+    if (item.path === targetPath) return true;
+    if (item.items?.length) {
+        return item.items.some((child) => itemContainsPage(child, targetPath));
+    }
+    return false;
+};
+
 interface MenuItemProps {
     item: PageItem;
     currentPage: string | null;
@@ -29,10 +42,20 @@ interface MenuItemProps {
     level?: number;
 }
 
-const MenuItem = ({ item, currentPage, onPageSelect, level = 0 }: MenuItemProps) => {
-    const [expanded, setExpanded] = useState(false);
-    const hasChildren = item.items && item.items.length > 0;
-    const paddingLeft = 4 + (level * 2);
+const MenuItem = ({
+    item,
+    currentPage,
+    onPageSelect,
+    level = 0
+}: MenuItemProps) => {
+    const hasChildren = Boolean(item.items?.length);
+    const shouldBeExpanded = hasChildren && itemContainsPage(item, currentPage);
+    const [expanded, setExpanded] = useState(shouldBeExpanded);
+
+    // Sync expanded state when currentPage changes
+    useEffect(() => {
+        setExpanded(shouldBeExpanded);
+    }, [shouldBeExpanded]);
 
     const handleClick = () => {
         if (hasChildren) {
@@ -49,7 +72,7 @@ const MenuItem = ({ item, currentPage, onPageSelect, level = 0 }: MenuItemProps)
                     selected={currentPage === item.path}
                     onClick={handleClick}
                     sx={{
-                        pl: paddingLeft,
+                        pl: 4 + level * 2,
                         py: 0.5,
                         gap: "8px",
                         "&.Mui-selected": {
@@ -61,7 +84,13 @@ const MenuItem = ({ item, currentPage, onPageSelect, level = 0 }: MenuItemProps)
                 >
                     <ListItemIcon sx={{ minWidth: 0 }}>
                         <IonIcon
-                            name={hasChildren ? (expanded ? "chevron-down-outline" : "chevron-forward-outline") : "document-text-outline"}
+                            name={
+                                hasChildren
+                                    ? expanded
+                                        ? "chevron-down-outline"
+                                        : "chevron-forward-outline"
+                                    : "document-text-outline"
+                            }
                             style={{
                                 display: "flex",
                                 alignItems: "center"
@@ -105,6 +134,28 @@ export const Sidebar = () => {
     );
     const [expandedSections, setExpandedSections] = useState<string[]>([]);
 
+    // Compute which section should be expanded based on currentPage
+    const sectionForCurrentPage = useMemo(() => {
+        if (!currentPage) return null;
+        return (
+            pages.find((section) =>
+                section.items.some((item) =>
+                    itemContainsPage(item, currentPage)
+                )
+            )?.sectionTitle || null
+        );
+    }, [pages, currentPage]);
+
+    // Auto-expand section containing current page
+    useEffect(() => {
+        if (
+            sectionForCurrentPage &&
+            !expandedSections.includes(sectionForCurrentPage)
+        ) {
+            setExpandedSections((prev) => [...prev, sectionForCurrentPage]);
+        }
+    }, [sectionForCurrentPage, expandedSections]);
+
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(setSearchQuery(event.target.value));
     };
@@ -121,38 +172,39 @@ export const Sidebar = () => {
         dispatch(setCurrentPage(pagePath));
     };
 
-    const filterItems = (items: PageItem[]): PageItem[] => {
-        if (searchQuery === "") return items;
+    const filteredPages = useMemo(() => {
+        if (!searchQuery) return pages;
 
-        return items.filter((item) => {
-            const titleMatches = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const query = searchQuery.toLowerCase();
+        const filterItems = (items: PageItem[]): PageItem[] => {
+            return items
+                .filter((item) => {
+                    const titleMatches = item.title
+                        .toLowerCase()
+                        .includes(query);
+                    if (item.items?.length) {
+                        const filteredChildren = filterItems(item.items);
+                        return titleMatches || filteredChildren.length > 0;
+                    }
+                    return titleMatches;
+                })
+                .map((item) => {
+                    if (item.items?.length) {
+                        return { ...item, items: filterItems(item.items) };
+                    }
+                    return item;
+                });
+        };
 
-            if (item.items && item.items.length > 0) {
-                const filteredChildren = filterItems(item.items);
-                return titleMatches || filteredChildren.length > 0;
-            }
-
-            return titleMatches;
-        }).map((item) => {
-            if (item.items && item.items.length > 0) {
-                return {
-                    ...item,
-                    items: filterItems(item.items)
-                };
-            }
-            return item;
-        });
-    };
-
-    const filteredPages = pages
-        .map((section) => ({
-            ...section,
-            items: searchQuery === "" ||
-                   section.sectionTitle.toLowerCase().includes(searchQuery.toLowerCase())
-                   ? filterItems(section.items)
-                   : filterItems(section.items)
-        }))
-        .filter((section) => section.items.length > 0);
+        return pages
+            .map((section) => ({
+                ...section,
+                items: section.sectionTitle.toLowerCase().includes(query)
+                    ? filterItems(section.items)
+                    : filterItems(section.items)
+            }))
+            .filter((section) => section.items.length > 0);
+    }, [pages, searchQuery]);
 
     return (
         <Box
@@ -257,7 +309,10 @@ export const Sidebar = () => {
                             <List dense>
                                 {section.items.map((item, index) => (
                                     <MenuItem
-                                        key={item.path || `${section.sectionTitle}-${index}`}
+                                        key={
+                                            item.path ||
+                                            `${section.sectionTitle}-${index}`
+                                        }
                                         item={item}
                                         currentPage={currentPage}
                                         onPageSelect={handlePageSelect}

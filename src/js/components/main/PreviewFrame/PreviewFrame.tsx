@@ -5,12 +5,14 @@ import { useSelector, useDispatch } from "react-redux";
 import * as helpers from "./helpers";
 import { RootState } from "../../../store";
 import { setComponentSchema } from "../../../store/actions";
+import { PageItem, PageSection, ComponentSchema } from "../../../store/types";
 
 export const PreviewFrame = () => {
     const dispatch = useDispatch();
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const {
         currentPage,
+        pages,
         zoom,
         viewport,
         direction,
@@ -40,23 +42,145 @@ export const PreviewFrame = () => {
         []
     );
 
+    // Helper function to recursively find a page item by path
+    const findPageItemByPath = useCallback(
+        (sections: PageSection[], path: string): PageItem | null => {
+            for (const section of sections) {
+                const findInItems = (items: PageItem[]): PageItem | null => {
+                    for (const item of items) {
+                        if (item.path === path) {
+                            return item;
+                        }
+                        if (item.items) {
+                            const found = findInItems(item.items);
+                            if (found) {
+                                return found;
+                            }
+                        }
+                    }
+                    return null;
+                };
+
+                const found = findInItems(section.items);
+                if (found) {
+                    return found;
+                }
+            }
+            return null;
+        },
+        []
+    );
+
+    // Helper function to merge multiple schemas
+    const mergeSchemas = useCallback(
+        (schemas: ComponentSchema[]): ComponentSchema => {
+            if (schemas.length === 0) {
+                return { controls: [], styles: [] };
+            }
+
+            if (schemas.length === 1) {
+                return schemas[0];
+            }
+
+            const merged: ComponentSchema = {
+                controls: [],
+                styles: []
+            };
+
+            // Merge controls arrays by appending
+            schemas.forEach((schema) => {
+                if (schema.controls) {
+                    merged.controls = [...merged.controls, ...schema.controls];
+                }
+            });
+
+            // Merge styles arrays by appending
+            schemas.forEach((schema) => {
+                if (schema.styles) {
+                    merged.styles = [...merged.styles, ...schema.styles];
+                }
+            });
+
+            // Deep merge other properties
+            const deepMerge = (
+                target: Record<string, unknown>,
+                source: Record<string, unknown>
+            ) => {
+                for (const key in source) {
+                    if (key === "controls" || key === "styles") {
+                        continue; // Already handled above
+                    }
+                    if (
+                        typeof source[key] === "object" &&
+                        source[key] !== null &&
+                        !Array.isArray(source[key]) &&
+                        typeof target[key] === "object" &&
+                        target[key] !== null &&
+                        !Array.isArray(target[key])
+                    ) {
+                        target[key] = deepMerge(
+                            { ...(target[key] as Record<string, unknown>) },
+                            source[key] as Record<string, unknown>
+                        );
+                    } else {
+                        target[key] = source[key];
+                    }
+                }
+                return target;
+            };
+
+            schemas.forEach((schema) => {
+                deepMerge(
+                    merged as unknown as Record<string, unknown>,
+                    schema as unknown as Record<string, unknown>
+                );
+            });
+
+            return merged;
+        },
+        []
+    );
+
     const loadComponentSchema = useCallback(
         async (pagePath: string) => {
             try {
-                const schemaPath = pagePath.replace(/\.html$/, ".schema.json");
-                const response = await fetch(`/${schemaPath}`);
+                // Find the page item to check for schemaPath
+                const pageItem = findPageItemByPath(pages, pagePath);
 
-                if (response.ok) {
-                    const schema = await response.json();
-                    dispatch(setComponentSchema(schema));
+                let schemaPaths: string[];
+
+                if (pageItem?.schemaPath) {
+                    // Use schemaPath from menu config
+                    if (Array.isArray(pageItem.schemaPath)) {
+                        schemaPaths = pageItem.schemaPath;
+                    } else {
+                        schemaPaths = [pageItem.schemaPath];
+                    }
                 } else {
-                    dispatch(setComponentSchema(null));
+                    // Fall back to default behavior: replace .html with .schema.json
+                    schemaPaths = [pagePath.replace(/\.html$/, ".schema.json")];
                 }
+
+                // Load all schema files
+                const schemaPromises = schemaPaths.map(async (schemaPath) => {
+                    const response = await fetch(`/${schemaPath}`);
+                    if (!response.ok) {
+                        throw new Error(`Failed to load schema: ${schemaPath}`);
+                    }
+                    return response.json() as Promise<ComponentSchema>;
+                });
+
+                const schemas = await Promise.all(schemaPromises);
+
+                // Merge schemas if multiple were loaded
+                const mergedSchema = mergeSchemas(schemas);
+                dispatch(setComponentSchema(mergedSchema));
             } catch (error) {
+                console.error("Error loading component schema:", error);
                 dispatch(setComponentSchema(null));
             }
         },
-        [dispatch]
+        [dispatch, pages, findPageItemByPath, mergeSchemas]
     );
 
     const handleIframeLoad = useCallback(() => {
@@ -87,7 +211,7 @@ export const PreviewFrame = () => {
         Object.entries(controlsTabValues).forEach(([name, value]) => {
             processedValues[name] = helpers.removeUnitsFromValue(value);
         });
-        
+
         sendMessageToFrame("CONTROLS_CHANGE", { values: processedValues });
 
         // Send portal tags if enabled
@@ -96,7 +220,18 @@ export const PreviewFrame = () => {
         } else {
             sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: [] });
         }
-    }, [currentPage, sendMessageToFrame, direction, zoom, customCss, customJs, savedTheme, controlsTabValues, portalTagsEnabled, portalTags]);
+    }, [
+        currentPage,
+        sendMessageToFrame,
+        direction,
+        zoom,
+        customCss,
+        customJs,
+        savedTheme,
+        controlsTabValues,
+        portalTagsEnabled,
+        portalTags
+    ]);
 
     useEffect(() => {
         if (currentPage) {
@@ -113,11 +248,11 @@ export const PreviewFrame = () => {
     }, [zoom, sendMessageToFrame]);
 
     useEffect(() => {
-        sendMessageToFrame("CUSTOM_CSS_CHANGE", { css: customCss || '' });
+        sendMessageToFrame("CUSTOM_CSS_CHANGE", { css: customCss || "" });
     }, [customCss, sendMessageToFrame]);
 
     useEffect(() => {
-        sendMessageToFrame("CUSTOM_JS_CHANGE", { js: customJs || '' });
+        sendMessageToFrame("CUSTOM_JS_CHANGE", { js: customJs || "" });
     }, [customJs, sendMessageToFrame]);
 
     useEffect(() => {
@@ -133,7 +268,10 @@ export const PreviewFrame = () => {
     useEffect(() => {
         if (styleTabValues) {
             sendMessageToFrame("STYLING_CHANGE", {
-                styles: helpers.prepareStylingTheme({ savedTheme, styleTabValues })
+                styles: helpers.prepareStylingTheme({
+                    savedTheme,
+                    styleTabValues
+                })
             });
         }
     }, [styleTabValues, sendMessageToFrame, savedTheme]);
@@ -189,15 +327,15 @@ export const PreviewFrame = () => {
 
     const getIframeSrc = () => {
         if (!currentPage) return "";
-        
+
         const baseUrl = `/${currentPage}`;
-        
+
         if (viewport === "mobile") {
             return `${baseUrl}?hideAdminControls=1&emulate=mobile`;
         } else if (viewport === "tablet") {
             return `${baseUrl}?hideAdminControls=1&emulate=tablet`;
         }
-        
+
         return baseUrl;
     };
 

@@ -3,6 +3,7 @@ export interface PageItem {
     path?: string;
     icon?: string;
     items?: PageItem[];
+    schemaPath?: string | string[];
 }
 
 export interface PageSection {
