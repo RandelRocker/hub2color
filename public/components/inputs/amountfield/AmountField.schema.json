@@ -25,15 +25,15 @@
     "styles": [
         {
             "type": "sectionTitle",
-            "label": "Common input styles"
+            "label": "Common field styles"
         },
         {
             "type": "group",
-            "id": "inputFieldIconsGroup",
+            "id": "amountFieldIconsGroup",
             "label": "Currency symbol",
             "fields": [
                 {
-                    "id": "inputCurrencySymbolColor",
+                    "id": "amountFieldCurrencySymbolColor",
                     "label": "Currency symbol color",
                     "defaultValue": "rgba(0, 0, 0, 0.54)",
                     "cssVariable": "--form-input-amount-field-currency-color",

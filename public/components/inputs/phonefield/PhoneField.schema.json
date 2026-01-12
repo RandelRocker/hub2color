@@ -1,0 +1,52 @@
+{
+    "controls": [
+        {
+            "id": "showPhoneCode",
+            "label": "Show phone code",
+            "defaultValue": true,
+            "description": "Show phone code",
+            "type": "boolean"
+        },
+        {
+            "id": "phoneCodeSelectable",
+            "label": "Phone code selectable",
+            "defaultValue": false,
+            "description": "Phone code selectable",
+            "type": "boolean"
+        },
+        {
+            "id": "endAdornment",
+            "label": "End icon",
+            "defaultValue": false,
+            "description": "Show icon at the end of the input",
+            "type": "boolean"
+        }
+    ],
+    "styles": [
+        {
+            "type": "sectionTitle",
+            "label": "Phone field styles"
+        },
+        {
+            "type": "group",
+            "id": "phoneFieldPhoneCodeGroup",
+            "label": "Phone code",
+            "fields": [
+                {
+                    "id": "phoneFieldPhoneCodeColor",
+                    "label": "Phone code color",
+                    "defaultValue": "rgba(0, 0, 0, 0.54)",
+                    "cssVariable": "--form-input-phone-field-phone-code-color",
+                    "type": "color"
+                },
+                {
+                    "id": "phoneFieldPhoneCodeBorderColor",
+                    "label": "Phone code border color",
+                    "defaultValue": "rgba(0, 0, 0, 0.23)",
+                    "cssVariable": "--form-input-phone-field-phone-code-border-color",
+                    "type": "color"
+                }
+            ]
+        }
+    ]
+}

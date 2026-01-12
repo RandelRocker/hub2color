@@ -4,77 +4,16 @@
             "id": "startAdornment",
             "label": "Start icon",
             "defaultValue": false,
-            "description": "Show icon at the start of the input",
+            "description": "Show icon at the start of the field",
             "type": "boolean"
         },
         {
             "id": "endAdornment",
             "label": "End icon",
             "defaultValue": false,
-            "description": "Show icon at the end of the input",
+            "description": "Show icon at the end of the field",
             "type": "boolean"
         }
     ],
-    "styles": [
-        {
-            "type": "sectionTitle",
-            "label": "Common dropdown styles"
-        },
-        {
-            "type": "group",
-            "id": "inputDropdownIconGroup",
-            "label": "Input Dropdown icon",
-            "fields": [
-                {
-                    "id": "inputDropdownIconColor",
-                    "label": "Input dropdown icon color",
-                    "defaultValue": "rgba(0, 0, 0, 0.54)",
-                    "cssVariable": "--form-input-dropdown-icon-color",
-                    "type": "color"
-                }
-            ]
-        },
-        {
-            "type": "group",
-            "id": "inputDropdownListGroup",
-            "label": "Input Dropdown list",
-            "fields": [
-                {
-                    "id": "inputDropdownListMaxHeight",
-                    "label": "Input dropdown list max height",
-                    "defaultValue": "240px",
-                    "cssVariable": "--form-input-dropdown-list-max-height",
-                    "type": "units"
-                },
-                {
-                    "id": "inputDropdownListBackgroundColor",
-                    "label": "Input dropdown list background color",
-                    "defaultValue": "#ffffff",
-                    "cssVariable": "--form-input-dropdown-list-background-color",
-                    "type": "color"
-                },
-                {
-                    "id": "inputDropdownListItemHoverBackgroundColor",
-                    "label": "Input dropdown list item hover background color",
-                    "defaultValue": "rgba(0, 0, 0, 0.04);",
-                    "cssVariable": "--form-input-dropdown-list-hover-background-color",
-                    "type": "color"
-                },
-                {
-                    "id": "inputDropdownListItemActiveBackgroundColor",
-                    "label": "Input dropdown list item active background color",
-                    "defaultValue": "rgba(0, 0, 0, 0.08);",
-                    "cssVariable": "--form-input-dropdown-list-active-background-color",
-                    "type": "color"
-                },
-                {
-                    "id": "inputDropdownListItemFontColor",
-                    "label": "Input dropdown list item font color",
-                    "defaultValue": "rgba(0, 0, 0, 0.85)",
-                    "cssVariable": "--form-input-dropdown-list-item-font-color",
-                    "type": "color"
-                }
-            ]
-        }
-    ]
+    "styles": []
 }

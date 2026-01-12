@@ -49,13 +49,16 @@ const MenuItem = ({
     level = 0
 }: MenuItemProps) => {
     const hasChildren = Boolean(item.items?.length);
-    const shouldBeExpanded = hasChildren && itemContainsPage(item, currentPage);
-    const [expanded, setExpanded] = useState(shouldBeExpanded);
+    const containsCurrentPage = hasChildren && itemContainsPage(item, currentPage);
+    const [expanded, setExpanded] = useState(containsCurrentPage);
 
-    // Sync expanded state when currentPage changes
+    // Auto-expand when currentPage changes to a page within this item (but allow manual close)
     useEffect(() => {
-        setExpanded(shouldBeExpanded);
-    }, [shouldBeExpanded]);
+        if (containsCurrentPage) {
+            setExpanded(true);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage]);
 
     const handleClick = () => {
         if (hasChildren) {
@@ -134,27 +137,20 @@ export const Sidebar = () => {
     );
     const [expandedSections, setExpandedSections] = useState<string[]>([]);
 
-    // Compute which section should be expanded based on currentPage
-    const sectionForCurrentPage = useMemo(() => {
-        if (!currentPage) return null;
-        return (
-            pages.find((section) =>
-                section.items.some((item) =>
-                    itemContainsPage(item, currentPage)
-                )
-            )?.sectionTitle || null
-        );
-    }, [pages, currentPage]);
-
-    // Auto-expand section containing current page
+    // Auto-expand section containing current page (but allow manual close)
     useEffect(() => {
-        if (
-            sectionForCurrentPage &&
-            !expandedSections.includes(sectionForCurrentPage)
-        ) {
-            setExpandedSections((prev) => [...prev, sectionForCurrentPage]);
+        if (!currentPage) return;
+        const section = pages.find((s) =>
+            s.items.some((item) => itemContainsPage(item, currentPage))
+        );
+        if (section) {
+            setExpandedSections((prev) =>
+                prev.includes(section.sectionTitle)
+                    ? prev
+                    : [...prev, section.sectionTitle]
+            );
         }
-    }, [sectionForCurrentPage, expandedSections]);
+    }, [currentPage, pages]);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(setSearchQuery(event.target.value));

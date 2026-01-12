@@ -30,15 +30,15 @@
                 ]
             },
             {
-                "title": "Inputs",
+                "title": "Form fields",
                 "items": [
                     {
-                        "title": "Text Input",
+                        "title": "Text field",
                         "path": "components/inputs/textfield/textfield.html",
                         "schemaPath": "components/inputs/InputCommon.schema.json"
                     },
                     {
-                        "title": "Password Input",
+                        "title": "Password field",
                         "path": "components/inputs/passwordfield/passwordfield.html",
                         "schemaPath": [
                             "components/inputs/InputCommon.schema.json",
@@ -46,7 +46,7 @@
                         ]
                     },
                     {
-                        "title": "Amount Input",
+                        "title": "Amount field",
                         "path": "components/inputs/amountfield/amountfield.html",
                         "schemaPath": [
                             "components/inputs/InputCommon.schema.json",
@@ -54,11 +54,30 @@
                         ]
                     },
                     {
-                        "title": "Select Field",
+                        "title": "Phone field",
+                        "path": "components/inputs/phonefield/phonefield.html",
+                        "schemaPath": [
+                            "components/inputs/InputCommon.schema.json",
+                            "components/inputs/SelectCommon.schema.json",
+                            "components/inputs/phonefield/PhoneField.schema.json"
+                        ]
+                    },
+                    {
+                        "title": "Select field",
                         "path": "components/inputs/selectfield/selectfield.html",
                         "schemaPath": [
                             "components/inputs/InputCommon.schema.json",
+                            "components/inputs/SelectCommon.schema.json",
                             "components/inputs/selectfield/SelectField.schema.json"
+                        ]
+                    },
+                    {
+                        "title": "Multiple select field",
+                        "path": "components/inputs/multipleselectfield/multipleselectfield.html",
+                        "schemaPath": [
+                            "components/inputs/InputCommon.schema.json",
+                            "components/inputs/SelectCommon.schema.json",
+                            "components/inputs/multipleselectfield/MultipleSelectField.schema.json"
                         ]
                     }
                 ]
