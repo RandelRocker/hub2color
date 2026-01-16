@@ -300,7 +300,7 @@
                         {
                             "id": "fieldInputBorderRadius",
                             "label": "Field input border radius",
-                            "defaultValue": "4px",
+                            "defaultValue": "8px",
                             "cssVariable": "--form-input-field-border-radius",
                             "type": "borderRadius"
                         },
@@ -366,6 +366,20 @@
                             "defaultValue": "#6ECD8D",
                             "cssVariable": "--form-input-field-loader-color",
                             "type": "color"
+                        },
+                        {
+                            "id": "fieldInputLoaderSize",
+                            "label": "Field input loader size",
+                            "defaultValue": "18px",
+                            "cssVariable": "--form-input-field-loader-size",
+                            "type": "units"
+                        },
+                        {
+                            "id": "fieldInputLoaderThickness",
+                            "label": "Field input loader thickness",
+                            "defaultValue": "4",
+                            "cssVariable": "--form-input-field-loader-thickness",
+                            "type": "number"
                         }
                     ]
                 }

@@ -16,6 +16,13 @@
                     "defaultValue": "rgba(0, 0, 0, 0.54)",
                     "cssVariable": "--form-input-dropdown-icon-color",
                     "type": "color"
+                },
+                {
+                    "id": "fieldDropdownIconSize",
+                    "label": "Field dropdown icon size",
+                    "defaultValue": "1.8rem",
+                    "cssVariable": "--form-input-dropdown-icon-size",
+                    "type": "units"
                 }
             ]
         },
@@ -37,6 +44,20 @@
                     "defaultValue": "#ffffff",
                     "cssVariable": "--form-input-dropdown-list-background-color",
                     "type": "color"
+                },
+                {
+                    "id": "fieldDropdownListItemHeight",
+                    "label": "Field dropdown list item height",
+                    "defaultValue": "45px",
+                    "cssVariable": "--form-input-dropdown-list-item-height",
+                    "type": "units"
+                },
+                {
+                    "id": "fieldDropdownListItemPadding",
+                    "label": "Field dropdown list item padding",
+                    "defaultValue": "0 12px",
+                    "cssVariable": "--form-input-dropdown-list-item-padding",
+                    "type": "padding"
                 },
                 {
                     "id": "fieldDropdownListItemHoverBackgroundColor",

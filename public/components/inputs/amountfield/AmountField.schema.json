@@ -1,10 +1,10 @@
 {
     "controls": [
         {
-            "id": "currencySymbol",
-            "label": "Currency symbol",
+            "id": "currencyCode",
+            "label": "Currency code",
             "defaultValue": "USD",
-            "description": "Currency symbol",
+            "description": "Currency code",
             "type": "text"
         },
         {

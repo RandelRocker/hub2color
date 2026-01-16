@@ -73,13 +73,6 @@
                     "defaultValue": "1px solid rgba(0, 0, 0, 0.23)",
                     "cssVariable": "--form-input-multiple-select-counter-border",
                     "type": "border"
-                },
-                {
-                    "id": "multipleSelectCounterBorderRadius",
-                    "label": "Counter border radius",
-                    "defaultValue": "50%",
-                    "cssVariable": "--form-input-multiple-select-counter-border-radius",
-                    "type": "borderRadius"
                 }
             ]
         }

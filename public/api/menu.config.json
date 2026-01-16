@@ -79,6 +79,15 @@
                             "components/inputs/SelectCommon.schema.json",
                             "components/inputs/multipleselectfield/MultipleSelectField.schema.json"
                         ]
+                    },
+                    {
+                        "title": "Autocomplete field",
+                        "path": "components/inputs/autocompletefield/autocompletefield.html",
+                        "schemaPath": [
+                            "components/inputs/InputCommon.schema.json",
+                            "components/inputs/SelectCommon.schema.json",
+                            "components/inputs/autocompletefield/AutocompleteField.schema.json"
+                        ]
                     }
                 ]
             }
