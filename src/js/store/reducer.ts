@@ -26,6 +26,9 @@ const initialState: AppState = {
     styleTabDefaultValues: {},
     portalTags: [],
     portalTagsEnabled: false,
+    previewBackgroundColor: typeof window !== 'undefined' 
+        ? (localStorage.getItem('previewBackgroundColor') || '#fff')
+        : '#fff',
 };
 
 export const appReducer = (
@@ -282,6 +285,13 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_PORTAL_TAGS_ENABLED:
                 draft.portalTagsEnabled = action.payload;
+                break;
+            case ActionTypes.SET_PREVIEW_BACKGROUND_COLOR:
+                draft.previewBackgroundColor = action.payload;
+                // Save to localStorage
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('previewBackgroundColor', action.payload);
+                }
                 break;
         }
     });

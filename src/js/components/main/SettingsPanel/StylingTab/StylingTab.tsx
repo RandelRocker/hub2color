@@ -304,6 +304,10 @@ const DebouncedColorPicker = ({
     const [localColor, setLocalColor] = useState<RgbaColor>(() => 
         rgbaStringToRgbaColor(value || "rgba(0, 0, 0, 1)")
     );
+    const [hexInput, setHexInput] = useState(() => {
+        const color = rgbaStringToRgbaColor(value || "rgba(0, 0, 0, 1)");
+        return `#${color.r.toString(16).padStart(2, "0")}${color.g.toString(16).padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`;
+    });
     const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -311,7 +315,9 @@ const DebouncedColorPicker = ({
 
     // Update local color when prop changes
     useEffect(() => {
-        setLocalColor(rgbaStringToRgbaColor(value || "rgba(0, 0, 0, 1)"));
+        const color = rgbaStringToRgbaColor(value || "rgba(0, 0, 0, 1)");
+        setLocalColor(color);
+        setHexInput(`#${color.r.toString(16).padStart(2, "0")}${color.g.toString(16).padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`);
     }, [value]);
 
     // Cleanup timeout on unmount
@@ -325,6 +331,7 @@ const DebouncedColorPicker = ({
 
     const updateColor = (color: RgbaColor) => {
         setLocalColor(color);
+        setHexInput(`#${color.r.toString(16).padStart(2, "0")}${color.g.toString(16).padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`);
         
         // Clear existing timeout
         if (timeoutRef.current) {
@@ -352,7 +359,6 @@ const DebouncedColorPicker = ({
     };
 
     const displayColor = rgbaColorToRgbaString(localColor);
-    const hexColor = `#${localColor.r.toString(16).padStart(2, "0")}${localColor.g.toString(16).padStart(2, "0")}${localColor.b.toString(16).padStart(2, "0")}`;
 
     return (
         <>
@@ -420,12 +426,14 @@ const DebouncedColorPicker = ({
                             />
                             <TextField
                                 size="small"
-                                value={hexColor}
+                                value={hexInput}
                                 onChange={(e) => {
                                     const hex = e.target.value;
+                                    setHexInput(hex);
                                     // Only update color if valid hex
                                     if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex)) {
-                                        const hexMatch = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.length === 4 ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}` : hex);
+                                        const normalizedHex = hex.length === 4 ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}` : hex;
+                                        const hexMatch = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(normalizedHex);
                                         if (hexMatch) {
                                             updateColor({
                                                 r: parseInt(hexMatch[1], 16),
@@ -446,10 +454,12 @@ const DebouncedColorPicker = ({
                                     if (/^#([A-Fa-f0-9]{3})$/.test(hex)) {
                                         hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
                                     }
-                                    // If still invalid, revert to current
+                                    // If invalid, revert to current color
                                     if (!/^#([A-Fa-f0-9]{6})$/.test(hex)) {
+                                        setHexInput(`#${localColor.r.toString(16).padStart(2, "0")}${localColor.g.toString(16).padStart(2, "0")}${localColor.b.toString(16).padStart(2, "0")}`);
                                         return;
                                     }
+                                    setHexInput(hex);
                                 }}
                                 disabled={disabled}
                                 sx={{ flex: 1 }}

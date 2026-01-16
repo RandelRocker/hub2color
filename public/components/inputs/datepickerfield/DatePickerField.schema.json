@@ -25,6 +25,10 @@
             "defaultValue": false,
             "description": "Show icon at the end of the field",
             "type": "boolean"
+        },
+        {
+            "id": "placeholder",
+            "type": "delete"
         }
     ],
     "styles": []

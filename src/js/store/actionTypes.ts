@@ -48,6 +48,11 @@ export interface SetStylingTabUIStateAction {
     payload: { scrollPosition?: number; expandedAccordions?: string[] };
 }
 
+export interface SetPreviewBackgroundColorAction {
+    type: ActionTypes.SET_PREVIEW_BACKGROUND_COLOR;
+    payload: string;
+}
+
 export interface saveStylingThemeAction {
     type: ActionTypes.SET_STYLING_THEME;
     payload: TStoredThemeStyles;
@@ -140,4 +145,5 @@ export type AppAction =
     | SetLoadingAction
     | SetErrorAction
     | SetPortalTagsAction
-    | SetPortalTagsEnabledAction;
+    | SetPortalTagsEnabledAction
+    | SetPreviewBackgroundColorAction;

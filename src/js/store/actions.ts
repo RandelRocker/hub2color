@@ -119,3 +119,8 @@ export const setPortalTagsEnabled = (enabled: boolean) => ({
     type: ActionTypes.SET_PORTAL_TAGS_ENABLED,
     payload: enabled,
 });
+
+export const setPreviewBackgroundColor = (color: string) => ({
+    type: ActionTypes.SET_PREVIEW_BACKGROUND_COLOR,
+    payload: color,
+});

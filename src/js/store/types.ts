@@ -138,4 +138,5 @@ export interface AppState {
     error: string | null;
     portalTags: PortalTag[];
     portalTagsEnabled: boolean;
+    previewBackgroundColor: string;
 }

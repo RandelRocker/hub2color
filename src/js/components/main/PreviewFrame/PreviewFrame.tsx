@@ -25,7 +25,8 @@ export const PreviewFrame = () => {
         savedTheme,
         controlsTabValues,
         portalTags,
-        portalTagsEnabled
+        portalTagsEnabled,
+        previewBackgroundColor
     } = useSelector((state: RootState) => state.app);
 
     // Load translations once on mount
@@ -100,10 +101,26 @@ export const PreviewFrame = () => {
                 styles: []
             };
 
-            // Merge controls arrays by appending
+            // First, collect all control IDs that should be deleted
+            const controlsToDelete = new Set<string>();
             schemas.forEach((schema) => {
                 if (schema.controls) {
-                    merged.controls = [...merged.controls, ...schema.controls];
+                    schema.controls.forEach((control: any) => {
+                        if (control.type === "delete" && control.id) {
+                            controlsToDelete.add(control.id);
+                        }
+                    });
+                }
+            });
+
+            // Merge controls arrays by appending, excluding deleted controls
+            schemas.forEach((schema) => {
+                if (schema.controls) {
+                    const filteredControls = schema.controls.filter((control: any) => {
+                        // Exclude controls marked for deletion or with type "delete"
+                        return control.type !== "delete" && !controlsToDelete.has(control.id);
+                    });
+                    merged.controls = [...merged.controls, ...filteredControls];
                 }
             });
 
@@ -240,6 +257,9 @@ export const PreviewFrame = () => {
         } else {
             sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: [] });
         }
+
+        // Send preview background color
+        sendMessageToFrame("PREVIEW_BACKGROUND_COLOR_CHANGE", { color: previewBackgroundColor });
     }, [
         currentPage,
         sendMessageToFrame,
@@ -250,7 +270,8 @@ export const PreviewFrame = () => {
         savedTheme,
         controlsTabValues,
         portalTagsEnabled,
-        portalTags
+        portalTags,
+        previewBackgroundColor
     ]);
 
     useEffect(() => {
@@ -303,6 +324,10 @@ export const PreviewFrame = () => {
             sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: [] });
         }
     }, [portalTags, portalTagsEnabled, sendMessageToFrame]);
+
+    useEffect(() => {
+        sendMessageToFrame("PREVIEW_BACKGROUND_COLOR_CHANGE", { color: previewBackgroundColor });
+    }, [previewBackgroundColor, sendMessageToFrame]);
 
     // Listen for PORTAL_READY message from iframe
     useEffect(() => {
@@ -402,7 +427,7 @@ export const PreviewFrame = () => {
         <Box
             sx={{
                 flex: 1,
-                bgcolor: "#f5f5f5",
+                bgcolor: previewBackgroundColor,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -413,7 +438,6 @@ export const PreviewFrame = () => {
                 sx={{
                     width: getViewportWidth(),
                     height: getViewportHeight(),
-                    bgcolor: "white",
                     overflow: "hidden",
                     transform: `scale(${zoom})`,
                     transformOrigin: "center center"
