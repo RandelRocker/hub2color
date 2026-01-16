@@ -6,10 +6,12 @@ import * as helpers from "./helpers";
 import { RootState } from "../../../store";
 import { setComponentSchema } from "../../../store/actions";
 import { PageItem, PageSection, ComponentSchema } from "../../../store/types";
+import { loadTranslations } from "../../../utils/translationsLoader";
 
 export const PreviewFrame = () => {
     const dispatch = useDispatch();
     const iframeRef = useRef<HTMLIFrameElement>(null);
+    const translationsRef = useRef<Record<string, string> | null>(null);
     const {
         currentPage,
         pages,
@@ -25,6 +27,17 @@ export const PreviewFrame = () => {
         portalTags,
         portalTagsEnabled
     } = useSelector((state: RootState) => state.app);
+
+    // Load translations once on mount
+    useEffect(() => {
+        loadTranslations()
+            .then((translations) => {
+                translationsRef.current = translations;
+            })
+            .catch((error) => {
+                console.error("Failed to load translations:", error);
+            });
+    }, []);
 
     const sendMessageToFrame = useCallback(
         (type: string, payload?: unknown) => {
@@ -189,6 +202,13 @@ export const PreviewFrame = () => {
         sendMessageToFrame("NAVIGATED", { path: currentPage });
         sendMessageToFrame("DIR_CHANGE", { dir: direction });
         sendMessageToFrame("SET_ZOOM", { scale: zoom });
+
+        // Send translations to iframe
+        if (translationsRef.current) {
+            sendMessageToFrame("TRANSLATIONS_LOADED", {
+                translations: translationsRef.current
+            });
+        }
 
         if (customCss) {
             sendMessageToFrame("CUSTOM_CSS_CHANGE", { css: customCss });
