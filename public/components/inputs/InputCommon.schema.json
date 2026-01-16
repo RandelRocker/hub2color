@@ -34,7 +34,7 @@
             "description": "Filed size",
             "type": "radio",
             "defaultValue": "medium",
-            "options": ["small", "medium"]
+            "options": [{ "value": "small", "label": "Small" }, { "value": "medium", "label": "Medium" }]
         },
         {
             "id": "disabled",

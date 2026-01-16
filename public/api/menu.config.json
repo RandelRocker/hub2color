@@ -88,6 +88,23 @@
                             "components/inputs/SelectCommon.schema.json",
                             "components/inputs/autocompletefield/AutocompleteField.schema.json"
                         ]
+                    },
+                    {
+                        "title": "Amount autocomplete field",
+                        "path": "components/inputs/amountautocompletefield/amountautocompletefield.html",
+                        "schemaPath": [
+                            "components/inputs/InputCommon.schema.json",
+                            "components/inputs/SelectCommon.schema.json",
+                            "components/inputs/amountautocompletefield/AmountAutocompleteField.schema.json"
+                        ]
+                    },
+                    {
+                        "title": "Date picker field",
+                        "path": "components/inputs/datepickerfield/datepickerfield.html",
+                        "schemaPath": [
+                            "components/inputs/InputCommon.schema.json",
+                            "components/inputs/datepickerfield/DatePickerField.schema.json"
+                        ]
                     }
                 ]
             }

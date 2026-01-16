@@ -74,6 +74,13 @@
                     "type": "color"
                 },
                 {
+                    "id": "fieldDropdownListItemActiveByTabBackgroundColor",
+                    "label": "Field dropdown list item active by tab background color",
+                    "defaultValue": "rgba(0, 0, 0, 0.04);",
+                    "cssVariable": "--form-input-dropdown-list-active-by-tab-background-color",
+                    "type": "color"
+                },
+                {
                     "id": "fieldDropdownListItemFontColor",
                     "label": "Field dropdown list item font color",
                     "defaultValue": "rgba(0, 0, 0, 0.85)",

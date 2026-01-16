@@ -1,0 +1,1169 @@
+/*!***************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./app-react/styles/main.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************/
+@import url(https://fonts.googleapis.com/css?family=Asap:400,500,700&display=swap);
+/*!*******************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./app-react/styles/main.scss (1) ***!
+  \*******************************************************************************************************************************************************************************************************************************************************/
+.ios *:focus {
+  outline: none;
+}
+
+.tablet *:not(input):not(textarea) {
+  -webkit-user-select: none;
+          user-select: none;
+}
+
+.mobile *:not(input):not(textarea) {
+  -webkit-user-select: none;
+          user-select: none;
+}
+
+.ios body {
+  touch-action: manipulation;
+}
+
+:root {
+  --accordion-header-hover-bg-color-new: var(--base-color-grey-4);
+  --accordion-body-row-border-color-new: var(--base-color-grey-3);
+  --accordion-body-header-main-detail-font-color-new: var(--black-const-color);
+  --accordion-body-header-highlight-detail-font-color-new: var(--primary-dark-font-color);
+  --accordion-body-row-value-font-color-new: var(--primary-dark-font-color);
+  --accordion-body-row-active-border-color-new: var(--base-color-green);
+}
+
+:root {
+  --accordion-container-font-color: var(--secondary-dark-font-color);
+  --accordion-container-border-color: var(--secondary-light-font-color);
+  --accordion-header-hover-bg-color: #d3e8f7;
+  --accordion-body-border-color: var(--list-title-border-bottom-color);
+  --accordion-body-before-border-color: var(--list-title-border-bottom-color);
+  --accordion-body-row-border-color: var(--secondary-light-font-color);
+  --accordion-body-header-main-detail-font-color: var(--black-const-color);
+  --accordion-body-header-highlight-detail-font-color: var(--primary-dark-font-color);
+  --accordion-body-row-value-font-color: var(--primary-dark-font-color);
+}
+
+:root {
+  --list-title-border-bottom-color: var(--orange-const-color);
+  --active-font-color: var(--orange-const-color);
+}
+
+:root {
+  --autocomplete-field-options-font-color: var(--black-const-color);
+  --autocomplete-field-options-separator-color: var(--base-color-grey-3);
+  --autocomplete-field-options-bg-color: var(--white-const-color);
+  --autocomplete-field-options-hover-bg-color: var(--base-color-grey-4);
+  --autocomplete-field-options-active-border-color: var(--input-field-focus-border-color);
+  --autocomplete-field-options-selected-bg-color: var(--pale-blue-const-color);
+  --autocomplete-options-font-color: var(--black-const-color);
+  --autocomplete-options-bg-color: var(--white-const-color);
+  --autocomplete-options-border-color: var(--base-color-grey-3);
+  --autocomplete-options-hover-bg-color: var(--base-color-grey-4);
+  --autocomplete-options-active-border-color: var(--form-field-border-focus-color);
+  --autocomplete-options-selected-bg-color: var(--base-color-grey-4);
+}
+
+:root {
+  --list-bg-color: var(--white-const-color);
+  --popup-bg-color: var(--white-const-color);
+  --menu-item-touchdevice-color: var(--pale-blue-const-color);
+}
+
+:root {
+  --bank-account-account-font-color: var(--black-const-color);
+  --bank-account-row-name-font-color: var(--dark-grey-const-color);
+  --bank-account-row-value-font-color: var(--black-const-color);
+  --bank-account-row-data-font-color: var(--black-const-color);
+}
+
+:root {
+  --black-const-color: #000;
+  --white-const-color: #fff;
+  --pale-blue-const-color: #d3e8f7;
+  --light-blue-const-color: #79c2f2;
+  --dark-blue-const-color: #3498db;
+  --lightest-grey-const-color: #f8f8f8;
+  --lighter-grey-const-color: #e7e7e7;
+  --light-grey-const-color: #bababa;
+  --dark-grey-const-color: #949494;
+  --lighter-green-const-color: #d4edda;
+  --green-const-color: #6ecd8d;
+  --dark-green-const-color: #62ad7b;
+  --red-const-color: #f35e5e;
+  --orange-const-color: #ff7348;
+  --yellow-const-color: #ffba00;
+  --dark-yellow-const-color: #cd9600;
+  --purple-const-color: #8160ed;
+  --base-color-white: #fff;
+  --base-color-red: #ffe8e8;
+  --base-color-red-2: #ec3238;
+  --base-color-red-3: #C81319;
+  --base-color-green: #6ECD8D;
+  --base-color-green-2: #379F59;
+  --base-color-blue: #2196f3;
+  --base-color-grey: #262626;
+  --base-color-grey-2: #4f4f4f;
+  --base-color-grey-3: #BDBDBD;
+  --base-color-grey-4: #f2f2f2;
+  --base-color-grey-5: #666666;
+  --base-color-grey-6: #D9D9D9;
+}
+
+:root {
+  --bingo-scheduler-controls-header-font-color: #fff;
+  --bingo-scheduler-controls-header-backgroud-color: #71b7e6;
+  --bingo-scheduler-list-header-backgroud-color: #d6eaf8;
+  --bingo-scheduler-list-row-border-color: #a4a4a4;
+  --bingo-scheduler-game-tile-background-color: #fff;
+  --bingo-scheduler-game-tile-background-color-hover: #fff;
+  --bingo-scheduler-game-frame-border-color: #e0e0e0;
+  --bingo-scheduler-game-frame-border-color-hover: #71b7e6;
+  --bingo-scheduler-game-image-shadow-color: #a4a4a4;
+}
+
+:root {
+  --input-field-font-color: var(--black-const-color);
+  --popup-font-color: var(--black-const-color);
+  --portlet-font-color: var(--black-const-color);
+}
+
+:root {
+  --bonus-history-bonus-name-font-color: #000;
+  --bonus-history-game-title-color: var(--black-const-color);
+  --bonus-history-bonus-progress-font-color: #fff;
+  --bonus-history-bonus-status-active-font-color: #6ecd8d;
+  --bonus-history-bonus-status-pending-font-color: #bababa;
+  --bonus-history-bonus-status-declined-font-color: #f35e5e;
+  --bonus-indicator-background-color: #6ecd8d;
+  --bonus-progress-bar-background-color: #d5d5d5;
+}
+
+:root {
+  --border-light-color: #eaeaea;
+  --border-color: #d3d3d3;
+}
+
+:root {
+  --broken-games-history-main-text-color: var(--black-const-color);
+  --broken-games-history-highlight-text-color: var(--primary-dark-font-color);
+}
+
+:root {
+  --bullets-bullet-background-color: #e0e0e0;
+  --bullets-active-bullet-background-color: var(--base-color-green);
+}
+
+:root {
+  --btn-primary-success-font-color: var(--btn-primary-font-const-color);
+  --btn-primary-negative-font-color: var(--btn-primary-font-const-color);
+  --btn-primary-info-font-color: var(--btn-primary-font-const-color);
+  --btn-primary-revert-font-color: var(--btn-primary-font-const-color);
+  --btn-secondary-hover-font-color: var(--white-const-color);
+}
+
+:root {
+  --cashier-suggestion-color: var(--btn-secondary-success-font-color);
+  --cashier-suggestion-color-hover: var(--base-color-white);
+  --cashier-tiles-bg-color: #F9F9F9;
+  --cashier-tiles-text-color: var(--base-color-grey);
+  --cashier-tabs-bg-color: var(--navigation-tabs-tab-background-color);
+  --cashier-tabs-text-color: var(--base-color-grey);
+  --cashier-tabs-active-tab-highlight-bg-color: var(--green-const-color);
+  --cashier-delete-hover-color: rgba(236, 50, 56, 0.1);
+  --cashier-back-btn-hover-color: var(--base-color-grey-4);
+}
+
+:root {
+  --chat-icon-unread-background-color: #ff871d;
+  --chat-icon-unread-font-color: var(--white-const-color);
+}
+
+:root {
+  --games-category-title-font-color: var(--main-text-color);
+  --games-slider-dots-bg-color: #45a6de;
+  --game-title-color: var(--black-const-color);
+  --game-live-info-color: var(--white-const-color);
+  --game-live-limits-font-color: #FFC700;
+  --game-live-limits-bg-color: rgba(0, 0, 0, 0.5);
+  --game-hover-title-color: var(--white-const-color);
+  --game-hover-btn-demo-bg-color: transparent;
+  --game-hover-btn-demo-font-color: var(--white-const-color);
+  --game-hover-btn-demo-border-color: var(--white-const-color);
+  --game-hover-btn-demo-hover-bg-color: var(--white-const-color);
+  --game-hover-btn-demo-hover-font-color: var(--black-const-color);
+  --game-hover-btn-play-bg-color: var(--white-const-color);
+  --game-hover-btn-play-font-color: var(--black-const-color);
+  --game-hover-btn-play-border-color: var(--white-const-color);
+  --game-hover-btn-play-hover-bg-color: transparent;
+  --game-hover-btn-play-hover-font-color: var(--white-const-color);
+  --game-hover-background-linear-gradient-start-color: rgba(0, 0, 0, 0.55);
+  --game-hover-background-linear-gradient-end-color: rgba(0, 0, 0, 0.85);
+}
+
+:root {
+  --common-table-row-border-color: var(--secondary-light-font-color);
+  --common-table-body-row-font-color: var(--secondary-dark-font-color);
+  --common-table-body-row-border-color: var(--secondary-light-font-color);
+  --common-table-body-header-font-color: var(--primary-dark-font-color);
+  --common-table-body-header-border-color: #71b7e6;
+  --common-table-body-header-bg-color: #e7f2fa;
+  --common-table-body-empty-bg-color: #e7e7e780;
+}
+
+:root {
+  --main-text-color: var(--base-color-grey);
+  --pressed-font-color: var(--purple-const-color);
+  --link-font-hover-color: var(--pressed-font-color);
+  --link-font-active-color: var(--pressed-font-color);
+  /* legacy for active nav menu item (link). DEL? */
+  --control-bg-color: var(--lightest-grey-const-color);
+  --control-arbitrary-el-color: var(--lighter-grey-const-color);
+  --sublist-bg-color: #f1f1f1;
+  --default-game-image-bg-color: #ebebeb;
+  --success-btn-const-color: var(--green-const-color);
+  --success-btn-dark-const-color: var(--dark-green-const-color);
+  --negative-btn-const-color: #f66464;
+  --negative-btn-dark-const-color: #cf4646;
+  --info-btn-const-color: var(--dark-blue-const-color);
+  --info-btn-dark-const-color: #1d79b6;
+  --revert-btn-const-color: var(--yellow-const-color);
+  --revert-btn-dark-const-color: var(--dark-yellow-const-color);
+  --btn-primary-font-const-color: var(--white-const-color);
+  --btn-secondary-bg-const-color: transparent;
+  --field-label-asterisk-color: #f35e5e;
+  --conic-progress-bar-bg-color: var(--lighter-grey-const-color);
+  --conic-progress-bar-progress-bg-color: var(--dark-blue-const-color);
+  --tabs-tab-font-color: var(--black-const-color);
+  --tabs-tab-active-font-color: var(--white-const-color);
+  --tabs-tab-active-bg-color: #3498db;
+  --tabs-tab-hover-bg-color: rgba(52, 152, 219, 0.05);
+  --toogle-bg-color: #ccc;
+  --toogle-active-bg-color: var(--green-const-color);
+  --leaderboard-status-badge-main-bg-color: #d8d8d8;
+  --leaderboard-status-badge-main-font-color: var(--white-const-color);
+  --leaderboard-reg-status-badge-card-internal-bg-color: var(--black-const-color);
+  --leaderboard-reg-status-badge-card-internal-font-color: var(--white-const-color);
+  --leaderboard-card-bg-color: #d8d8d8;
+  --leaderboard-card-shadow-color: rgba(0, 0, 0, .2);
+  --leaderboard-card-body-bg-color: #fff;
+  --leaderboard-card-body-font-color: var(--portlet-font-color);
+  --leaderboard-card-internal-reg-border-color: #d72a2a;
+  --scrollbar-thumb-bg-color: rgba(0, 0, 0, .45);
+  --scrollbar-thumb-hover-bg-color: rgba(0, 0, 0, .55);
+}
+
+:root {
+  --cookies-regulation-message-background-color: #0e214c;
+  --cookies-regulation-message-font-color: var(--white-const-color);
+  --cookies-regulation-button-accept-font-color: var(--white-const-color);
+  --cookies-regulation-button-accept-background-color: transparent;
+  --cookies-regulation-button-accept-border-color: var(--white-const-color);
+  --cookies-regulation-button-accept-hover-font-color: #0e214c;
+  --cookies-regulation-button-accept-hover-background-color: var(--white-const-color);
+  --cookies-regulation-button-accept-hover-border-color: var(--white-const-color);
+  --cookies-regulation-button-setup-font-color: var(--white-const-color);
+  --cookies-regulation-button-setup-background-color: transparent;
+  --cookies-regulation-button-setup-border-color: var(--white-const-color);
+  --cookies-regulation-button-setup-hover-font-color: #0e214c;
+  --cookies-regulation-button-setup-hover-background-color: var(--white-const-color);
+  --cookies-regulation-button-setup-hover-border-color: var(--white-const-color);
+}
+
+:root {
+  --date-span-picker-title-font-color: var(--white-const-color);
+  --date-span-picker-title-bg-color: #3b99d9;
+  --date-span-picker-timer-label-font-color: var(--white-const-color);
+  --date-span-picker-timer-font-color: #89c3e9;
+  --date-span-picker-timer-bg-color: #74b8e4;
+  --date-span-picker-timer-unlimited-font-color: #bcdcf1;
+  --date-span-picker-timer-active-number-font-color: var(--white-const-color);
+  --date-span-picker-timer-active-clock-bg-color: #4da4df;
+  --date-span-picker-keyboard-font-color: var(--black-const-color);
+  --date-span-picker-keyboard-cancel-hover-bg-color: rgba(63, 155, 217, 0.15);
+}
+
+:root {
+  --input-field-border-color: #a4a4a4;
+  --input-field-background-disabled: transparent;
+  --input-field-disabled-font-color: var(--light-grey-const-color);
+  --input-field-background-color: transparent;
+}
+
+:root {
+  --detailed-transaction-history-title-light-bg-color: #e7f2fa;
+  --detailed-transaction-history-title-light-border-top-color: #71b7e6;
+  --detailed-transaction-history-highlight-font-color: var(--black-const-color);
+  --detailed-transaction-history-amount-font-color: var(--primary-dark-font-color);
+  --detailed-transaction-history-status-approved-font-color: var(--valid-font-color);
+  --detailed-transaction-history-status-declined-font-color: var(--invalid-font-color);
+}
+
+:root {
+  --free-spins-balance-primary-dark-font-color: var(--dark-blue-const-color);
+  --free-spins-balance-black-font-color: var(--black-const-color);
+  --free-spins-balance-game-title-color: var(--black-const-color);
+}
+
+:root {
+  --game-history-value-color: var(--dark-blue-const-color);
+  --game-history-datetime-color: #a2a2a2;
+  --game-history-name-color: var(--black-const-color);
+  --game-history-chart-empty-bg-color: #e7e7e780;
+}
+
+:root {
+  --games-grid-tab-background-color: rgba(0,0,0,0);
+  --games-grid-tab-background-active-color: var(--base-color-green);
+  --games-grid-tab-border-color: var(--base-color-grey-6);
+  --games-grid-tab-border-active-color: var(--base-color-green);
+  --games-grid-tab-text-color: var(--base-color-grey-5);
+  --games-grid-tab-text-active-color: var(--base-color-white);
+  --games-grid-category-name-color: var(--main-text-color);
+  --games-grid-category-description-color: var(--main-text-color);
+  --games-grid-category-view-more-color: var(--base-color-green);
+  --games-grid-category-view-more-hover-color: var(--base-color-green-2);
+  --games-grid-filters-input-background-color: rgba(0,0,0,0);
+  --games-grid-filters-input-border-color: #A6A6A6;
+  --games-grid-filters-mobile-counter-background-color: var(--base-color-green);
+  --games-grid-filters-mobile-counter-text-color: var(--white-const-color);
+  --games-grid-game-tile-text-color: var(--base-color-white);
+  --games-grid-game-tile-hover-bg-color: rgba(0,0,0,0.75);
+  --games-grid-labels-background-color: #EA2027;
+  --games-grid-labels-text-color: var(--base-color-white);
+  --games-grid-game-live-limits-font-color: #FFC312;
+  --games-grid-jackpot-text-color: var(--base-color-white);
+  --games-grid-jackpot-background-color: rgba(0,0,0,0.75);
+  --games-grid-volatility-background-color: var(--base-color-white);
+  --games-grid-free-spins-background-color: rgba(0, 0, 0, .5);
+  --games-grid-golden-chips-background-color: rgba(0, 0, 0, .5);
+  --games-grid-empty-game-content-background-color: #f5f5f5;
+  --games-grid-info-empty-game-container-text-color: var(--main-text-color);
+  --games-grid-info-labels-background-color: var(--games-grid-labels-background-color);
+  --games-grid-info-labels-text-color: var(--games-grid-labels-text-color);
+  --games-grid-info-game-live-limits-font-color: var(--games-grid-game-live-limits-font-color);
+  --games-grid-info-volatility-background-color: var(--base-color-grey-4);
+  --games-grid-info-free-spins-background-color: var(--base-color-grey-4);
+  --games-grid-info-golden-chips-background-color: var(--base-color-grey-4);
+  --games-grid-carousel-top-numbers-text-color: #6ECD8D;
+  --games-grid-carousel-top-numbers-text-stroke-color: var(--white-const-color);
+}
+
+:root {
+  --games-search-btn-font-color: var(--base-color-grey-3);
+  --games-search-btn-border-color: var(--base-color-grey-3);
+  --games-search-btn-bg-color: var(--base-color-white);
+}
+
+:root {
+  --games-search-component-background-color: transparent;
+  --games-search-field-background-color: var(--white-const-color);
+  --games-search-field-border-color: var(--base-color-grey-3);
+  --games-search-field-text-color: var(--main-text-color);
+  --games-search-field-placeholder-color: var(--base-color-grey-3);
+  --games-search-results-empty-text-color: var(--base-color-grey-3);
+  --games-search-results-title-text-color: var(--main-text-color);
+  --games-search-results-title-count-color: var(--main-text-color);
+  --games-search-results-background-color: var(--white-const-color);
+  --games-search-results-item-hover-color: var(--base-color-grey-4);
+  --games-search-results-item-provider-text-color: var(--base-color-grey-3);
+  --games-search-results-item-name-text-color: var(--main-text-color);
+  --games-search-results-item-image-background-color: var(--default-game-image-bg-color);
+  --games-search-results-item-match-color: var(--black-const-color);
+  --games-search-results-separator-color: var(--base-color-grey-3);
+}
+
+:root {
+  --btn-secondary-generic-font-color: #000;
+  --btn-secondary-generic-border-color: #b9b9b9;
+  --btn-secondary-generic-hover-bg-color: rgba(185, 185, 185, 0.15);
+  --btn-secondary-generic-bg-color: var(--btn-secondary-bg-const-color);
+}
+
+:root {
+  --golden-chips-balances-primary-dark-font-color: var(--dark-blue-const-color);
+  --golden-chips-balances-black-font-color: var(--black-const-color);
+  --golden-chips-balances-game-title-color: var(--black-const-color);
+}
+
+:root {
+  --header-session-ticker-font-color: #fff;
+  --header-nav-bar-background-color: #3498db;
+  --header-icon-label-font-color-hover: #fff;
+  --header-icon-label-font-color: #000;
+  --header-icon-light-label-font-color: #fff;
+  --header-icon-light-label-font-color-hover: #fff;
+  --header-user-low-balance-label-font-color: #ff7348;
+  --header-deposit-btn-font-color: #6ecd8d;
+  --header-deposit-btn-background-color: transparent;
+  --header-deposit-btn-border-color: #6ecd8d;
+  --header-deposit-btn-font-color-hover: #fff;
+  --header-deposit-btn-background-color-hover: #6ecd8d;
+  --header-deposit-btn-border-color-hover: #6ecd8d;
+  --header-touchdevice-shadow-color: rgba(0, 0, 0, .2);
+  --header-touchdevice-background-color: #3498db;
+}
+
+:root {
+  --btn-primary-info-bg-color: var(--info-btn-const-color);
+  --btn-primary-info-shadow-color: var(--info-btn-dark-const-color);
+  --btn-primary-info-hover-bg-color: var(--info-btn-dark-const-color);
+  --btn-secondary-info-font-color: var(--info-btn-const-color);
+  --btn-secondary-info-border-color: var(--info-btn-const-color);
+  --btn-secondary-info-hover-bg-color: var(--info-btn-const-color);
+  --btn-secondary-info-bg-color: var(--btn-secondary-bg-const-color);
+  --btn-readonly-info-bg-color: rgba(52, 152, 219, 0.3);
+  --btn-readonly-info-font-color: var(--info-btn-const-color);
+}
+
+:root {
+  --invalid-font-color: var(--red-const-color);
+  --input-field-negative-border-color: var(--red-const-color);
+  --date-picker-invalid-border-color: var(--red-const-color);
+}
+
+:root {
+  --language-list-divider-border-bottom-color: #d3d3d3;
+  --language-list-item-active-background-color: #f2f2f2;
+  --language-list-item-hover-background-color: #d3e8f7;
+}
+
+:root {
+  --btn-primary-lb-success-bg-color: #FFCC00;
+  --btn-primary-lb-success-color: #000000 ;
+  --btn-secondary-lb_success-font-color: #fff;
+  --btn-secondary-lb-success-bg-color: #143f80;
+  --btn-secondary-lb-success-border-color: #143f80;
+  --btn-secondary-success-border-color: var(--success-btn-const-color);
+  --btn-secondary-success-hover-bg-color: var(--success-btn-const-color);
+  --btn-secondary-lb_howToPlay-font-color: #fff;
+  --btn-secondary-lb-howToPlay-bg-color: #EF7B52;
+  --btn-secondary-lb-howToPlay-border-color: #EF7B52;
+  --btn-readonly-lb-success-bg-color: #8A8A8A;
+  --btn-readonly-lb-success-font-color: #CBD0D2;
+}
+
+:root {
+  --leaderboard-competitors-table-title-font-color: var(--portlet-font-color);
+  --leaderboard-competitors-table-main-font-color: var(--portlet-font-color);
+  --leaderboard-competitors-table-head-font-color: #8A8A8A;
+  --leaderboard-competitors-table-head-bg-color: var(--white-const-color);
+  --leaderboard-competitors-table-head-border-color: #e2e2e2;
+  --leaderboard-competitors-table-body-bg-color: #f9f9f9;
+  --leaderboard-competitors-table-empty-font-color: #969696;
+  --leaderboard-competitors-table-player-bg-color: #2EA3DD;
+  --leaderboard-competitors-table-score-font-color: var(--leaderboard-competitors-table-player-bg-color);
+  --leaderboard-competitors-table-player-font-color: var(--white-const-color);
+  --leaderboard-competitors-table-first-place-font-color: var(--leaderboard-competitors-table-main-font-color);
+  --leaderboard-competitors-table-first-place-bg-color: #ffd15c;
+  --leaderboard-competitors-table-second-place-font-color: var(--leaderboard-competitors-table-main-font-color);
+  --leaderboard-competitors-table-second-place-bg-color: #cccbcb;
+  --leaderboard-competitors-table-third-place-font-color: var(--leaderboard-competitors-table-main-font-color);
+  --leaderboard-competitors-table-third-place-bg-color: #eca14e;
+  --leaderboard-competitiors-row-inprizes-color: #F1F4F5;
+  --leaderboard-competitiors-row-inprizes-divider-color: #FFF;
+  --leaderboard-competitiors-row-not-inprizes-divider-color: #E8EEEF;
+  --leaderboard-competitiors-row-inprizes-not-me-color: #333333;
+  --leaderboard-competitors-table-title-row-color: #8A8A8A;
+}
+
+:root {
+  --leaderboard-countdown-badge-dark-bg-color: #0D1D32;
+  --leaderboard-countdown-badge-v-dark-bg-color: #222222;
+  --leaderboard-countdown-badge-blue-bg-color: #28348F;
+  --leaderboard-countdown-badge-indigo-bg-color: #783DC8;
+  --leaderboard-countdown-badge-teal-bg-color: #87B1CB;
+  --leaderboard-countdown-badge-dark-font-color: var(--white-const-color);
+  --leaderboard-countdown-badge-dark-timer-font-color: var(--white-const-color);
+  --leaderboard-countdown-badge-dark-timer-highlighted-font-color: #e33c36;
+  --leaderboard-countdown-badge-light-bg-color: #f9f9f9;
+  --leaderboard-countdown-badge-light-font-color: rgba(0, 0, 0, .6);
+  --leaderboard-countdown-badge-light-timer-font-color: #686868;
+  --leaderboard-countdown-badge-light-timer-highlighted-font-color: #de0023;
+}
+
+:root {
+  --leaderboard-details-name-font-color: var(--portlet-font-color);
+  --leaderboard-details-prizes-top-font-color: var(--white-const-color);
+  --leaderboard-details-prizes-common-font-color: var(--portlet-font-color);
+  --leaderboard-details-rules-title-font-color: var(--portlet-font-color);
+  --leaderboard-details-rules-text-font-color: var(--portlet-font-color);
+  --leaderboard-details-info-list-font-color: var(--portlet-font-color);
+  --leaderboard-details-section-border-color: var(--border-color);
+  --leaderboard-details-internal-reg-hint-font-color: #FFBA00;
+  --leaderboard-details-title-background-color: #F1F4F5;
+  --leaderboard-details-title-color: #333333;
+  --leaderboard-prizes-table-title-row-color: #8A8A8A;
+  --leaderboard-prizes-first-color: #FFCC00;
+  --leaderboard-prizes-second-color: #CDCDCD;
+  --leaderboard-prizes-third-color: #F29946;
+  --leaderboard-prizes-genneral-color: #333333;
+  --leaderboard-prizes-text-color: #333333;
+}
+
+:root {
+  --leaderboard-expandable-section-bg-color: transparent;
+  --leaderboard-expandable-section-title-font-color: var(--portlet-font-color);
+  --leaderboard-expandable-section-border-color: var(--border-color);
+}
+
+:root {
+  --leaderboard-games-tab-bg-color: #f9f9f9;
+  --leaderboard-games-tab-font-color: var(--portlet-font-color);
+  --leaderboard-games-tab-countdown-font-color: var(--leaderboard-games-tab-font-color);
+  --leaderboard-games-tab-active-bg-color: var(--leaderboard-games-tab-bg-color);
+  --leaderboard-games-tab-active-font-color: var(--leaderboard-games-tab-font-color);
+  --leaderboard-games-tab-active-countdown-font-color: var(--leaderboard-games-tab-countdown-font-color);
+  --leaderboard-games-tab-active-border-color: #24c5a2;
+  --leaderboard-games-tab-active-circle-bg-color: var(--leaderboard-games-tab-active-border-color);
+  --leaderboard-games-tab-upcoming-bg-color: var(--leaderboard-games-tab-bg-color);
+  --leaderboard-games-tab-upcoming-font-color: var(--leaderboard-games-tab-font-color);
+  --leaderboard-games-tab-upcoming-countdown-font-color: var(--leaderboard-games-tab-countdown-font-color);
+  --leaderboard-games-tab-upcoming-border-color: #f9b249;
+  --leaderboard-games-tab-upcoming-circle-bg-color: var(--leaderboard-games-tab-upcoming-border-color);
+}
+
+:root {
+  --leaderboard-list-tabs-border-color: #f2f2f2;
+  --leaderboard-list-tabs-bg-color: transparent;
+  --leaderboard-list-tabs-tab-font-color: #a4a4a4;
+  --leaderboard-list-tabs-tab-active-font-color: #ff7348;
+  --leaderboard-list-tabs-tab-active-counter-font-color: #a4a4a4;
+  --leaderboard-list-tabs-tab-active-border-color: #ff7348;
+  --leaderboard-list-card-bg-color: var(--leaderboard-card-bg-color);
+  --leaderboard-list-card-shadow-color: var(--leaderboard-card-shadow-color);
+  --leaderboard-list-card-body-bg-color: var(--leaderboard-card-body-bg-color);
+  --leaderboard-list-card-body-font-color: var(--leaderboard-card-body-font-color);
+  --leaderboard-list-card-body-content-border-color: #f2f2f2;
+  --leaderboard-list-card-name-font-color: var(--leaderboard-card-body-font-color);
+  --leaderboard-list-card-media-linear-gradient-start-color: rgba(0, 0, 0, .83);
+  --leaderboard-list-card-media-linear-gradient-end-color: rgba(8, 39, 60, 0);
+  --leaderboard-list-card-internal-reg-border-color: var(--leaderboard-card-internal-reg-border-color);
+  --leaderboard-list-active-tab-color: #EF7B52;
+  --leaderboard-list-inactive-tab-color: #8A8A8A;
+  --leaderboard-list-opt-in-background-color: #FFCC00;
+  --leaderboard-list-read-more-background-color: #143F80;
+  --leaderboard-list-view-results-background-color: #FFCC00;
+  --leaderboard-list-view-leaderboard-background-color: #FFCC00;
+  --leaderboard-list-opt-in-border-color: #FFCC00;
+  --leaderboard-list-read-more-border-color: #FFCC00;
+  --leaderboard-list-view-results-border-color: #FFCC00;
+  --leaderboard-list-view-leaderboard-border-color: #FFCC00;
+  --leaderboard-list-opt-in-text-color: #000000;
+  --leaderboard-list-read-more-text-color: #fff;
+  --leaderboard-list-view-results-text-color: #000;
+  --leaderboard-list-view-leaderboard-text-color: #000;
+  --leaderboard-list-opt-in-border-width: 2px;
+  --leaderboard-list-read-more-border-width: 0px;
+  --leaderboard-list-view-results-border-width: 2px;
+  --leaderboard-list-view-leaderboard-border-width: 2px;
+  --leaderboard-list-joined-button-background-color: #8A8A8A;
+  --leaderboard-list-joined-button-border-color: #8A8A8A;
+  --leaderboard-list-joined-button-text-color: #CBD0D2;
+  --leaderboard-list-joined-button-border-width: 0;
+}
+
+:root {
+  --leaderboard-slider-card-bg-color: var(--leaderboard-card-bg-color);
+  --leaderboard-slider-card-shadow-color: var(--leaderboard-card-shadow-color);
+  --leaderboard-slider-card-body-bg-color: #12364e;
+  --leaderboard-slider-card-body-font-color: var(--white-const-color);
+  --leaderboard-slider-card-body-content-border-color: rgba(255,255,255,0.26);
+  --leaderboard-slider-card-name-font-color: var(--leaderboard-slider-card-body-font-color);
+  --leaderboard-slider-card-internal-reg-border-color: var(--leaderboard-card-internal-reg-border-color);
+  --leaderboard-slider-countdown-highlighted-font-color: #e33c36;
+}
+
+:root {
+  --leaderboard-status-badge-page-active-bg-color: #e33c40;
+  --leaderboard-status-badge-page-active-font-color: var(--white-const-color);
+  --leaderboard-status-badge-page-not-started-bg-color: #ffba00;
+  --leaderboard-status-badge-page-not-started-font-color: #353535;
+  --leaderboard-status-badge-page-completed-bg-color: #3498db;
+  --leaderboard-status-badge-page-completed-font-color: var(--white-const-color);
+  --leaderboard-status-badge-card-active-bg-color: #e33c40;
+  --leaderboard-status-badge-card-active-font-color: var(--white-const-color);
+  --leaderboard-status-badge-card-not-started-bg-color: #ffba00;
+  --leaderboard-status-badge-card-not-started-font-color: var(--white-const-color);
+  --leaderboard-status-badge-card-completed-bg-color: #3498db;
+  --leaderboard-status-badge-card-completed-font-color: var(--white-const-color);
+}
+
+:root {
+  --link-color: var(--dark-blue-const-color);
+  --link-active-color: var(--purple-const-color);
+  --link-tablet-hover-color: var(--black-const-color);
+}
+
+:root {
+  --list-hover-bg-color: #d3e8f7;
+}
+
+:root {
+  --loader-dot-bg-color: var(--green-const-color);
+}
+
+:root {
+  --login-history-highlight-font-color: var(--black-const-color);
+  --login-history-data-font-color: var(--primary-dark-font-color);
+}
+
+:root {
+  --myaccount-sidebar-header-title-color: #6bb1e0;
+  --myaccount-sidebar-list-hover-bg-color: var(--list-hover-bg-color);
+  --myaccount-sidebar-bg-color: #fff;
+  --myaccount-sidebar-menu-text-color: var(--main-text-color);
+  --myaccount-sidebar-list-back-color: #6bb1e0;
+}
+
+:root {
+  --chat-bundle-icon-unread-background-color: #ff871d;
+  --chat-bundle-icon-unread-font-color: #ffffff;
+  --page-left-menu-item-active-border-left-color: #ff7348;
+  --page-left-menu-background-color: rgba(255,255,255,0);
+  --page-left-menu-border-right-color: #d3d3d3;
+  --page-left-menu-item-active-font-color: #ff7348;
+  --page-left-menu-item-font-color: #000;
+  --page-left-menu-item-touchdevice-pressed-background-color: #d3e8f7;
+  --page-left-menu-item-hover-font-color: #3498db;
+}
+
+:root {
+  --navigation-tabs-tab-highlight-color: var(--green-const-color);
+  --navigation-tabs-tab-background-color: var(--base-color-grey-4);
+  --navigation-tabs-tab-font-color: var(--base-color-grey);
+}
+
+:root {
+  --btn-primary-negative-bg-color: var(--negative-btn-const-color);
+  --btn-primary-negative-shadow-color: var(--negative-btn-dark-const-color);
+  --btn-primary-negative-hover-bg-color: var(--negative-btn-dark-const-color);
+  --btn-secondary-negative-font-color: var(--negative-btn-const-color);
+  --btn-secondary-negative-border-color: var(--negative-btn-const-color);
+  --btn-secondary-negative-hover-bg-color: var(--negative-btn-const-color);
+  --btn-secondary-negative-bg-color: var(--btn-secondary-bg-const-color);
+  --btn-secondary-negative-rounded-bg-color: rgba(246, 100, 100, 0.15);
+  --btn-readonly-negative-bg-color: rgba(246, 100, 100, 0.3);
+  --btn-readonly-negative-font-color: var(--negative-btn-const-color);
+}
+
+:root {
+  --new-button-primary-success-text-color: var(--base-color-white);
+  --new-button-primary-success-background-color: var(--base-color-green);
+  --new-button-primary-success-hover-background-color: var(--base-color-green-2);
+  --new-button-primary-negative-text-color: var(--base-color-white);
+  --new-button-primary-negative-background-color: var(--base-color-red-2);
+  --new-button-primary-negative-hover-background-color: var(--base-color-red-3);
+  --new-button-secondary-success-text-color: var(--base-color-green);
+  --new-button-secondary-success-text-hover-color: var(--base-color-green-2);
+  --new-button-secondary-success-background-color: var(--base-color-white);
+  --new-button-secondary-success-border-color: var(--base-color-green);
+  --new-button-secondary-success-border-hover-color: var(--base-color-green-2);
+  --new-button-secondary-negative-text-color: var(--base-color-red-2);
+  --new-button-secondary-negative-text-hover-color: var(--base-color-red-3);
+  --new-button-secondary-negative-background-color: var(--base-color-white);
+  --new-button-secondary-negative-border-color: var(--base-color-red-2);
+  --new-button-secondary-negative-border-hover-color: var(--base-color-red-3);
+}
+
+:root {
+  --form-error-message-background-color: var(--base-color-red);
+  --form-error-message-text-color: #5F2120;
+  --form-error-message-border-color: transparent;
+  --form-error-message-icon-color: #EA2027;
+}
+
+:root {
+  --form-field-text-color: var(--main-text-color);
+  --form-field-text-error-color: var(--base-color-red-2);
+  --form-field-placeholder-color: var(--base-color-grey-2);
+  --form-field-hint-color: var(--base-color-grey-2);
+  --form-field-background-color: var(--base-color-grey-4);
+  --form-field-border-color: var(--base-color-grey-4);
+  --form-field-border-error-color: var(--base-color-red-2);
+  --form-field-border-focus-color: var(--base-color-blue);
+  --form-field-label-font-color: var(--main-text-color);
+  --form-field-label-asterisk-color: var(--base-color-red-2);
+  --form-field-multiselect-counter-text-color: var(--white-const-color);
+  --form-field-multiselect-counter-background-color: var(--base-color-green);
+  --form-field-multiselect-dropdown-background-color: var(--white-const-color);
+  --form-field-multiselect-dropdown-item-background-color: var(--base-color-grey-4);
+}
+
+:root {
+  --form-toggle-background-color: var(--base-color-grey-4);
+  --form-toggle-mark-background-color: var(--base-color-green);
+  --form-toggle-mark-background-disabled-color: var(--base-color-grey-3);
+}
+
+:root {
+  --form-warning-message-background-color: #FFF7EA;
+  --form-warning-message-text-color: #663C00;
+  --form-warning-message-border-color: transparent;
+  --form-warning-message-icon-color: #EBAF00;
+}
+
+:root {
+  --notification-text-color: #fff;
+  --notification-default-bg-color: #313131;
+  --notification-success-bg-color: #43a047;
+  --notification-error-bg-color: #d32f2f;
+  --notification-info-bg-color: #2196f3;
+  --notification-warning-bg-color: #ff9800;
+}
+
+:root {
+  --page-layout-background-color: rgba(255,255,255,0);
+}
+
+:root {
+  --pending-withdrawals-total-amount-color: var(--green-const-color);
+  --pending-withdrawals-item-date-color: var(--black-const-color);
+  --pending-withdrawals-item-amount-color: var(--dark-blue-const-color);
+}
+
+:root {
+  --player-yearly-statistic-info-separator-color: var(--black-const-color);
+  --player-yearly-statistic-table-amount-color: var(--primary-dark-font-color);
+  --player-yearly-statistic-table-item-color: var(--black-const-color);
+}
+
+:root {
+  --popup-title-font-color: #6bb1e0;
+  --popup-overlay-bg-color: var(--black-const-color);
+  --popup-box-shadow-color: rgba(0, 0, 0, 0.2);
+  --popups-dots-border-color: #e7e7e7;
+  --popups-dots-active-bg-color: #e7e7e7;
+}
+
+:root {
+  --portlet-header-background-color: transparent;
+  --portlet-header-font-color: var(--main-text-color);
+}
+
+:root {
+  --primary-light-font-color: var(--light-blue-const-color);
+  --primary-dark-font-color: var(--dark-blue-const-color);
+  --border-hover-color: var(--light-blue-const-color);
+  --input-field-focus-border-color: var(--dark-blue-const-color);
+  --link-font-color: var(--primary-dark-font-color);
+}
+
+:root {
+  --productLimit-group-color: var(--black-const-color);
+  --productLimit-divider-color: var(--border-light-color);
+  --productLimit-success-color: var(--input-field-success-border-color);
+  --productLimit-negative-color: var(--input-field-negative-border-color);
+  --productLimit-group-bg-color: transparent;
+  --productLimit-font-color: var(--black-const-color);
+  --productLimit-caption-color: var(--secondary-light-font-color);
+  --productLimit-control-bg-color: var(--control-bg-color);
+  --productLimit-progress-fill-color: var(--conic-progress-bar-progress-bg-color);
+  --productLimit-progress-empty-color: var(--conic-progress-bar-bg-color);
+}
+
+:root {
+  --promotions-tab-background-color: rgba(0,0,0,0);
+  --promotions-tab-background-active-color: var(--base-color-green);
+  --promotions-tab-border-color: var(--base-color-grey-6);
+  --promotions-tab-border-active-color: var(--base-color-green);
+  --promotions-tab-text-color: var(--base-color-grey-5);
+  --promotions-tab-text-active-color: var(--base-color-white);
+  --promotions-category-name-color: var(--main-text-color);
+  --promotions-category-description-color: var(--main-text-color);
+  --promotions-filters-input-background-color: rgba(0,0,0,0);
+  --promotions-filters-input-border-color: #A6A6A6;
+  --promotions-filters-mobile-counter-background-color: var(--base-color-green);
+  --promotions-filters-mobile-counter-text-color: var(--white-const-color);
+  --promotions-promotion-image-background-color: #E0E0E0;
+  --promotions-promotion-name-text-color: var(--base-color-white);
+  --promotions-label-background-color: #EA2027;
+  --promotions-label-text-color: var(--base-color-white);
+  --promotions-empty-content-background-color: #f5f5f5;
+  --promotions-terms-text-color: #6ECD8D;
+  --promotion-info-empty-container-text-color: var(--main-text-color);
+  --promotion-info-terms-arrow-color: var(--base-color-grey-5);
+}
+
+:root {
+  --questionnaire-footer-color: #828282;
+  --questionnaire-survey-completed-background-color: #f5f5f5;
+}
+
+:root {
+  --questionnaire-history-table-score-color: var(--primary-dark-font-color);
+  --questionnaire-history-table-main-color: var(--black-const-color);
+  --questionnaire-history-body-color: var(--black-const-color);
+  --questionnaire-history-mobile-table-date-color: var(--dark-grey-const-color);
+}
+
+:root {
+  --radio-btn-group-label-font-color: var(--black-const-color);
+  --radio-btn-label-font-color: var(--input-field-font-color);
+  --radio-btn-hint-font-color: var(--secondary-light-font-color);
+}
+
+:root {
+  --range-bar-bg-color: #bdbdbd;
+  --range-bar-active-bg-color: #3598db;
+  --range-bar-handle-bg-color: #3598db;
+  --range-labels-font-color: var(--black-const-color);
+  --range-marks-font-color: var(--secondary-light-font-color);
+}
+
+:root {
+  --reconnect-message-background-color: #0e214c;
+  --reconnect-message-font-color: var(--white-const-color);
+  --reconnect-button-accept-font-color: var(--white-const-color);
+  --reconnect-button-accept-background-color: transparent;
+  --reconnect-button-accept-border-color: var(--white-const-color);
+  --reconnect-button-accept-hover-font-color: #0e214c;
+  --reconnect-button-accept-hover-background-color: var(--white-const-color);
+  --reconnect-button-accept-hover-border-color: var(--white-const-color);
+}
+
+:root {
+  --btn-primary-revert-bg-color: var(--revert-btn-const-color);
+  --btn-primary-revert-shadow-color: var(--revert-btn-dark-const-color);
+  --btn-primary-revert-hover-bg-color: var(--revert-btn-dark-const-color);
+  --btn-secondary-revert-font-color: var(--revert-btn-const-color);
+  --btn-secondary-revert-border-color: var(--revert-btn-const-color);
+  --btn-secondary-revert-hover-bg-color: var(--revert-btn-const-color);
+  --btn-secondary-revert-bg-color: var(--btn-secondary-bg-const-color);
+  --btn-readonly-revert-bg-color: rgba(255, 186, 0, 0.3);
+  --btn-readonly-revert-font-color: var(--revert-btn-const-color);
+}
+
+:root {
+  --scheduled-breaks-rule-highlight-font-color: var(--black-const-color);
+  --scheduled-breaks-date-picker-active-tab: #3498db;
+  --scheduled-breaks-date-picker-active-tab-font-color: #fff;
+  --scheduled-breaks-date-picker-tabs-underline: #EDEDED;
+  --scheduled-breaks-input-read-only-color: var(--black-const-color);
+}
+
+:root {
+  --secondary-light-font-color: var(--light-grey-const-color);
+  --secondary-dark-font-color: var(--dark-grey-const-color);
+  --input-field-placeholder-font-color: var(--secondary-dark-font-color);
+  --form-green-text-color: var(--green-const-color);
+}
+
+:root {
+  --signin-notification-banner-background-color: #f5c850;
+  --signin-notification-banner-font-color: var(--black-const-color);
+  --signin-notification-banner-link-font-color: #2e5190;
+}
+
+:root {
+  --slide-menu-default-bg-color: #f5f5f5;
+}
+
+:root {
+  --slider-progress-bar-bg-color: var(--light-blue-const-color);
+  --slider-progress-bar-color: var(--dark-blue-const-color);
+}
+
+:root {
+  --btn-primary-success-bg-color: var(--success-btn-const-color);
+  --btn-primary-success-shadow-color: var(--success-btn-dark-const-color);
+  --btn-primary-success-hover-bg-color: var(--success-btn-dark-const-color);
+  --btn-secondary-success-font-color: var(--success-btn-const-color);
+  --btn-secondary-success-border-color: var(--success-btn-const-color);
+  --btn-secondary-success-hover-bg-color: var(--success-btn-const-color);
+  --btn-secondary-success-bg-color: var(--btn-secondary-bg-const-color);
+  --btn-readonly-success-bg-color: rgba(110, 205, 141, 0.3);
+  --btn-readonly-success-font-color: var(--success-btn-const-color);
+}
+
+:root {
+  --terms-and-conditions-history-date-color: var(--black-const-color);
+  --terms-and-conditions-history-version-color: var(--primary-dark-font-color);
+}
+
+:root {
+  --textarea-font-color: var(--input-field-font-color);
+  --textarea-border-color: var(--input-field-border-color);
+  --textarea-placeholder-font-color: var(--input-field-placeholder-font-color);
+  --textarea-scrollbar-thumb: #99CBEC;
+  --textarea-scrollbar-track: #f1f1f1;
+}
+
+:root {
+  --input-field-tooltip-background: var(--white-const-color);
+  --input-field-tooltip-text-color: var(--dark-grey-const-color);
+}
+
+:root {
+  --top-winners-just-won-font-color: #767778;
+  --top-winners-info-font-color: #000;
+  --top-winners-carousel-bg-color: #F5F5F5;
+  --top-winners-carousel-item-bg-color: rgba(46, 81, 144, 0.05);
+  --top-winners-carousel-item-hover-bg-color: rgba(46, 81, 144, 0.15);
+  --top-winners-table-bg-color: #F5F5F5;
+  --top-winners-table-item-border-color: #D6D6D6;
+  --top-winners-line-bg-color: #F5F5F5;
+  --top-winners-line-item-hover-color: #6ECD8D;
+  --top-winners-line-separator-color: #000;
+}
+
+:root {
+  --transaction-history-value-color: var(--dark-blue-const-color);
+  --transaction-history-main-color: var(--black-const-color);
+  --transaction-history-datetime-color: #a2a2a2;
+  --transaction-history-tabs-background: transparent;
+  --transaction-history-summary-background: #f6fafd;
+  --transaction-history-tab-font-color: var(--tab-bar-btn-font-color);
+  --transaction-history-tab-border-bottom-color-active: var(--tab-bar-btn-border-bottom-color-active);
+  --transaction-history-tab-background-color: var(--tab-bar-btn-background-color);
+  --transaction-history-tab-background-color-hover: var(--tab-bar-btn-background-color-hover);
+  --transaction-history-tab-font-color-active: var(--tab-bar-btn-font-color-active);
+}
+
+:root {
+  --valid-font-color: var(--green-const-color);
+  --input-field-success-border-color: var(--green-const-color);
+}
+
+:root {
+  --w2g-reporting-form-black-font-color: var(--black-const-color);
+  --w2g-reporting-form-table-accordion-row-value-font-color: var(--primary-dark-font-color);
+}
+
+:root {
+  --warning-font-color: #dfad37;
+  --warning-background-color: #fcdca6;
+  --warning-border-color: #fbd879;
+}
+
+:root {
+  /* General font */
+  --font-family: Asap, Helvetica Neue, Helvetica, Arial, sans-serif;
+  /* General borders */
+  --border: 1px solid var(--border-color);
+  --border-light: 1px solid var(--border-light-color);
+  --border-hover: 0 0 0 2px var(--border-hover-color), 0 0 2px 2px rgba(0, 0, 0, .6);
+  --list-border: var(--border);
+  /* General inputs */
+  --input-field-border: 1px solid var(--input-field-border-color);
+  --input-field-focus-border: 1px solid var(--input-field-focus-border-color);
+  --input-field-margin: 1.25em;
+  --input-field-height: 2.444em;
+  /* z-index */
+  --geofencing-z-index: 100;
+  --geocomply-z-index: 100;
+  --popup-common-z-index: 100;
+  --popup-layer-z-index: 103;
+  --card-popup-z-index: 12;
+  --lotto-modals-z-index: 15;
+  --sportsbook-modals-z-index: 15;
+  --notifications-z-index: 104;
+  --cookies-regulation-message-z-index: 15;
+  --signin-notification-z-index: 100;
+  --slide-menu-z-index: 200;
+  --chat-window-container-z-index: 13;
+  --myaccount-sidebar-zindex: 99;
+  --header-z-index: 12;
+  --default-header-z-index: 40;
+  --dropdown-z-index: 10;
+  --tooltip-z-index: 12;
+  --desktop-min-page-width: 1200px;
+  --page-header-height: 3.4rem;
+  /* sprites */
+  --site-main-sprite: url(../../images/ic_WL_sprite.png);
+  --site-flags-sprite: url(../../images/ic_WL_flags_sprite.png);
+  --site-payments-sprite: url(../../images/ic_WL_payment_sprite.png);
+}
+
+html {
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: var(--main-text-color);
+}
+
+[prevent-scrolling] {
+  position: fixed;
+  overflow-y: scroll;
+  width: 100%;
+  height: 100%;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes styles__slideInDown--2eP {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes styles__showBounceIn--u4o {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+  20% {
+    transform: scale3d(1.4, 1.4, 1.4);
+  }
+  40% {
+    transform: scale3d(0.7, 0.7, 0.7);
+  }
+  60% {
+    opacity: 1;
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
+  80% {
+    transform: scale3d(0.95, 0.95, 0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+@keyframes styles__lighterBounceIn--i6d {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+  20% {
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
+  40% {
+    transform: scale3d(0.9, 0.9, 0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: scale3d(1.03, 1.03, 1.03);
+  }
+  80% {
+    transform: scale3d(0.97, 0.97, 0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+.slideInDown {
+  animation: styles__slideInDown--2eP 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+.showBounceIn {
+  animation: styles__showBounceIn--u4o 0.7s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.lighterBounceIn {
+  animation: styles__lighterBounceIn--i6d 0.75s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.hidden {
+  display: none;
+}
+
+.mirror-mode {
+  direction: rtl;
+}
+
+h1, h2, h3 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--main-text-color);
+}
+
+h1 {
+  font-size: 2.28rem;
+  padding-top: 2.85rem;
+  padding-bottom: 1.71rem;
+}
+
+h2 {
+  font-size: 1.71rem;
+  padding-top: 2.85rem;
+  padding-bottom: 1.71rem;
+}
+
+h3 {
+  font-size: 1.28rem;
+  padding: 1.14rem 0;
+}
+
+/* Sprite classes */
+.cms-global-icons-sprite {
+  background-image: var(--site-main-sprite);
+}
+
+.cms-global-payments-sprite {
+  background-image: var(--site-payments-sprite);
+}
+
+.cms-global-flags-sprite {
+  background-image: var(--site-flags-sprite);
+}
+/*!***************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./hub2color/styles/main.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************/
+.h1 {
+  font-size: 2.28rem;
+  padding-top: 2.85rem;
+  padding-bottom: 1.71rem;
+  text-align: center;
+}
+
+.h2 {
+  padding: 0;
+}
+
+.component-container-row {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  border: 1px solid #e8eaee;
+  border-radius: 12px;
+  align-items: center;
+  gap: 16px;
+}
+/*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./hub2color/js/components/ComponentLayout/ComponentLayout.scss ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************/
+.ComponentLayout__container--1vA {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./app-react/js/components/common/MUI/formFields/components/inputs/Input/Input.scss ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************/
+:root {
+  --form-input-field-loader-size: 18px;
+  --form-input-field-loader-thickness: 4;
+}
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./app-react/js/components/common/MUI/formFields/components/inputs/PhoneField/PhoneField.scss ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************/
+.PhoneField__phoneCodeContainer--3qv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[2].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[2].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[2].use[3]!./hub2color/components/Inputs/DatePickerField/DatePickerField.scss ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************/
+.DatePickerField__form--36B {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}

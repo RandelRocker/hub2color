@@ -1,0 +1,31 @@
+{
+    "controls": [
+        {
+            "id": "format",
+            "label": "Date format",
+            "description": "Format to display the date",
+            "options": [
+                { "value": "dd/MM/yyyy", "label": "DD/MM/YYYY" },
+                { "value": "MM/dd/yyyy", "label": "MM/DD/YYYY" },
+                { "value": "yyyy/MM/dd", "label": "YYYY/MM/DD" }
+            ],
+            "defaultValue": "dd/MM/yyyy",
+            "type": "select"
+        },
+        {
+            "id": "startAdornment",
+            "label": "Start icon",
+            "defaultValue": false,
+            "description": "Show icon at the start of the field",
+            "type": "boolean"
+        },
+        {
+            "id": "endAdornment",
+            "label": "End icon",
+            "defaultValue": false,
+            "description": "Show icon at the end of the field",
+            "type": "boolean"
+        }
+    ],
+    "styles": []
+}

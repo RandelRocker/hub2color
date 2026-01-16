@@ -99,7 +99,7 @@ export const ControlsTab = () => {
     const renderControl = (field: {
         id: string;
         type: string;
-        options?: string[];
+        options?: string[] | { label: string; value: string }[];
         min?: number;
         max?: number;
         step?: number;
@@ -240,15 +240,20 @@ export const ControlsTab = () => {
                                     variant="outlined"
                                     sx={{ fontSize: "0.875rem" }}
                                 >
-                                    {options?.map((option: string) => (
-                                        <MenuItem
-                                            key={option}
-                                            sx={{ fontSize: "0.875rem" }}
-                                            value={option}
-                                        >
-                                            {option}
-                                        </MenuItem>
-                                    ))}
+                                    {options?.map((option) => {
+                                        const isObject = typeof option === 'object';
+                                        const label = isObject ? option.label : option;
+                                        const value = isObject ? option.value : option;
+                                        return (
+                                            <MenuItem
+                                                key={value}
+                                                sx={{ fontSize: "0.875rem" }}
+                                                value={value}
+                                            >
+                                                {label}
+                                            </MenuItem>
+                                        );
+                                    })}
                                 </Select>
                             </FormControl>
                         )}
@@ -318,20 +323,25 @@ export const ControlsTab = () => {
                         defaultValue={defaultValue}
                         render={({ field: fieldProps }) => (
                             <RadioGroup {...fieldProps} row sx={{ gap: 1 }}>
-                                {options?.map((option: string) => (
-                                    <FormControlLabel
-                                        key={option}
-                                        value={option}
-                                        control={<Radio size="small" />}
-                                        slotProps={{
-                                            typography: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        label={option}
-                                        sx={{ mr: 1 }}
-                                    />
-                                ))}
+                                {options?.map((option) => {
+                                    const isObject = typeof option === 'object';
+                                    const label = isObject ? option.label : option;
+                                    const value = isObject ? option.value : option;
+                                    return (
+                                        <FormControlLabel
+                                            key={value}
+                                            value={value}
+                                            control={<Radio size="small" />}
+                                            slotProps={{
+                                                typography: {
+                                                    sx: { fontSize: "0.875rem" }
+                                                }
+                                            }}
+                                            label={label}
+                                            sx={{ mr: 1 }}
+                                        />
+                                    );
+                                })}
                             </RadioGroup>
                         )}
                     />
