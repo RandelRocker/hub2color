@@ -105,7 +105,7 @@ export const PreviewFrame = () => {
             const controlsToDelete = new Set<string>();
             schemas.forEach((schema) => {
                 if (schema.controls) {
-                    schema.controls.forEach((control: any) => {
+                    schema.controls.forEach((control: { type?: string; id?: string }) => {
                         if (control.type === "delete" && control.id) {
                             controlsToDelete.add(control.id);
                         }
@@ -116,9 +116,9 @@ export const PreviewFrame = () => {
             // Merge controls arrays by appending, excluding deleted controls
             schemas.forEach((schema) => {
                 if (schema.controls) {
-                    const filteredControls = schema.controls.filter((control: any) => {
+                    const filteredControls = schema.controls.filter((control: { type?: string; id?: string }) => {
                         // Exclude controls marked for deletion or with type "delete"
-                        return control.type !== "delete" && !controlsToDelete.has(control.id);
+                        return control.type !== "delete" && !controlsToDelete.has(control.id as string);
                     });
                     merged.controls = [...merged.controls, ...filteredControls];
                 }
@@ -236,9 +236,12 @@ export const PreviewFrame = () => {
         }
 
         // Send styling theme
-        if (savedTheme) {
+        if (styleTabValues || savedTheme) {
             sendMessageToFrame("STYLING_CHANGE", {
-                styles: savedTheme
+                styles: helpers.prepareStylingTheme({
+                    savedTheme,
+                    styleTabValues
+                })
             });
         }
 
@@ -262,6 +265,7 @@ export const PreviewFrame = () => {
         sendMessageToFrame("PREVIEW_BACKGROUND_COLOR_CHANGE", { color: previewBackgroundColor });
     }, [
         currentPage,
+        styleTabValues,
         sendMessageToFrame,
         direction,
         zoom,
@@ -315,7 +319,7 @@ export const PreviewFrame = () => {
                 })
             });
         }
-    }, [styleTabValues, sendMessageToFrame, savedTheme]);
+    }, [styleTabValues, sendMessageToFrame, savedTheme, viewport]);
 
     useEffect(() => {
         if (portalTagsEnabled) {
@@ -427,7 +431,7 @@ export const PreviewFrame = () => {
         <Box
             sx={{
                 flex: 1,
-                bgcolor: previewBackgroundColor,
+                bgcolor: "#f5f5f5",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -440,6 +444,7 @@ export const PreviewFrame = () => {
                     height: getViewportHeight(),
                     overflow: "hidden",
                     transform: `scale(${zoom})`,
+                    bgcolor: previewBackgroundColor,
                     transformOrigin: "center center"
                 }}
             >

@@ -13,6 +13,19 @@
             "type": "select"
         },
         {
+            "id": "disableFuture",
+            "label": "Disable future dates",
+            "defaultValue": false,
+            "description": "Disable selection of future dates",
+            "type": "boolean"
+        },        {
+            "id": "disablePast",
+            "label": "Disable past dates",
+            "defaultValue": false,
+            "description": "Disable selection of past dates",
+            "type": "boolean"
+        },
+        {
             "id": "startAdornment",
             "label": "Start icon",
             "defaultValue": false,
@@ -31,5 +44,168 @@
             "type": "delete"
         }
     ],
-    "styles": []
+    "styles": [
+        {
+            "type": "sectionTitle",
+            "label": "Date picker field styles"
+        },
+        {
+            "type": "group",
+            "id": "datePickerFieldIconsGroup",
+            "label": "Calendar icon",
+            "fields": [
+                {
+                    "id": "datePickerFieldIconColor",
+                    "label": "Calendar icon color",
+                    "defaultValue": "rgba(0, 0, 0, 0.54)",
+                    "cssVariable": "--form-input-date-picker-field-icon-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldIconHoverColor",
+                    "label": "Calendar icon hover color",
+                    "defaultValue": "rgba(0, 0, 0, 0.54)",
+                    "cssVariable": "--form-input-date-picker-field-icon-hover-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldIconBackgroundColor",
+                    "label": "Calendar icon background color",
+                    "defaultValue": "rgba(0, 0, 0, 0.04)",
+                    "cssVariable": "--form-input-date-picker-field-icon-background-color",
+                    "type": "color"
+                }
+            ]
+        },
+        {
+            "type": "sectionTitle",
+            "label": "Date picker calendar popup styles"
+        },
+        {
+            "type": "group",
+            "id": "datePickerFieldCalendarPopupGroup",
+            "label": "Calendar popup",
+            "fields": [
+                {
+                    "id": "datePickerFieldCalendarPopupBackgroundColor",
+                    "label": "Calendar popup background color",
+                    "defaultValue": "#ffffff",
+                    "cssVariable": "--form-input-date-picker-calendar-background-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupTextColor",
+                    "label": "Calendar popup text color",
+                    "defaultValue": "rgba(0, 0, 0, 0.87)",
+                    "cssVariable": "--form-input-date-picker-calendar-text-color",
+                    "type": "color"
+                }
+            ]
+        },
+        {
+            "type": "group",
+            "id": "datePickerFieldCalendarPopupYearGroup",
+            "label": "Calendar popup year selection",
+            "fields": [
+                {
+                    "id": "datePickerFieldCalendarPopupYearTitleFontSize",
+                    "label": "Year title font size",
+                    "defaultValue": "1.14rem",
+                    "cssVariable": "--form-input-date-picker-calendar-year-title-font-size",
+                    "type": "units"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearTitleColor",
+                    "label": "Year title font color",
+                    "defaultValue": "rgba(0, 0, 0, 0.85)",
+                    "cssVariable": "--form-input-date-picker-calendar-year-title-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearSwitchIconColor",
+                    "label": "Year switch button color",
+                    "defaultValue": "rgba(0, 0, 0, 0.54)",
+                    "cssVariable": "--form-input-date-picker-calendar-year-switch-icon-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearSwitchIconHoverColor",
+                    "label": "Year switch button hover color",
+                    "defaultValue": "rgba(0, 0, 0, 0.87)",
+                    "cssVariable": "--form-input-date-picker-calendar-year-switch-icon-hover-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearSwitchIconBackgroundColor",
+                    "label": "Year switch button background color",
+                    "defaultValue": "rgba(0, 0, 0, 0.04)",
+                    "cssVariable": "--form-input-date-picker-calendar-year-switch-icon-background-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearPreviousNextIconColor",
+                    "label": "Year previous/next button color",
+                    "defaultValue": "rgba(0, 0, 0, 0.54)",
+                    "cssVariable": "--form-input-date-picker-calendar-year-previous-next-icon-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearPreviousNextIconHoverColor",
+                    "label": "Year previous/next button hover color",
+                    "defaultValue": "rgba(0, 0, 0, 0.87)",
+                    "cssVariable": "--form-input-date-picker-calendar-year-previous-next-icon-hover-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearPreviousNextIconBackgroundColor",
+                    "label": "Year previous/next button background color",
+                    "defaultValue": "rgba(0, 0, 0, 0.04)",
+                    "cssVariable": "--form-input-date-picker-calendar-year-previous-next-icon-background-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearListItemFontSize",
+                    "label": "Year list item font size",
+                    "defaultValue": "1.14rem",
+                    "cssVariable": "--form-input-date-picker-calendar-year-list-item-font-size",
+                    "type": "units"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearListItemFontColor",
+                    "label": "Year list item font color",
+                    "defaultValue": "rgba(0, 0, 0, 0.87)",
+                    "cssVariable": "--form-input-date-picker-calendar-year-list-item-font-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearListItemHoverColor",
+                    "label": "Year list item hover font color",
+                    "defaultValue": "rgba(0, 0, 0, 0.87)",
+                    "cssVariable": "--form-input-date-picker-calendar-year-list-item-hover-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearListItemHoverBackgroundColor",
+                    "label": "Year list item hover background color",
+                    "defaultValue": "rgba(110,205,141,0.3)",
+                    "cssVariable": "--form-input-date-picker-calendar-year-list-item-hover-background-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearListItemSelectedColor",
+                    "label": "Year list item selected font color",
+                    "defaultValue": "#ffffff",
+                    "cssVariable": "--form-input-date-picker-calendar-year-list-item-selected-color",
+                    "type": "color"
+                },
+                {
+                    "id": "datePickerFieldCalendarPopupYearListItemSelectedBackgroundColor",
+                    "label": "Year list item selected background color",
+                    "defaultValue": "#6ECD8D",
+                    "cssVariable": "--form-input-date-picker-calendar-year-list-item-selected-background-color",
+                    "type": "color"
+                }
+            ]
+        }
+    ]
 }

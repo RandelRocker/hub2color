@@ -200,17 +200,17 @@
                             "type": "units"
                         },
                         {
-                            "id": "fieldInputFontColor",
-                            "label": "Field input font color",
-                            "defaultValue": "rgba(0, 0, 0, 0.6)",
-                            "cssVariable": "--form-input-field-font-color",
-                            "type": "color"
-                        },
-                        {
                             "id": "fieldInputPlaceholderFontColor",
                             "label": "Field input placeholder font color",
                             "defaultValue": "rgba(0, 0, 0, 0.82)",
                             "cssVariable": "--form-input-placeholder-font-color",
+                            "type": "color"
+                        },
+                        {
+                            "id": "fieldInputFontColor",
+                            "label": "Field input font color",
+                            "defaultValue": "rgba(0, 0, 0, 0.6)",
+                            "cssVariable": "--form-input-field-font-color",
                             "type": "color"
                         },
                         {
