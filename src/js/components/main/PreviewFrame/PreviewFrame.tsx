@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import * as helpers from "./helpers";
 import { RootState } from "../../../store";
+import * as config from "../../../../../config";
 import { setComponentSchema } from "../../../store/actions";
 import { PageItem, PageSection, ComponentSchema } from "../../../store/types";
 import { loadTranslations } from "../../../utils/translationsLoader";
@@ -193,7 +194,7 @@ export const PreviewFrame = () => {
 
                 // Load all schema files
                 const schemaPromises = schemaPaths.map(async (schemaPath) => {
-                    const response = await fetch(`/${schemaPath}`);
+                    const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/${schemaPath}`);
                     if (!response.ok) {
                         throw new Error(`Failed to load schema: ${schemaPath}`);
                     }
@@ -377,7 +378,7 @@ export const PreviewFrame = () => {
     const getIframeSrc = () => {
         if (!currentPage) return "";
 
-        const baseUrl = `/${currentPage}`;
+        const baseUrl = `${config.HUB2COLOR_PUBLIC_PATH}/${currentPage}`;
 
         if (viewport === "mobile") {
             return `${baseUrl}?hideAdminControls=1&emulate=mobile`;

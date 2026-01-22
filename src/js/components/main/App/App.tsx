@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Box } from "@mui/material";
 import { useDispatch } from "react-redux";
 
+import * as config from "../../../../../config";
 import { TStoredThemeStyles } from "../../../store/types";
 import { Sidebar } from "../Sidebar/Sidebar";
 import { ContentArea } from "../ContentArea/ContentArea";
@@ -20,7 +21,7 @@ export const App = () => {
     useEffect(() => {
         const loadPages = async () => {
             try {
-                const response = await fetch("/api/menu.config.json");
+                const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/config/menu.config.json`);
                 if (!response.ok) {
                     throw new Error(
                         `Failed to fetch pages: ${response.status}`
@@ -58,7 +59,7 @@ export const App = () => {
 
         const loadPortalTag = async () => {
             try {
-                const response = await fetch("/api/tags.json");
+                const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/config/tags.json`);
                 if (!response.ok) {
                     throw new Error(
                         `Failed to fetch tags: ${response.status}`

@@ -22,6 +22,8 @@ import { useDispatch } from "react-redux";
 import { setPortalTags } from "../../../../store/actions";
 import { PortalTag } from "../../../../store/types";
 
+import * as config from "../../../../../../config";
+
 interface TagsDialogProps {
     open: boolean;
     onClose: () => void;
@@ -63,7 +65,7 @@ export const TagsDialog = ({ open, onClose, portalTags }: TagsDialogProps) => {
     const loadTags = async () => {
         setLoading(true);
         try {
-            const response = await fetch("/api/tags.json");
+            const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/config/tags.json`);
             if (!response.ok) {
                 throw new Error(`Failed to fetch tags: ${response.status}`);
             }

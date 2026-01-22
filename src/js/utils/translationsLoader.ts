@@ -1,28 +1,12 @@
 /**
  * Utility for loading and caching translations from translations.conf
  */
+import * as config from "../../../config";
 
 type TranslationsMap = Record<string, string>;
 
 let translationsCache: TranslationsMap | null = null;
 let loadingPromise: Promise<TranslationsMap> | null = null;
-
-/**
- * Parse translations.conf format to JSON object
- * Format: "key"="""value"""
- */
-function parseTranslationsConf(content: string): TranslationsMap {
-    const translations: TranslationsMap = {};
-    const regex = /"([^"]+)"\s*=\s*"""([^"]*)"""/g;
-    let match;
-
-    while ((match = regex.exec(content)) !== null) {
-        const [, key, value] = match;
-        translations[key] = value;
-    }
-
-    return translations;
-}
 
 /**
  * Load translations from the server (only once)
@@ -40,20 +24,14 @@ export async function loadTranslations(): Promise<TranslationsMap> {
     }
 
     // Start loading
-    loadingPromise = fetch("/api/translations.conf")
+    loadingPromise = fetch(`${config.HUB2COLOR_PUBLIC_PATH}/config/translations.json`)
         .then((response) => {
             if (!response.ok) {
                 throw new Error(
                     `Failed to load translations: ${response.statusText}`
                 );
             }
-            return response.text();
-        })
-        .then((content) => {
-            const parsed = parseTranslationsConf(content);
-            translationsCache = parsed;
-            loadingPromise = null;
-            return parsed;
+            return response.json();
         })
         .catch((error) => {
             loadingPromise = null;

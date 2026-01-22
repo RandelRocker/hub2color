@@ -16,6 +16,8 @@ import {
     Typography
 } from "@mui/material";
 
+import * as config from "../../../../../../config";
+
 interface TagsSelectDialogProps {
     open: boolean;
     onClose: () => void;
@@ -50,7 +52,7 @@ export const TagsSelectDialog = ({ open, onClose, tagTypeId, onTagSelect }: Tags
     const loadTags = async () => {
         setLoading(true);
         try {
-            const response = await fetch("/api/tags.json");
+            const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/config/tags.json`);
             if (!response.ok) {
                 throw new Error(`Failed to fetch tags: ${response.status}`);
             }

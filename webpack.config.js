@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const config = require("./config");
 
 module.exports = (env, argv) => {
     const isProduction = argv.mode === "production";
@@ -47,7 +48,17 @@ module.exports = (env, argv) => {
                 {
                     directory: path.join(__dirname, "public"),
                     publicPath: "/"
-                }
+                },
+                {
+                    directory: path.resolve(__dirname, config.PORTAL_HUB2COLOR_MOUNT_FOLDER), 
+                    publicPath: config.HUB2COLOR_PUBLIC_PATH + '/', // Files in /external-folder/ are ALSO at localhost:8080/
+                    watch: true,
+                },
+                {
+                    directory: path.resolve(__dirname, config.PORTAL_IMG_MOUNT_FOLDER), 
+                    publicPath: config.HUB2COLOR_IMG_PUBLIC_PATH + '/', // Files in /external-folder/ are ALSO at localhost:8080/
+                    watch: true,
+                },
             ],
             port: 3000,
             hot: true,
