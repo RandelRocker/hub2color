@@ -124,3 +124,13 @@ export const setPreviewBackgroundColor = (color: string) => ({
     type: ActionTypes.SET_PREVIEW_BACKGROUND_COLOR,
     payload: color,
 });
+
+export const setSiteTheme = (themeName: string, themeUrl: string) => ({
+    type: ActionTypes.SET_SITE_THEME,
+    payload: { themeName, themeUrl },
+});
+
+export const setPortalIcons = (icons: Record<string, string>) => ({
+    type: ActionTypes.SET_PORTAL_ICONS,
+    payload: icons,
+});

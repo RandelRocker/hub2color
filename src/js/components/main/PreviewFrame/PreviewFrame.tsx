@@ -27,7 +27,7 @@ export const PreviewFrame = () => {
         controlsTabValues,
         portalTags,
         portalTagsEnabled,
-        previewBackgroundColor
+        previewBackgroundColor,
     } = useSelector((state: RootState) => state.app);
 
     // Load translations once on mount

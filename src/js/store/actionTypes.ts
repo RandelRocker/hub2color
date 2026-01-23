@@ -121,6 +121,16 @@ export interface SetPortalTagsEnabledAction {
     payload: boolean;
 }
 
+export interface SetSiteThemeAction {
+    type: ActionTypes.SET_SITE_THEME;
+    payload: { themeName: string; themeUrl: string };
+}
+
+export interface SetPortalIconsAction {
+    type: ActionTypes.SET_PORTAL_ICONS;
+    payload: Record<string, string>;
+}
+
 export type AppAction =
     | SetPagesAction
     | SetCurrentPageAction
@@ -146,4 +156,6 @@ export type AppAction =
     | SetErrorAction
     | SetPortalTagsAction
     | SetPortalTagsEnabledAction
-    | SetPreviewBackgroundColorAction;
+    | SetPreviewBackgroundColorAction
+    | SetSiteThemeAction
+    | SetPortalIconsAction;

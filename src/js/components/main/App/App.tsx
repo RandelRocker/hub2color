@@ -11,7 +11,9 @@ import {
     setLoading,
     setError,
     saveStylingTheme,
-    setPortalTags
+    setPortalTags,
+    setSiteTheme,
+    setPortalIcons
 } from "../../../store/actions";
 import { PortalTag, PortalTagRaw } from "../../../store/types";
 
@@ -92,9 +94,58 @@ export const App = () => {
             }
         };
 
+        const loadSiteTheme = async () => {
+            try {
+                const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/config/site-theme-response.json`);
+                if (!response.ok) {
+                    throw new Error(
+                        `Failed to fetch site theme: ${response.status}`
+                    );
+                }
+                const data = await response.json();
+                dispatch(setSiteTheme(data.themeName, data.themeUrl));
+                return data.themeUrl;
+            } catch (error) {
+                console.error("Failed to load site theme:", error);
+                return null;
+            }
+        };
+
+        const loadIcons = async (themeUrl: string | null) => {
+            if (!themeUrl) {
+                console.error("Cannot load icons: themeUrl is not available");
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/config/get-icons-response.json`);
+                if (!response.ok) {
+                    throw new Error(
+                        `Failed to fetch icons: ${response.status}`
+                    );
+                }
+                const data = await response.json();
+                
+                // Transform icons: modify path to include themeUrl
+                const transformedIcons: Record<string, string> = {};
+                data.forEach((icon: { name: string; path: string }) => {
+                    transformedIcons[icon.name] = `/${themeUrl}/${icon.path}`;
+                });
+                
+                dispatch(setPortalIcons(transformedIcons));
+            } catch (error) {
+                console.error("Failed to load icons:", error);
+            }
+        };
+
         loadPages();
         loadSavedStylingTheme();
         loadPortalTag();
+        
+        // Load site theme first, then use the themeUrl to load icons
+        loadSiteTheme().then((themeUrl) => {
+            loadIcons(themeUrl);
+        });
     }, [dispatch]);
 
     return (

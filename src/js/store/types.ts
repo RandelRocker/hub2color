@@ -139,4 +139,7 @@ export interface AppState {
     portalTags: PortalTag[];
     portalTagsEnabled: boolean;
     previewBackgroundColor: string;
+    themeName: string | null;
+    themeUrl: string | null;
+    portalIcons: Record<string, string>;
 }

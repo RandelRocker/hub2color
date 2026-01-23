@@ -29,6 +29,9 @@ const initialState: AppState = {
     previewBackgroundColor: typeof window !== 'undefined' 
         ? (localStorage.getItem('previewBackgroundColor') || '#fff')
         : '#fff',
+    themeName: null,
+    themeUrl: null,
+    portalIcons: {},
 };
 
 export const appReducer = (
@@ -292,6 +295,13 @@ export const appReducer = (
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('previewBackgroundColor', action.payload);
                 }
+                break;
+            case ActionTypes.SET_SITE_THEME:
+                draft.themeName = action.payload.themeName;
+                draft.themeUrl = action.payload.themeUrl;
+                break;
+            case ActionTypes.SET_PORTAL_ICONS:
+                draft.portalIcons = action.payload;
                 break;
         }
     });
