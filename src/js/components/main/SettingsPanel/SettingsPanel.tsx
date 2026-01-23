@@ -66,7 +66,7 @@ export const SettingsPanel = () => {
         null
     );
     const [stylesFilter, setStylesFilter] = useState<
-        "all" | "colors" | "icons"
+        "all" | "colors" | "images"
     >("all");
     const [panelHeight, setPanelHeight] = useState(DEFAULT_HEIGHT);
     const [isDragging, setIsDragging] = useState(false);
@@ -170,7 +170,7 @@ export const SettingsPanel = () => {
         setFilterAnchorEl(null);
     };
 
-    const handleSetStylesFilter = (filter: "all" | "colors" | "icons") => {
+    const handleSetStylesFilter = (filter: "all" | "colors" | "images") => {
         setStylesFilter(filter);
         handleFilterMenuClose();
     };
@@ -348,9 +348,9 @@ export const SettingsPanel = () => {
                                         colors
                                     </MenuItem>
                                     <MenuItem
-                                        selected={stylesFilter === "icons"}
+                                        selected={stylesFilter === "images"}
                                         onClick={() =>
-                                            handleSetStylesFilter("icons")
+                                            handleSetStylesFilter("images")
                                         }
                                         sx={{
                                             fontSize: "0.875rem",
@@ -430,7 +430,7 @@ export const SettingsPanel = () => {
                         }
                     >
                         {activeTab === 0 && <ControlsTab />}
-                        {activeTab === 1 && <StylingTab />}
+                        {activeTab === 1 && <StylingTab stylesFilter={stylesFilter} />}
                     </Suspense>
                 </Box>
             </Paper>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import {
     Box,
     Typography,
@@ -36,6 +36,96 @@ import type { RgbaColor } from "react-colorful";
 import { RootState } from "../../../../store";
 import { updateStylingTabValues, updateStylingTabValuesWithDefault, setStylingTabUIState, updateStylingTabDefaultValues } from "../../../../store/actions";
 import { StylingTabValues, StyleGroup, StyleField } from "../../../../store/types";
+
+type StylesFilter = "all" | "colors" | "images";
+
+const isStyleGroup = (item: StyleField | StyleGroup): item is StyleGroup => {
+    return (
+        (item as StyleGroup).type === "group" ||
+        (item as StyleGroup).type === "sectionTitle" ||
+        (item as StyleGroup).type === "groupTitle"
+    );
+};
+
+const isContentItem = (item: StyleField | StyleGroup): boolean => {
+    if (isStyleGroup(item)) {
+        return item.type === "group";
+    }
+
+    return true;
+};
+
+const pruneOrphanHeadings = (items: (StyleField | StyleGroup)[]): (StyleField | StyleGroup)[] => {
+    if (items.length === 0) return items;
+
+    const isSectionTitle = (item: StyleField | StyleGroup): item is StyleGroup =>
+        isStyleGroup(item) && item.type === "sectionTitle";
+
+    // For now we only apply the "orphan header" rule to sectionTitle (per request).
+    const result: (StyleField | StyleGroup)[] = [];
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+
+        if (!isSectionTitle(item)) {
+            result.push(item);
+            continue;
+        }
+
+        let hasContentBelow = false;
+        for (let j = i + 1; j < items.length; j++) {
+            const next = items[j];
+            if (isSectionTitle(next)) break;
+            if (isContentItem(next)) {
+                hasContentBelow = true;
+                break;
+            }
+        }
+
+        if (hasContentBelow) {
+            result.push(item);
+        }
+    }
+
+    return result;
+};
+
+const filterStyleItems = (
+    items: (StyleField | StyleGroup)[],
+    stylesFilter: Exclude<StylesFilter, "all">
+): (StyleField | StyleGroup)[] => {
+    const matchesFilter = (field: StyleField) => {
+        if (stylesFilter === "colors") return field.type === "color";
+        if (stylesFilter === "images") return field.type === "image";
+        return true;
+    };
+
+    const filtered = items
+        .map((item) => {
+            if (isStyleGroup(item)) {
+                if (item.type === "group") {
+                    const filteredFields = filterStyleItems(
+                        item.fields || [],
+                        stylesFilter
+                    );
+
+                    if (filteredFields.length === 0) return null;
+
+                    return {
+                        ...item,
+                        fields: pruneOrphanHeadings(filteredFields)
+                    } as StyleGroup;
+                }
+
+                // Keep headings for now; they get pruned later if orphaned.
+                return item;
+            }
+
+            return matchesFilter(item) ? item : null;
+        })
+        .filter(Boolean) as (StyleField | StyleGroup)[];
+
+    return pruneOrphanHeadings(filtered);
+};
 
 // Helper functions for color conversion
 const hexToRgba = (hex: string, alpha: number = 1): string => {
@@ -2738,11 +2828,17 @@ const DebouncedBorderPicker = ({
     );
 };
 
-export const StylingTab = () => {
+export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilter }) => {
     const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const { componentSchema, styleTabDefaultValues, stylingUIState, savedTheme, portalIcons } =
         useSelector((state: RootState) => state.app);
+
+    const stylesToRender = useMemo(() => {
+        const baseStyles = componentSchema?.styles || [];
+        if (stylesFilter === "all") return baseStyles;
+        return filterStyleItems(baseStyles, stylesFilter);
+    }, [componentSchema, stylesFilter]);
 
     const { control, subscribe, getValues, reset } = useForm({
         defaultValues: styleTabDefaultValues
@@ -3568,7 +3664,7 @@ export const StylingTab = () => {
         const sections: JSX.Element[] = [];
         const fieldRows: JSX.Element[] = [];
 
-        componentSchema.styles.forEach((item) => {
+        stylesToRender.forEach((item) => {
             if ("type" in item) {
                 const itemTyped = item as StyleField | StyleGroup;
                 if (itemTyped.type === "group") {
