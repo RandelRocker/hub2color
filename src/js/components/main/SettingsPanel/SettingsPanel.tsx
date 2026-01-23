@@ -1,4 +1,11 @@
-import { useState, useCallback, useRef, useEffect, lazy, Suspense } from "react";
+import {
+    useState,
+    useCallback,
+    useRef,
+    useEffect,
+    lazy,
+    Suspense
+} from "react";
 import {
     Box,
     Paper,
@@ -11,7 +18,13 @@ import {
     MenuItem,
     CircularProgress
 } from "@mui/material";
-import { Restore, RestartAlt, Save, MoreVert } from "@mui/icons-material";
+import {
+    Restore,
+    RestartAlt,
+    Save,
+    MoreVert,
+    FilterList
+} from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../store";
@@ -23,13 +36,17 @@ import {
 } from "../../../store/actions";
 import { TStoredThemeStyles } from "../../../store/types";
 
-const ControlsTab = lazy(() => 
-    import(/* webpackChunkName: "controls-tab" */ "./ControlsTab/ControlsTab").then(module => {
+const ControlsTab = lazy(() =>
+    import(
+        /* webpackChunkName: "controls-tab" */ "./ControlsTab/ControlsTab"
+    ).then((module) => {
         return { default: module.ControlsTab };
     })
 );
-const StylingTab = lazy(() => 
-    import(/* webpackChunkName: "styling-tab" */ "./StylingTab/StylingTab").then(module => {
+const StylingTab = lazy(() =>
+    import(
+        /* webpackChunkName: "styling-tab" */ "./StylingTab/StylingTab"
+    ).then((module) => {
         return { default: module.StylingTab };
     })
 );
@@ -45,9 +62,15 @@ export const SettingsPanel = () => {
     );
     const [activeTab, setActiveTab] = useState(0);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(
+        null
+    );
+    const [stylesFilter, setStylesFilter] = useState<
+        "all" | "colors" | "icons"
+    >("all");
     const [panelHeight, setPanelHeight] = useState(DEFAULT_HEIGHT);
     const [isDragging, setIsDragging] = useState(false);
-    
+
     // Refs for optimized drag handling
     const startYRef = useRef(0);
     const startHeightRef = useRef(0);
@@ -59,7 +82,7 @@ export const SettingsPanel = () => {
         if (rafIdRef.current !== null) {
             cancelAnimationFrame(rafIdRef.current);
         }
-        
+
         rafIdRef.current = requestAnimationFrame(() => {
             const deltaY = startYRef.current - e.clientY;
             const newHeight = Math.min(
@@ -74,7 +97,7 @@ export const SettingsPanel = () => {
         setIsDragging(false);
         document.body.style.cursor = "";
         document.body.style.userSelect = "";
-        
+
         if (rafIdRef.current !== null) {
             cancelAnimationFrame(rafIdRef.current);
             rafIdRef.current = null;
@@ -90,21 +113,24 @@ export const SettingsPanel = () => {
         };
     }, []);
 
-    const handleResizeStart = useCallback((e: React.MouseEvent) => {
-        e.preventDefault();
-        setIsDragging(true);
-        startYRef.current = e.clientY;
-        startHeightRef.current = panelHeight;
-        document.body.style.cursor = "ns-resize";
-        document.body.style.userSelect = "none";
-    }, [panelHeight]);
+    const handleResizeStart = useCallback(
+        (e: React.MouseEvent) => {
+            e.preventDefault();
+            setIsDragging(true);
+            startYRef.current = e.clientY;
+            startHeightRef.current = panelHeight;
+            document.body.style.cursor = "ns-resize";
+            document.body.style.userSelect = "none";
+        },
+        [panelHeight]
+    );
 
     const handleResetToPreviousSaved = useCallback(() => {
         dispatch(updateStylingTabToPreviousValues());
     }, [dispatch]);
 
     const handleResetToDefault = useCallback(() => {
-       dispatch(updateStylingTabToDefaultValues());
+        dispatch(updateStylingTabToDefaultValues());
     }, [dispatch]);
 
     const handleSave = useCallback(() => {
@@ -134,6 +160,19 @@ export const SettingsPanel = () => {
 
     const handleMenuClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleFilterMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setFilterAnchorEl(event.currentTarget);
+    };
+
+    const handleFilterMenuClose = () => {
+        setFilterAnchorEl(null);
+    };
+
+    const handleSetStylesFilter = (filter: "all" | "colors" | "icons") => {
+        setStylesFilter(filter);
+        handleFilterMenuClose();
     };
 
     const handleMenuResetToPreviousSaved = useCallback(() => {
@@ -210,87 +249,169 @@ export const SettingsPanel = () => {
                     }}
                 />
                 {/* Header */}
-            <Toolbar
-                variant="dense"
-                sx={{
-                    minHeight: 40,
-                    borderBottom: 1,
-                    borderColor: "divider",
-                    justifyContent: "space-between",
-                    backgroundColor: "#F7F9FC",
-                    "@media (min-width:600px)": {
-                        paddingRight: "16px",
-                        paddingLeft: "16px"
-                    }
-                }}
-            >
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Tabs
-                        value={activeTab}
-                        onChange={(_, newValue) => {
-                            setActiveTab(newValue);
-                            dispatch(updateStyleSchemaDefaults());
-                        }}
-                        variant="scrollable"
-                        scrollButtons={false}
-                        sx={{
-                            minHeight: 36,
-                            width: "auto",
-                            "& .MuiTab-root": {
+                <Toolbar
+                    variant="dense"
+                    sx={{
+                        minHeight: 40,
+                        borderBottom: 1,
+                        borderColor: "divider",
+                        justifyContent: "space-between",
+                        backgroundColor: "#F7F9FC",
+                        "@media (min-width:600px)": {
+                            paddingRight: "16px",
+                            paddingLeft: "16px"
+                        }
+                    }}
+                >
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Tabs
+                            value={activeTab}
+                            onChange={(_, newValue) => {
+                                setActiveTab(newValue);
+                                dispatch(updateStyleSchemaDefaults());
+                            }}
+                            variant="scrollable"
+                            scrollButtons={false}
+                            sx={{
                                 minHeight: 36,
-                                fontSize: 12,
-                                fontWeight: 500,
-                                textTransform: "none",
-                                px: 2
-                            }
-                        }}
-                    >
-                        <Tab label="Controls" />
-                        <Tab label="Styling" />
-                    </Tabs>
-                </Box>
+                                width: "auto",
+                                "& .MuiTab-root": {
+                                    minHeight: 36,
+                                    fontSize: 12,
+                                    fontWeight: 500,
+                                    textTransform: "none",
+                                    px: 2
+                                }
+                            }}
+                        >
+                            <Tab label="Controls" />
+                            <Tab label="Styling" />
+                        </Tabs>
+                    </Box>
 
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                    <Tooltip title="Save Styling">
-                        <IconButton size="small" onClick={handleSave}>
-                            <Save fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Reset Options">
-                        <IconButton size="small" onClick={handleMenuOpen}>
-                            <MoreVert fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                    <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleMenuClose}
-                        transformOrigin={{
-                            vertical: "top",
-                            horizontal: "right"
-                        }}
-                        anchorOrigin={{
-                            vertical: "bottom",
-                            horizontal: "right"
-                        }}
+                    <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
                     >
-                        <MenuItem
-                            onClick={handleMenuResetToPreviousSaved}
-                            sx={{ fontSize: "0.875rem" }}
-                        >
-                            <Restore sx={{ mr: 1, fontSize: "1rem" }} />
-                            Reset to Previous Saved
-                        </MenuItem>
-                        <MenuItem
-                            onClick={handleMenuResetToDefault}
-                            sx={{ fontSize: "0.875rem" }}
-                        >
-                            <RestartAlt sx={{ mr: 1, fontSize: "1rem" }} />
-                            Reset to Default
-                        </MenuItem>
-                    </Menu>
-                </Box>
-            </Toolbar>
+                        {activeTab === 1 && (
+                            <>
+                                <Tooltip title="Filter Styles">
+                                    <IconButton
+                                        size="small"
+                                        onClick={handleFilterMenuOpen}
+                                    >
+                                        <FilterList
+                                            fontSize="small"
+                                            sx={{
+                                                color:
+                                                    stylesFilter !== "all"
+                                                        ? "#1976d2"
+                                                        : "inherit"
+                                            }}
+                                        />
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    anchorEl={filterAnchorEl}
+                                    open={Boolean(filterAnchorEl)}
+                                    onClose={handleFilterMenuClose}
+                                    transformOrigin={{
+                                        vertical: "top",
+                                        horizontal: "right"
+                                    }}
+                                    anchorOrigin={{
+                                        vertical: "bottom",
+                                        horizontal: "right"
+                                    }}
+                                >
+                                    <MenuItem
+                                        selected={stylesFilter === "all"}
+                                        onClick={() =>
+                                            handleSetStylesFilter("all")
+                                        }
+                                        sx={{
+                                            fontSize: "0.875rem",
+                                            textTransform: "capitalize"
+                                        }}
+                                    >
+                                        all styles
+                                    </MenuItem>
+                                    <MenuItem
+                                        selected={stylesFilter === "colors"}
+                                        onClick={() =>
+                                            handleSetStylesFilter("colors")
+                                        }
+                                        sx={{
+                                            fontSize: "0.875rem",
+                                            textTransform: "capitalize"
+                                        }}
+                                    >
+                                        colors
+                                    </MenuItem>
+                                    <MenuItem
+                                        selected={stylesFilter === "icons"}
+                                        onClick={() =>
+                                            handleSetStylesFilter("icons")
+                                        }
+                                        sx={{
+                                            fontSize: "0.875rem",
+                                            textTransform: "capitalize"
+                                        }}
+                                    >
+                                        icons
+                                    </MenuItem>
+                                </Menu>
+                                <Tooltip title="Save Styling">
+                                    <IconButton
+                                        size="small"
+                                        onClick={handleSave}
+                                    >
+                                        <Save fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Reset Options">
+                                    <IconButton
+                                        size="small"
+                                        onClick={handleMenuOpen}
+                                    >
+                                        <MoreVert fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleMenuClose}
+                                    transformOrigin={{
+                                        vertical: "top",
+                                        horizontal: "right"
+                                    }}
+                                    anchorOrigin={{
+                                        vertical: "bottom",
+                                        horizontal: "right"
+                                    }}
+                                >
+                                    <MenuItem
+                                        onClick={handleMenuResetToPreviousSaved}
+                                        sx={{ fontSize: "0.875rem" }}
+                                    >
+                                        <Restore
+                                            sx={{ mr: 1, fontSize: "1rem" }}
+                                        />
+                                        Reset to Previous Saved
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={handleMenuResetToDefault}
+                                        sx={{ fontSize: "0.875rem" }}
+                                    >
+                                        <RestartAlt
+                                            sx={{ mr: 1, fontSize: "1rem" }}
+                                        />
+                                        Reset to Default
+                                    </MenuItem>
+                                </Menu>
+                            </>
+                        )}
+                    </Box>
+                </Toolbar>
 
                 {/* Tab Content */}
                 <Box sx={{ flex: 1, overflow: "hidden" }}>
