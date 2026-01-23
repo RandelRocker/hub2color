@@ -19,7 +19,12 @@ import {
     Menu,
     Tooltip,
     Popover,
-    InputAdornment
+    InputAdornment,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MoreVert, Restore, RestartAlt } from "@mui/icons-material";
@@ -478,6 +483,164 @@ const DebouncedColorPicker = ({
                     </Box>
                 </Box>
             </Popover>
+        </>
+    );
+};
+
+const PortalIconImagePicker = ({
+    iconUrl,
+    iconKey
+}: {
+    iconUrl?: string;
+    iconKey: string;
+}) => {
+    const [open, setOpen] = useState(false);
+    const [source, setSource] = useState<"documents" | "local">("documents");
+    const [imageName, setImageName] = useState(() => iconKey || "");
+
+    useEffect(() => {
+        setImageName(iconKey || "");
+    }, [iconKey]);
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    return (
+        <>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Box
+                    onClick={handleOpen}
+                    sx={{
+                        width: 30,
+                        height: 30,
+                        minWidth: 30,
+                        border: "1px solid #e0e0e0",
+                        borderRadius: 1,
+                        cursor: "pointer",
+                        overflow: "hidden",
+                        backgroundColor: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        "&:hover": { opacity: 0.85 },
+                        transition: "opacity 0.2s"
+                    }}
+                    role="button"
+                    aria-label="Open image picker"
+                >
+                    {iconUrl ? (
+                        <Box
+                            component="img"
+                            src={iconUrl}
+                            alt={iconKey}
+                            sx={{ width: "100%", height: "100%", objectFit: "contain" }}
+                        />
+                    ) : (
+                        <Box sx={{ width: "100%", height: "100%", backgroundColor: "#f0f0f0" }} />
+                    )}
+                </Box>
+            </Box>
+
+            <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+                <DialogTitle>Image</DialogTitle>
+                <DialogContent sx={{ pt: 2 }}>
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 1fr",
+                            gap: 2
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                backgroundColor: "#f6fbff",
+                                borderRadius: 1,
+                                border: "1px solid #e0e0e0",
+                                minHeight: 260,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                p: 2
+                            }}
+                        >
+                            {iconUrl ? (
+                                <Box
+                                    component="img"
+                                    src={iconUrl}
+                                    alt={iconKey}
+                                    sx={{ maxWidth: "100%", maxHeight: 220, objectFit: "contain" }}
+                                />
+                            ) : (
+                                <Typography variant="body2" color="text.secondary">
+                                    No image
+                                </Typography>
+                            )}
+                        </Box>
+
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, justifyContent: "center" }}>
+                            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                                <TextField
+                                    label="Image name"
+                                    size="small"
+                                    fullWidth
+                                    value={imageName}
+                                    onChange={(e) => setImageName(e.target.value)}
+                                />
+                                <Button
+                                    variant="outlined"
+                                    component="a"
+                                    href={iconUrl || "#"}
+                                    download
+                                    disabled={!iconUrl}
+                                >
+                                    Download
+                                </Button>
+                            </Box>
+
+                            <RadioGroup
+                                value={source}
+                                sx={{ flexDirection: "row", gap: 2 }}
+                                onChange={(e) => {
+                                    const next = e.target.value === "local" ? "local" : "documents";
+                                    setSource(next);
+                                }}
+                            >
+                                <FormControlLabel
+                                    value="documents"
+                                    control={<Radio size="small" />}
+                                    label="from documents & media"
+                                    slotProps={{ typography: { sx: { fontSize: "0.875rem" } } }}
+                                />
+                                <FormControlLabel
+                                    value="local"
+                                    control={<Radio size="small" />}
+                                    label="from local files"
+                                    slotProps={{ typography: { sx: { fontSize: "0.875rem" } } }}
+                                />
+                            </RadioGroup>
+
+                            <TextField
+                                label="Upload file"
+                                type="file"
+                                size="small"
+                                fullWidth
+                                slotProps={{
+                                    inputLabel: { shrink: true },
+                                    input: { inputProps: { accept: "image/*" } }
+                                }}
+                            />
+                        </Box>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="contained" onClick={() => undefined}>
+                        Upload
+                    </Button>
+                    <Button variant="outlined" onClick={handleClose}>
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 };
@@ -2578,7 +2741,7 @@ const DebouncedBorderPicker = ({
 export const StylingTab = () => {
     const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const { componentSchema, styleTabDefaultValues, stylingUIState, savedTheme } =
+    const { componentSchema, styleTabDefaultValues, stylingUIState, savedTheme, portalIcons } =
         useSelector((state: RootState) => state.app);
 
     const { control, subscribe, getValues, reset } = useForm({
@@ -2683,16 +2846,14 @@ export const StylingTab = () => {
                 const stylingTabValues: StylingTabValues = {};
 
                 Object.entries(values).forEach(([key, value]) => {
-                    // Check if this field is enabled
-                    const enabledKey = `${key}_enabled`;
-                    const isEnabled = Boolean(values[enabledKey]);
-
                     if (value !== undefined) {
                         const field = findFieldById(
                             componentSchema?.styles || [],
                             key
                         );
                         if (field?.cssVariable) {
+                            const enabledKey = `${key}_enabled`;
+                            const isEnabled = field.type === "image" ? true : Boolean(values[enabledKey]);
                             stylingTabValues[field.cssVariable] = {
                                 id: field.id,
                                 value,
@@ -2784,7 +2945,7 @@ export const StylingTab = () => {
             defaultValue = ""
         } = field;
 
-        const isFieldEnabled = getValues(`${id}_enabled`) || false;
+        const isFieldEnabled = type === "image" ? true : (getValues(`${id}_enabled`) || false);
 
         switch (type) {
             case "text":
@@ -2975,6 +3136,21 @@ export const StylingTab = () => {
                     />
                 );
 
+            case "image":
+                return (
+                    <Controller
+                        name={id}
+                        control={control}
+                        defaultValue={defaultValue}
+                        render={({ field: fieldProps }) => {
+                            const iconKey = String(defaultValue ?? fieldProps.value ?? "");
+                            const iconUrl = portalIcons?.[iconKey];
+
+                            return <PortalIconImagePicker iconUrl={iconUrl} iconKey={iconKey} />;
+                        }}
+                    />
+                );
+
             case "units":
                 return (
                     <Controller
@@ -3160,54 +3336,60 @@ export const StylingTab = () => {
         }
     };
 
-    const renderField = (field: StyleField) => (
-        <Box
-            key={field.id}
-            sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
-                py: 1.5,
-                px: 2,
-                borderBottom: "1px solid #e0e0e0"
-            }}
-        >
-            <Box sx={{ width: "15%", minWidth: 60 }}>
-                <Controller
-                    name={`${field.id}_enabled`}
-                    control={control}
-                    defaultValue={false}
-                    render={({ field: checkboxField }) => (
-                        <Checkbox
-                            checked={(checkboxField.value as boolean) || false}
-                            onChange={(e) => {
-                                const isChecked = e.target.checked;
-                                checkboxField.onChange(isChecked);
-                            }}
-                            size="small"
+    const renderField = (field: StyleField) => {
+        const showEnableCheckbox = field.type !== "image";
+
+        return (
+            <Box
+                key={field.id}
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    py: 1.5,
+                    px: 2,
+                    borderBottom: "1px solid #e0e0e0"
+                }}
+            >
+                <Box sx={{ width: "15%", minWidth: 60 }}>
+                    {showEnableCheckbox ? (
+                        <Controller
+                            name={`${field.id}_enabled`}
+                            control={control}
+                            defaultValue={false}
+                            render={({ field: checkboxField }) => (
+                                <Checkbox
+                                    checked={(checkboxField.value as boolean) || false}
+                                    onChange={(e) => {
+                                        const isChecked = e.target.checked;
+                                        checkboxField.onChange(isChecked);
+                                    }}
+                                    size="small"
+                                />
+                            )}
                         />
-                    )}
-                />
+                    ) : null}
+                </Box>
+                <Box sx={{ width: "35%", minWidth: 120 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                        {field.label}
+                    </Typography>
+                </Box>
+                <Box sx={{ width: "50%", flex: 1 }}>{renderControl(field)}</Box>
+                <Box sx={{ width: "auto", minWidth: 32 }}>
+                    <Tooltip title="Field options">
+                        <IconButton
+                            size="small"
+                            onClick={(e) => handleFieldMenuOpen(e, field)}
+                            sx={{ opacity: 0.7, "&:hover": { opacity: 1 } }}
+                        >
+                            <MoreVert fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
             </Box>
-            <Box sx={{ width: "35%", minWidth: 120 }}>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {field.label}
-                </Typography>
-            </Box>
-            <Box sx={{ width: "50%", flex: 1 }}>{renderControl(field)}</Box>
-            <Box sx={{ width: "auto", minWidth: 32 }}>
-                <Tooltip title="Field options">
-                    <IconButton
-                        size="small"
-                        onClick={(e) => handleFieldMenuOpen(e, field)}
-                        sx={{ opacity: 0.7, "&:hover": { opacity: 1 } }}
-                    >
-                        <MoreVert fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-            </Box>
-        </Box>
-    );
+        );
+    };
 
     const renderGroupAsSection = (group: StyleGroup) => {
         const isExpanded = expandedAccordions.includes(group.id || group.label);
