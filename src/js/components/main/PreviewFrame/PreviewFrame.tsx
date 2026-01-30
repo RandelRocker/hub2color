@@ -194,11 +194,17 @@ export const PreviewFrame = () => {
 
                 // Load all schema files
                 const schemaPromises = schemaPaths.map(async (schemaPath) => {
-                    const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/${schemaPath}`);
-                    if (!response.ok) {
-                        throw new Error(`Failed to load schema: ${schemaPath}`);
+                    try {
+                        const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/${schemaPath}`);
+
+                        if (!response.ok) {
+                            throw new Error(`Failed to load schema: ${schemaPath}`);
+                        }
+
+                        return response.json() as Promise<ComponentSchema>;
+                    } catch (error) {
+                        throw new Error(`Failed to fetch schema: ${schemaPath}`);
                     }
-                    return response.json() as Promise<ComponentSchema>;
                 });
 
                 const schemas = await Promise.all(schemaPromises);
@@ -207,7 +213,7 @@ export const PreviewFrame = () => {
                 const mergedSchema = mergeSchemas(schemas);
                 dispatch(setComponentSchema(mergedSchema));
             } catch (error) {
-                console.error("Error loading component schema:", error);
+                // console.error("Error loading component schema:", error);
                 dispatch(setComponentSchema(null));
             }
         },
