@@ -6,7 +6,7 @@ import * as helpers from "./helpers";
 import { RootState } from "../../../store";
 import * as config from "../../../../../config";
 import { setComponentSchema } from "../../../store/actions";
-import { PageItem, PageSection, ComponentSchema } from "../../../store/types";
+import { PageItem, PageSection, ComponentSchema, StyleField, StyleGroup } from "../../../store/types";
 import { loadTranslations } from "../../../utils/translationsLoader";
 
 export const PreviewFrame = () => {
@@ -125,10 +125,62 @@ export const PreviewFrame = () => {
                 }
             });
 
-            // Merge styles arrays by appending
+            // Helper function to merge style items (groups and fields)
+            const mergeStyleItems = (
+                existing: (StyleField | StyleGroup)[],
+                newItems: (StyleField | StyleGroup)[]
+            ): (StyleField | StyleGroup)[] => {
+                const result = [...existing];
+                
+                newItems.forEach((newItem) => {
+                    // Check if it's a group with an ID
+                    if (newItem.type === "group" && newItem.id) {
+                        // Find existing group with the same ID
+                        const existingGroupIndex = result.findIndex(
+                            (item) => item.type === "group" && item.id === newItem.id
+                        );
+                        
+                        if (existingGroupIndex !== -1) {
+                            // Merge the group: append fields from newItem to existing group
+                            const existingGroup = result[existingGroupIndex] as StyleGroup;
+                            const newGroup = newItem as StyleGroup;
+                            
+                            if (existingGroup.fields && newGroup.fields) {
+                                // Recursively merge nested fields/groups
+                                existingGroup.fields = mergeStyleItems(
+                                    existingGroup.fields,
+                                    newGroup.fields
+                                );
+                            } else if (newGroup.fields) {
+                                // If existing group has no fields, just use new group's fields
+                                existingGroup.fields = [...newGroup.fields];
+                            }
+                        } else {
+                            // No existing group with this ID, add it (with recursively merged fields if it has nested groups)
+                            const newGroup = newItem as StyleGroup;
+                            if (newGroup.fields) {
+                                const mergedNewItem: StyleGroup = {
+                                    ...newGroup,
+                                    fields: mergeStyleItems([], newGroup.fields)
+                                };
+                                result.push(mergedNewItem);
+                            } else {
+                                result.push(newItem);
+                            }
+                        }
+                    } else {
+                        // Not a group with ID, or it's a sectionTitle/groupTitle, just append
+                        result.push(newItem);
+                    }
+                });
+                
+                return result;
+            };
+
+            // Merge styles arrays, handling groups with equal IDs
             schemas.forEach((schema) => {
                 if (schema.styles) {
-                    merged.styles = [...merged.styles, ...schema.styles];
+                    merged.styles = mergeStyleItems(merged.styles, schema.styles);
                 }
             });
 
