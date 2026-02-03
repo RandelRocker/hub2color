@@ -6,7 +6,7 @@ import * as helpers from "./helpers";
 import { RootState } from "../../../store";
 import * as config from "../../../../../config";
 import { setComponentSchema } from "../../../store/actions";
-import { PageItem, PageSection, ComponentSchema, StyleField, StyleGroup } from "../../../store/types";
+import { PageItem, PageSection, ComponentSchema, StyleField, StyleGroup, ControlField } from "../../../store/types";
 import { loadTranslations } from "../../../utils/translationsLoader";
 
 export const PreviewFrame = () => {
@@ -114,14 +114,32 @@ export const PreviewFrame = () => {
                 }
             });
 
-            // Merge controls arrays by appending, excluding deleted controls
+            // Merge controls arrays, replacing controls with the same ID
             schemas.forEach((schema) => {
                 if (schema.controls) {
-                    const filteredControls = schema.controls.filter((control: { type?: string; id?: string }) => {
+                    schema.controls.forEach((control: ControlField | { type?: string; id?: string }) => {
+                        const controlId = control.id;
                         // Exclude controls marked for deletion or with type "delete"
-                        return control.type !== "delete" && !controlsToDelete.has(control.id as string);
+                        if ((control as { type?: string }).type === "delete" || (controlId && controlsToDelete.has(controlId))) {
+                            return;
+                        }
+                        // Type guard: ensure it's a valid ControlField
+                        if (!controlId || !("label" in control)) {
+                            return;
+                        }
+                        const validControl = control as ControlField;
+                        // Find existing control with the same ID
+                        const existingIndex = merged.controls.findIndex(
+                            (c) => c.id === validControl.id
+                        );
+                        if (existingIndex !== -1) {
+                            // Replace existing control
+                            merged.controls[existingIndex] = validControl;
+                        } else {
+                            // Add new control
+                            merged.controls.push(validControl);
+                        }
                     });
-                    merged.controls = [...merged.controls, ...filteredControls];
                 }
             });
 
