@@ -143,6 +143,31 @@ export const PreviewFrame = () => {
                 }
             });
 
+            // After all schemas are processed, filter out any controls that should be deleted
+            // This ensures deletion works regardless of schema load order
+            merged.controls = merged.controls.filter(
+                (control) => !controlsToDelete.has(control.id)
+            );
+
+            // First, collect all style field/group IDs that should be deleted
+            const stylesToDelete = new Set<string>();
+            const collectStylesToDelete = (items: (StyleField | StyleGroup)[]): void => {
+                items.forEach((item) => {
+                    if ((item as { type?: string }).type === "delete" && item.id) {
+                        stylesToDelete.add(item.id);
+                    }
+                    // Recursively check nested fields in groups
+                    if ("fields" in item && item.fields) {
+                        collectStylesToDelete(item.fields);
+                    }
+                });
+            };
+            schemas.forEach((schema) => {
+                if (schema.styles) {
+                    collectStylesToDelete(schema.styles);
+                }
+            });
+
             // Helper function to merge style items (groups and fields)
             const mergeStyleItems = (
                 existing: (StyleField | StyleGroup)[],
@@ -151,6 +176,12 @@ export const PreviewFrame = () => {
                 const result = [...existing];
                 
                 newItems.forEach((newItem) => {
+                    // Exclude items marked for deletion or with type "delete"
+                    const itemId = newItem.id;
+                    if ((newItem as { type?: string }).type === "delete" || (itemId && stylesToDelete.has(itemId))) {
+                        return;
+                    }
+                    
                     // Check if it's a group with an ID
                     if (newItem.type === "group" && newItem.id) {
                         // Find existing group with the same ID
@@ -201,6 +232,34 @@ export const PreviewFrame = () => {
                     merged.styles = mergeStyleItems(merged.styles, schema.styles);
                 }
             });
+
+            // Helper function to recursively filter out deleted style items
+            const filterDeletedStyles = (
+                items: (StyleField | StyleGroup)[]
+            ): (StyleField | StyleGroup)[] => {
+                return items
+                    .filter((item) => {
+                        // Remove items that should be deleted
+                        if (item.id && stylesToDelete.has(item.id)) {
+                            return false;
+                        }
+                        return true;
+                    })
+                    .map((item) => {
+                        // Recursively filter nested fields in groups
+                        if ("fields" in item && item.fields) {
+                            return {
+                                ...item,
+                                fields: filterDeletedStyles(item.fields)
+                            } as StyleGroup;
+                        }
+                        return item;
+                    });
+            };
+
+            // After all schemas are processed, filter out any styles that should be deleted
+            // This ensures deletion works regardless of schema load order
+            merged.styles = filterDeletedStyles(merged.styles);
 
             // Deep merge other properties
             const deepMerge = (
