@@ -57,16 +57,48 @@ const DEFAULT_HEIGHT = MIN_HEIGHT;
 
 export const SettingsPanel = () => {
     const dispatch = useDispatch();
-    const { currentPage, styleTabValues, savedTheme } = useSelector(
+    const { currentPage, styleTabValues, savedTheme, componentSchema } = useSelector(
         (state: RootState) => state.app
     );
+    
+    // Check if controls and styles are empty
+    const hasControls = componentSchema?.controls && componentSchema.controls.length > 0;
+    const hasStyles = componentSchema?.styles && componentSchema.styles.length > 0;
+    
+    // Map tab indices: 0 = Controls, 1 = Styling
+    // When tabs are hidden, MUI Tabs will re-index automatically
     const [activeTab, setActiveTab] = useState(0);
+    
+    // Determine which logical tab (Controls=0, Styling=1) is active based on visible tabs
+    const getLogicalTab = useCallback((tabIndex: number): number | null => {
+        if (hasControls && hasStyles) {
+            return tabIndex; // 0 = Controls, 1 = Styling
+        } else if (hasControls) {
+            return tabIndex === 0 ? 0 : null; // Only Controls
+        } else if (hasStyles) {
+            return tabIndex === 0 ? 1 : null; // Only Styling
+        }
+        return null;
+    }, [hasControls, hasStyles]);
+    
+    // Adjust activeTab if current tab is hidden
+    useEffect(() => {
+        const logicalTab = getLogicalTab(activeTab);
+        if (logicalTab === null) {
+            // Current tab is hidden, switch to first available
+            if (hasControls) {
+                setActiveTab(0);
+            } else if (hasStyles) {
+                setActiveTab(0);
+            }
+        }
+    }, [hasControls, hasStyles, activeTab, getLogicalTab]);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(
         null
     );
     const [stylesFilter, setStylesFilter] = useState<
-        "all" | "colors" | "images"
+        "all" | "colors" | "images" | "changed"
     >("all");
     const [panelHeight, setPanelHeight] = useState(DEFAULT_HEIGHT);
     const [isDragging, setIsDragging] = useState(false);
@@ -170,7 +202,9 @@ export const SettingsPanel = () => {
         setFilterAnchorEl(null);
     };
 
-    const handleSetStylesFilter = (filter: "all" | "colors" | "images") => {
+    const handleSetStylesFilter = (
+        filter: "all" | "colors" | "images" | "changed"
+    ) => {
         setStylesFilter(filter);
         handleFilterMenuClose();
     };
@@ -184,6 +218,11 @@ export const SettingsPanel = () => {
         handleResetToDefault();
         handleMenuClose();
     };
+
+    // Hide the entire panel if both tabs are not available
+    if (!hasControls && !hasStyles) {
+        return null;
+    }
 
     return (
         <>
@@ -284,15 +323,15 @@ export const SettingsPanel = () => {
                                 }
                             }}
                         >
-                            <Tab label="Controls" />
-                            <Tab label="Styling" />
+                            {hasControls && <Tab label="Controls" />}
+                            {hasStyles && <Tab label="Styling" />}
                         </Tabs>
                     </Box>
 
                     <Box
                         sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
                     >
-                        {activeTab === 1 && (
+                        {getLogicalTab(activeTab) === 1 && (
                             <>
                                 <Tooltip title="Filter Styles">
                                     <IconButton
@@ -329,11 +368,10 @@ export const SettingsPanel = () => {
                                             handleSetStylesFilter("all")
                                         }
                                         sx={{
-                                            fontSize: "0.875rem",
-                                            textTransform: "capitalize"
+                                            fontSize: "0.875rem"
                                         }}
                                     >
-                                        all styles
+                                        Show all styles
                                     </MenuItem>
                                     <MenuItem
                                         selected={stylesFilter === "colors"}
@@ -341,11 +379,10 @@ export const SettingsPanel = () => {
                                             handleSetStylesFilter("colors")
                                         }
                                         sx={{
-                                            fontSize: "0.875rem",
-                                            textTransform: "capitalize"
+                                            fontSize: "0.875rem"
                                         }}
                                     >
-                                        colors
+                                        Show colors only
                                     </MenuItem>
                                     <MenuItem
                                         selected={stylesFilter === "images"}
@@ -353,11 +390,21 @@ export const SettingsPanel = () => {
                                             handleSetStylesFilter("images")
                                         }
                                         sx={{
-                                            fontSize: "0.875rem",
-                                            textTransform: "capitalize"
+                                            fontSize: "0.875rem"
                                         }}
                                     >
-                                        icons
+                                        Show images only
+                                    </MenuItem>
+                                    <MenuItem
+                                        selected={stylesFilter === "changed"}
+                                        onClick={() =>
+                                            handleSetStylesFilter("changed")
+                                        }
+                                        sx={{
+                                            fontSize: "0.875rem"
+                                        }}
+                                    >
+                                        Show changed styles only
                                     </MenuItem>
                                 </Menu>
                                 <Tooltip title="Save Styling">
@@ -429,8 +476,15 @@ export const SettingsPanel = () => {
                             </Box>
                         }
                     >
-                        {activeTab === 0 && <ControlsTab />}
-                        {activeTab === 1 && <StylingTab stylesFilter={stylesFilter} />}
+                        {(() => {
+                            const logicalTab = getLogicalTab(activeTab);
+                            if (logicalTab === 0 && hasControls) {
+                                return <ControlsTab />;
+                            } else if (logicalTab === 1 && hasStyles) {
+                                return <StylingTab stylesFilter={stylesFilter} />;
+                            }
+                            return null;
+                        })()}
                     </Suspense>
                 </Box>
             </Paper>

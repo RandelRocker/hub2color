@@ -5,7 +5,7 @@ import { AppAction } from "./actionTypes";
 
 const initialState: AppState = {
     pages: [],
-    currentPage: 'components/inputs/autocompletefield/autocompletefield.html',
+    currentPage: 'components/sitesettings/typography/typography.html',
     customCss: "",
     customJs: "",
     zoom: 1,

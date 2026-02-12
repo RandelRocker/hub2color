@@ -37,7 +37,7 @@ import { RootState } from "../../../../store";
 import { updateStylingTabValues, updateStylingTabValuesWithDefault, setStylingTabUIState, updateStylingTabDefaultValues } from "../../../../store/actions";
 import { StylingTabValues, StyleGroup, StyleField } from "../../../../store/types";
 
-type StylesFilter = "all" | "colors" | "images";
+type StylesFilter = "all" | "colors" | "images" | "changed";
 
 const isStyleGroup = (item: StyleField | StyleGroup): item is StyleGroup => {
     return (
@@ -91,11 +91,14 @@ const pruneOrphanHeadings = (items: (StyleField | StyleGroup)[]): (StyleField | 
 
 const filterStyleItems = (
     items: (StyleField | StyleGroup)[],
-    stylesFilter: Exclude<StylesFilter, "all">
+    stylesFilter: Exclude<StylesFilter, "all">,
+    enabledCssVariables?: Set<string>
 ): (StyleField | StyleGroup)[] => {
     const matchesFilter = (field: StyleField) => {
         if (stylesFilter === "colors") return field.type === "color";
         if (stylesFilter === "images") return field.type === "image";
+        if (stylesFilter === "changed")
+            return enabledCssVariables?.has(field.cssVariable) ?? false;
         return true;
     };
 
@@ -105,7 +108,8 @@ const filterStyleItems = (
                 if (item.type === "group") {
                     const filteredFields = filterStyleItems(
                         item.fields || [],
-                        stylesFilter
+                        stylesFilter,
+                        enabledCssVariables
                     );
 
                     if (filteredFields.length === 0) return null;
@@ -2831,14 +2835,26 @@ const DebouncedBorderPicker = ({
 export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilter }) => {
     const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const { componentSchema, styleTabDefaultValues, stylingUIState, savedTheme, portalIcons } =
+    const { componentSchema, styleTabDefaultValues, styleTabValues, stylingUIState, savedTheme, portalIcons } =
         useSelector((state: RootState) => state.app);
+
+    const enabledCssVariables = useMemo(() => {
+        return new Set(
+            Object.entries(styleTabValues || {})
+                .filter(([, v]) => v?.isEnabled === true)
+                .map(([cssVar]) => cssVar)
+        );
+    }, [styleTabValues]);
 
     const stylesToRender = useMemo(() => {
         const baseStyles = componentSchema?.styles || [];
         if (stylesFilter === "all") return baseStyles;
-        return filterStyleItems(baseStyles, stylesFilter);
-    }, [componentSchema, stylesFilter]);
+        return filterStyleItems(
+            baseStyles,
+            stylesFilter,
+            stylesFilter === "changed" ? enabledCssVariables : undefined
+        );
+    }, [componentSchema, stylesFilter, enabledCssVariables]);
 
     const { control, subscribe, getValues, reset } = useForm({
         defaultValues: styleTabDefaultValues
