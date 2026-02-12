@@ -14,13 +14,15 @@ import { useDispatch } from "react-redux";
 import {
     toggleCodeEditorSidebar
 } from "../../../store/actions";
+import { CustomHtmlPayload } from "../../../store/types";
 import { CustomCssTab, CustomCssTabHandle } from "./CustomCssTab/CustomCssTab";
+import { CustomHTMLTab, CustomHTMLTabHandle } from "./CustomHTMLTab/CustomHTMLTab";
 import { CustomJsTab, CustomJsTabHandle } from "./CustomJsTab/CustomJsTab";
 import { TagsSelectDialog } from "./TagsSelectDialog/TagsSelectDialog";
 
 const MIN_WIDTH = 300;
 const MAX_WIDTH = 1000;
-const DEFAULT_WIDTH = 420;
+const DEFAULT_WIDTH = 450;
 
 export const CodeEditorSidebar = () => {
     const dispatch = useDispatch();
@@ -38,6 +40,7 @@ export const CodeEditorSidebar = () => {
     // Refs for tab components to call loadTag
     const cssTabRef = useRef<CustomCssTabHandle>(null);
     const jsTabRef = useRef<CustomJsTabHandle>(null);
+    const htmlTabRef = useRef<CustomHTMLTabHandle>(null);
 
     // Handle mouse move with RAF for smooth updates
     const handleMouseMove = useCallback((e: React.MouseEvent | MouseEvent) => {
@@ -102,15 +105,18 @@ export const CodeEditorSidebar = () => {
         setTagsDialogOpen(true);
     };
 
-    const handleTagSelect = useCallback((value: string) => {
-        if (activeTab === 0) {
-            // CSS tab
-            cssTabRef.current?.loadTag(value);
-        } else {
-            // JS tab
-            jsTabRef.current?.loadTag(value);
-        }
-    }, [activeTab]);
+    const handleTagSelect = useCallback(
+        (value: string | CustomHtmlPayload) => {
+            if (activeTab === 0) {
+                cssTabRef.current?.loadTag(value as string);
+            } else if (activeTab === 1) {
+                jsTabRef.current?.loadTag(value as string);
+            } else {
+                htmlTabRef.current?.loadTag(value as CustomHtmlPayload);
+            }
+        },
+        [activeTab]
+    );
 
     return (
         <>
@@ -211,11 +217,20 @@ export const CodeEditorSidebar = () => {
                     >
                         <Tab label="Custom CSS" />
                         <Tab label="Custom JS" />
+                        <Tab label="Custom HTML" />
                     </Tabs>
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                    <Tooltip title={activeTab === 0 ? "Create CSS Tag" : "Create JS Tag"}>
+                    <Tooltip
+                        title={
+                            activeTab === 0
+                                ? "Create CSS Tag"
+                                : activeTab === 1
+                                  ? "Create JS Tag"
+                                  : "Create HTML Tag"
+                        }
+                    >
                         <IconButton size="small" onClick={handleSave}>
                             <Save fontSize="small" />
                         </IconButton>
@@ -235,15 +250,40 @@ export const CodeEditorSidebar = () => {
 
                 {/* Tab Content */}
                 <Box sx={{ flex: 1, overflow: "hidden" }}>
-                    {activeTab === 0 && <CustomCssTab ref={cssTabRef} dialogOpen={dialogOpen} onDialogClose={handleDialogClose} />}
-                    {activeTab === 1 && <CustomJsTab ref={jsTabRef} dialogOpen={dialogOpen} onDialogClose={handleDialogClose} />}
+                    {activeTab === 0 && (
+                        <CustomCssTab
+                            ref={cssTabRef}
+                            dialogOpen={dialogOpen}
+                            onDialogClose={handleDialogClose}
+                        />
+                    )}
+                    {activeTab === 1 && (
+                        <CustomJsTab
+                            ref={jsTabRef}
+                            dialogOpen={dialogOpen}
+                            onDialogClose={handleDialogClose}
+                        />
+                    )}
+                    {activeTab === 2 && (
+                        <CustomHTMLTab
+                            ref={htmlTabRef}
+                            dialogOpen={dialogOpen}
+                            onDialogClose={handleDialogClose}
+                        />
+                    )}
                 </Box>
             </Paper>
 
             <TagsSelectDialog
                 open={tagsDialogOpen}
                 onClose={() => setTagsDialogOpen(false)}
-                tagTypeId={activeTab === 0 ? "custom_css" : "custom_js"}
+                tagTypeId={
+                    activeTab === 0
+                        ? "custom_css"
+                        : activeTab === 1
+                          ? "custom_js"
+                          : "custom_tag_type"
+                }
                 onTagSelect={handleTagSelect}
             />
         </>

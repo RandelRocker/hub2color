@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -65,6 +65,11 @@ export const setCustomCss = (css: string) => ({
 export const setCustomJs = (js: string) => ({
     type: ActionTypes.SET_CUSTOM_JS,
     payload: js,
+});
+
+export const setCustomHtml = (html: CustomHtmlPayload) => ({
+    type: ActionTypes.SET_CUSTOM_HTML,
+    payload: html,
 });
 
 export const setZoom = (zoom: number) => ({

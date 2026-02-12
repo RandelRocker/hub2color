@@ -21,6 +21,7 @@ export const PreviewFrame = () => {
         direction,
         customCss,
         customJs,
+        customHtml,
         loading,
         styleTabValues,
         savedTheme,
@@ -371,6 +372,11 @@ export const PreviewFrame = () => {
             sendMessageToFrame("CUSTOM_JS_CHANGE", { js: customJs });
         }
 
+        sendMessageToFrame("CUSTOM_HTML_CHANGE", {
+            beforeEndHead: customHtml.beforeEndHead,
+            beforeEndBody: customHtml.beforeEndBody
+        });
+
         // Send styling theme
         if (styleTabValues || savedTheme) {
             sendMessageToFrame("STYLING_CHANGE", {
@@ -407,6 +413,7 @@ export const PreviewFrame = () => {
         zoom,
         customCss,
         customJs,
+        customHtml,
         savedTheme,
         controlsTabValues,
         portalTagsEnabled,
@@ -435,6 +442,13 @@ export const PreviewFrame = () => {
     useEffect(() => {
         sendMessageToFrame("CUSTOM_JS_CHANGE", { js: customJs || "" });
     }, [customJs, sendMessageToFrame]);
+
+    useEffect(() => {
+        sendMessageToFrame("CUSTOM_HTML_CHANGE", {
+            beforeEndHead: customHtml.beforeEndHead,
+            beforeEndBody: customHtml.beforeEndBody
+        });
+    }, [customHtml, sendMessageToFrame]);
 
     useEffect(() => {
         const processedValues: Record<string, unknown> = {};

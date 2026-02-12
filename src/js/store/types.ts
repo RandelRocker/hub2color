@@ -46,6 +46,11 @@ export interface ControlsTabValues {
 
 export type TStoredThemeStyles = Record<string, string>;
 
+export interface CustomHtmlPayload {
+    beforeEndHead: string;
+    beforeEndBody: string;
+}
+
 export interface ControlsSchemaProps {
     fields: ControlField[];
 }
@@ -127,6 +132,7 @@ export interface AppState {
     stylingUIState: { scrollPosition?: number; expandedAccordions?: string[] };
     customCss: string;
     customJs: string;
+    customHtml: CustomHtmlPayload;
     zoom: number;
     viewport: "desktop" | "tablet" | "mobile";
     direction: "ltr" | "rtl";

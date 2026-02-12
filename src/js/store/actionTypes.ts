@@ -1,4 +1,4 @@
-import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload } from "./types";
 import { ActionTypes } from "./constants";
 
 export interface SetPagesAction {
@@ -66,6 +66,11 @@ export interface SetCustomCssAction {
 export interface SetCustomJsAction {
     type: ActionTypes.SET_CUSTOM_JS;
     payload: string;
+}
+
+export interface SetCustomHtmlAction {
+    type: ActionTypes.SET_CUSTOM_HTML;
+    payload: CustomHtmlPayload;
 }
 
 export interface SetZoomAction {
@@ -145,6 +150,7 @@ export type AppAction =
     | saveStylingThemeAction
     | SetCustomCssAction
     | SetCustomJsAction
+    | SetCustomHtmlAction
     | SetZoomAction
     | SetViewportAction
     | SetDirectionAction

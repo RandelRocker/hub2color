@@ -1,6 +1,6 @@
 import { produce } from "immer";
 import { ActionTypes } from "./constants";
-import { AppState, TStoredThemeStyles, StyleField, StyleGroup } from "./types";
+import { AppState, TStoredThemeStyles, StyleField, StyleGroup, CustomHtmlPayload } from "./types";
 import { AppAction } from "./actionTypes";
 
 const initialState: AppState = {
@@ -8,6 +8,7 @@ const initialState: AppState = {
     currentPage: 'components/sitesettings/typography/typography.html',
     customCss: "",
     customJs: "",
+    customHtml: { beforeEndHead: "", beforeEndBody: "" },
     zoom: 1,
     viewport: "desktop",
     direction: "ltr",
@@ -246,6 +247,10 @@ export const appReducer = (
 
             case ActionTypes.SET_CUSTOM_JS:
                 draft.customJs = action.payload;
+                break;
+
+            case ActionTypes.SET_CUSTOM_HTML:
+                draft.customHtml = action.payload as CustomHtmlPayload;
                 break;
 
             case ActionTypes.SET_ZOOM:

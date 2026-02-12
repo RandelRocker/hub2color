@@ -17,12 +17,13 @@ import {
 } from "@mui/material";
 
 import * as config from "../../../../../../config";
+import { CustomHtmlPayload } from "../../../../store/types";
 
 interface TagsSelectDialogProps {
     open: boolean;
     onClose: () => void;
-    tagTypeId: "custom_css" | "custom_js";
-    onTagSelect: (value: string) => void;
+    tagTypeId: "custom_css" | "custom_js" | "custom_tag_type";
+    onTagSelect: (value: string | CustomHtmlPayload) => void;
 }
 
 interface TagFromApi {
@@ -33,6 +34,8 @@ interface TagFromApi {
     config: {
         style?: string;
         code?: string;
+        beforeEndHead?: string;
+        beforeEndBody?: string;
         [key: string]: unknown;
     };
 }
@@ -78,12 +81,19 @@ export const TagsSelectDialog = ({ open, onClose, tagTypeId, onTagSelect }: Tags
     };
 
     const handleRowClick = (tag: TagFromApi) => {
-        // Extract the appropriate config value based on tagTypeId
-        const value = tagTypeId === "custom_css" 
-            ? (tag.config.style || "")
-            : (tag.config.code || "");
-        
-        onTagSelect(value);
+        if (tagTypeId === "custom_tag_type") {
+            const value: CustomHtmlPayload = {
+                beforeEndHead: tag.config.beforeEndHead ?? "",
+                beforeEndBody: tag.config.beforeEndBody ?? ""
+            };
+            onTagSelect(value);
+        } else {
+            const value =
+                tagTypeId === "custom_css"
+                    ? (tag.config.style || "")
+                    : (tag.config.code || "");
+            onTagSelect(value);
+        }
         onClose();
     };
 
@@ -92,7 +102,13 @@ export const TagsSelectDialog = ({ open, onClose, tagTypeId, onTagSelect }: Tags
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>
-                Select {tagTypeId === "custom_css" ? "CSS" : "JS"} Tag
+                Select{" "}
+                {tagTypeId === "custom_css"
+                    ? "CSS"
+                    : tagTypeId === "custom_js"
+                      ? "JS"
+                      : "HTML"}{" "}
+                Tag
             </DialogTitle>
             <DialogContent>
                 {loading ? (
