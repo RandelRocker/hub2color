@@ -96,7 +96,7 @@ const filterStyleItems = (
 ): (StyleField | StyleGroup)[] => {
     const matchesFilter = (field: StyleField) => {
         if (stylesFilter === "colors") return field.type === "color";
-        if (stylesFilter === "images") return field.type === "image";
+        if (stylesFilter === "images") return field.type === "image" || field.type === "staticImage";
         if (stylesFilter === "changed")
             return enabledCssVariables?.has(field.cssVariable) ?? false;
         return true;
@@ -2835,7 +2835,7 @@ const DebouncedBorderPicker = ({
 export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilter }) => {
     const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const { componentSchema, styleTabDefaultValues, styleTabValues, stylingUIState, savedTheme, portalIcons } =
+    const { componentSchema, styleTabDefaultValues, styleTabValues, stylingUIState, savedTheme, portalIcons, themeUrl } =
         useSelector((state: RootState) => state.app);
 
     const enabledCssVariables = useMemo(() => {
@@ -2965,10 +2965,14 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                         );
                         if (field?.cssVariable) {
                             const enabledKey = `${key}_enabled`;
-                            const isEnabled = field.type === "image" ? true : Boolean(values[enabledKey]);
+                            const isEnabled = field.type === "image" || field.type === "staticImage" ? true : Boolean(values[enabledKey]);
+                            const resolvedValue =
+                                field.type === "staticImage" && themeUrl && (field.defaultValue ?? value)
+                                    ? `https://core3-qa09.mws.playtechgaming.com/${themeUrl}/${field.defaultValue ?? value}` // remove hostname and leave absolute path once moved to real CMS
+                                    : value;
                             stylingTabValues[field.cssVariable] = {
                                 id: field.id,
-                                value,
+                                value: resolvedValue,
                                 themeKey: field?.themeKey,
                                 isEnabled
                             };
@@ -2981,7 +2985,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
         });
 
         return () => callback();
-    }, [componentSchema?.styles, dispatch, findFieldById, subscribe]);
+    }, [componentSchema?.styles, dispatch, findFieldById, subscribe, themeUrl]);
 
     // useEffect(() => {
     //     if (currentComponentSchema.current !== componentSchema) {
@@ -3057,7 +3061,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
             defaultValue = ""
         } = field;
 
-        const isFieldEnabled = type === "image" ? true : (getValues(`${id}_enabled`) || false);
+        const isFieldEnabled = type === "image" || type === "staticImage" ? true : (getValues(`${id}_enabled`) || false);
 
         switch (type) {
             case "text":
@@ -3263,6 +3267,21 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                     />
                 );
 
+            case "staticImage":
+                return (
+                    <Controller
+                        name={id}
+                        control={control}
+                        defaultValue={defaultValue}
+                        render={() => {
+                            const iconKey = String(defaultValue ?? "");
+                            const iconUrl = themeUrl ? `https://core3-qa09.mws.playtechgaming.com/${themeUrl}/${defaultValue}` : undefined; // remove hostname and leave absolute path once moved to real CMS
+
+                            return <PortalIconImagePicker iconUrl={iconUrl} iconKey={iconKey} />;
+                        }}
+                    />
+                );
+
             case "units":
                 return (
                     <Controller
@@ -3449,7 +3468,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
     };
 
     const renderField = (field: StyleField) => {
-        const showEnableCheckbox = field.type !== "image";
+        const showEnableCheckbox = field.type !== "image" && field.type !== "staticImage";
 
         return (
             <Box

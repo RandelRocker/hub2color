@@ -29,6 +29,8 @@ export const PreviewFrame = () => {
         portalTags,
         portalTagsEnabled,
         previewBackgroundColor,
+        themeName,
+        themeUrl,
     } = useSelector((state: RootState) => state.app);
 
     // Load translations once on mount
@@ -405,6 +407,9 @@ export const PreviewFrame = () => {
 
         // Send preview background color
         sendMessageToFrame("PREVIEW_BACKGROUND_COLOR_CHANGE", { color: previewBackgroundColor });
+
+        // Send portal theme info
+        sendMessageToFrame("PORTAL_INFO_UPDATE", { themeName, themeUrl });
     }, [
         currentPage,
         styleTabValues,
@@ -418,7 +423,9 @@ export const PreviewFrame = () => {
         controlsTabValues,
         portalTagsEnabled,
         portalTags,
-        previewBackgroundColor
+        previewBackgroundColor,
+        themeName,
+        themeUrl,
     ]);
 
     useEffect(() => {
@@ -482,6 +489,10 @@ export const PreviewFrame = () => {
     useEffect(() => {
         sendMessageToFrame("PREVIEW_BACKGROUND_COLOR_CHANGE", { color: previewBackgroundColor });
     }, [previewBackgroundColor, sendMessageToFrame]);
+
+    useEffect(() => {
+        sendMessageToFrame("PORTAL_INFO_UPDATE", { themeName, themeUrl });
+    }, [themeName, themeUrl, sendMessageToFrame]);
 
     // Listen for PORTAL_READY message from iframe
     useEffect(() => {
