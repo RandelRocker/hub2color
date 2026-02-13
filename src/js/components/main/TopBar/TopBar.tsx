@@ -1,10 +1,11 @@
 import {
     Box,
-    IconButton,
+    Button,
     Divider,
-    Tooltip,
+    IconButton,
     Popover,
     TextField,
+    Tooltip,
     Typography
 } from "@mui/material";
 import { Code, SellOutlined, EditOutlined, BiotechRounded, FormatColorFillRounded } from "@mui/icons-material";
@@ -44,6 +45,8 @@ const rgbaStringToRgbaColor = (rgba: string): RgbaColor => {
 const rgbaColorToRgbaString = (color: RgbaColor): string => {
     return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
 };
+
+const DEFAULT_PREVIEW_BACKGROUND_COLOR = "rgba(255, 255, 255, 1)";
 
 export const TopBar = () => {
     const dispatch = useDispatch();
@@ -136,6 +139,17 @@ export const TopBar = () => {
         timeoutRef.current = setTimeout(() => {
             dispatch(setPreviewBackgroundColor(rgbaColorToRgbaString(color)));
         }, 150);
+    };
+
+    const handleRemoveBgColor = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+        const defaultColor = rgbaStringToRgbaColor(DEFAULT_PREVIEW_BACKGROUND_COLOR);
+        setLocalBgColor(defaultColor);
+        setHexInput(`#${defaultColor.r.toString(16).padStart(2, "0")}${defaultColor.g.toString(16).padStart(2, "0")}${defaultColor.b.toString(16).padStart(2, "0")}`);
+        dispatch(setPreviewBackgroundColor(DEFAULT_PREVIEW_BACKGROUND_COLOR));
     };
 
     return (
@@ -545,6 +559,16 @@ export const TopBar = () => {
                                 width: "100%"
                             }}
                         />
+                    </Box>
+                    <Box sx={{ mt: 2 }}>
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={handleRemoveBgColor}
+                            fullWidth
+                        >
+                            Remove color
+                        </Button>
                     </Box>
                 </Box>
             </Popover>
