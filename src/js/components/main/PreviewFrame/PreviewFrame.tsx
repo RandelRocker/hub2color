@@ -374,10 +374,12 @@ export const PreviewFrame = () => {
             sendMessageToFrame("CUSTOM_JS_CHANGE", { js: customJs });
         }
 
-        sendMessageToFrame("CUSTOM_HTML_CHANGE", {
-            beforeEndHead: customHtml.beforeEndHead,
-            beforeEndBody: customHtml.beforeEndBody
-        });
+        if (customHtml.beforeEndHead || customHtml.beforeEndBody) {
+            sendMessageToFrame("CUSTOM_HTML_CHANGE", {
+                beforeEndHead: customHtml.beforeEndHead,
+                beforeEndBody: customHtml.beforeEndBody
+            });
+        }
 
         // Send styling theme
         if (styleTabValues || savedTheme) {
@@ -400,9 +402,7 @@ export const PreviewFrame = () => {
 
         // Send portal tags if enabled
         if (portalTagsEnabled) {
-            sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: portalTags });
-        } else {
-            sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: [] });
+            portalTags && portalTags.length > 0 && sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: portalTags });
         }
 
         // Send preview background color
