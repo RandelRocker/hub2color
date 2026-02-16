@@ -22,7 +22,7 @@ import {
     Restore,
     RestartAlt,
     Save,
-    MoreVert,
+    MoreHoriz,
     FilterList
 } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
@@ -420,7 +420,7 @@ export const SettingsPanel = () => {
                                         size="small"
                                         onClick={handleMenuOpen}
                                     >
-                                        <MoreVert fontSize="small" />
+                                        <MoreHoriz fontSize="small" />
                                     </IconButton>
                                 </Tooltip>
                                 <Menu

@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -138,4 +138,9 @@ export const setSiteTheme = (themeName: string, themeUrl: string) => ({
 export const setPortalIcons = (icons: Record<string, string>) => ({
     type: ActionTypes.SET_PORTAL_ICONS,
     payload: icons,
+});
+
+export const setReferenceOverlay = (overlay: ReferenceOverlayState | null) => ({
+    type: ActionTypes.SET_REFERENCE_OVERLAY,
+    payload: overlay,
 });

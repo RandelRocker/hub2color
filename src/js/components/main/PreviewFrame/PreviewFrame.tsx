@@ -5,9 +5,11 @@ import { useSelector, useDispatch } from "react-redux";
 import * as helpers from "./helpers";
 import { RootState } from "../../../store";
 import * as config from "../../../../../config";
-import { setComponentSchema } from "../../../store/actions";
+import { setComponentSchema, setReferenceOverlay } from "../../../store/actions";
 import { PageItem, PageSection, ComponentSchema, StyleField, StyleGroup, ControlField } from "../../../store/types";
+import { createReferenceOverlayFromFile, getFirstImageFromClipboard } from "../../../utils/referenceOverlay";
 import { loadTranslations } from "../../../utils/translationsLoader";
+import { ReferenceOverlay } from "./ReferenceOverlay/ReferenceOverlay";
 
 export const PreviewFrame = () => {
     const dispatch = useDispatch();
@@ -31,7 +33,89 @@ export const PreviewFrame = () => {
         previewBackgroundColor,
         themeName,
         themeUrl,
+        referenceOverlay
     } = useSelector((state: RootState) => state.app);
+
+    const handleReferenceOverlayChange = useCallback((nextOverlay: NonNullable<typeof referenceOverlay>) => {
+        dispatch(setReferenceOverlay(nextOverlay));
+    }, [dispatch]);
+
+    const handleReferenceOverlayDelete = useCallback(() => {
+        dispatch(setReferenceOverlay(null));
+    }, [dispatch]);
+
+    const handleClipboardImage = useCallback(async (event: ClipboardEvent) => {
+        const imageFile = getFirstImageFromClipboard(event);
+        if (!imageFile) {
+            return;
+        }
+
+        event.preventDefault();
+        const nextOverlay = await createReferenceOverlayFromFile(imageFile);
+        if (!nextOverlay) {
+            return;
+        }
+
+        dispatch(setReferenceOverlay(nextOverlay));
+    }, [dispatch]);
+
+    useEffect(() => {
+        let detachIframePasteListener: () => void = () => undefined;
+        let cancelled = false;
+
+        const attachIframePasteListener = (): (() => void) => {
+            let frameDocument: Document | null = null;
+            try {
+                frameDocument = iframeRef.current?.contentWindow?.document ?? null;
+            } catch {
+                return () => undefined;
+            }
+
+            if (!frameDocument) {
+                return () => undefined;
+            }
+
+            const handler = (event: ClipboardEvent) => {
+                handleClipboardImage(event);
+            };
+
+            frameDocument.addEventListener("paste", handler, true);
+
+            return () => {
+                try {
+                    frameDocument?.removeEventListener("paste", handler, true);
+                } catch {
+                    // ignore when document is gone
+                }
+            };
+        };
+
+        const tryAttach = () => {
+            if (cancelled) return;
+            detachIframePasteListener();
+            detachIframePasteListener = attachIframePasteListener();
+        };
+
+        tryAttach();
+
+        const timeouts: ReturnType<typeof setTimeout>[] = [100, 300, 800].map((ms) =>
+            setTimeout(tryAttach, ms)
+        );
+
+        const iframeEl = iframeRef.current;
+        const handleIframeLoad = () => {
+            tryAttach();
+        };
+
+        iframeEl?.addEventListener("load", handleIframeLoad);
+
+        return () => {
+            cancelled = true;
+            detachIframePasteListener();
+            timeouts.forEach(clearTimeout);
+            iframeEl?.removeEventListener("load", handleIframeLoad);
+        };
+    }, [currentPage, handleClipboardImage]);
 
     // Load translations once on mount
     useEffect(() => {
@@ -410,6 +494,8 @@ export const PreviewFrame = () => {
 
         // Send portal theme info
         sendMessageToFrame("PORTAL_INFO_UPDATE", { themeName, themeUrl });
+
+        sendMessageToFrame("CMSR_READY");
     }, [
         currentPage,
         styleTabValues,
@@ -596,30 +682,47 @@ export const PreviewFrame = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                overflow: "hidden"
+                overflow: "visible"
             }}
         >
             <Box
                 sx={{
                     width: getViewportWidth(),
                     height: getViewportHeight(),
-                    overflow: "hidden",
                     transform: `scale(${zoom})`,
-                    bgcolor: previewBackgroundColor,
+                    position: "relative",
+                    overflow: "visible",
                     transformOrigin: "center center"
                 }}
             >
-                <iframe
-                    ref={iframeRef}
-                    src={getIframeSrc()}
-                    style={{
-                        width: "100%",
-                        height: "100%",
-                        border: "none",
-                        display: "block"
+                <Box
+                    sx={{
+                        inset: 0,
+                        overflow: "hidden",
+                        position: "absolute",
+                        bgcolor: previewBackgroundColor
                     }}
-                    title="Component Preview"
-                />
+                >
+                    <iframe
+                        ref={iframeRef}
+                        src={getIframeSrc()}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            border: "none",
+                            display: "block"
+                        }}
+                        title="Component Preview"
+                    />
+                </Box>
+
+                {referenceOverlay && (
+                    <ReferenceOverlay
+                        overlay={referenceOverlay}
+                        onDelete={handleReferenceOverlayDelete}
+                        onChange={handleReferenceOverlayChange}
+                    />
+                )}
             </Box>
         </Box>
     );

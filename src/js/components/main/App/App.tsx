@@ -13,12 +13,36 @@ import {
     saveStylingTheme,
     setPortalTags,
     setSiteTheme,
-    setPortalIcons
+    setPortalIcons,
+    setReferenceOverlay
 } from "../../../store/actions";
 import { PortalTag, PortalTagRaw } from "../../../store/types";
+import { createReferenceOverlayFromFile, getFirstImageFromClipboard } from "../../../utils/referenceOverlay";
 
 export const App = () => {
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        const handlePaste = (event: ClipboardEvent) => {
+            const imageFile = getFirstImageFromClipboard(event);
+            if (!imageFile) {
+                return;
+            }
+            event.preventDefault();
+            event.stopPropagation();
+            createReferenceOverlayFromFile(imageFile).then((overlay) => {
+                if (overlay) {
+                    dispatch(setReferenceOverlay(overlay));
+                }
+            });
+        };
+
+        window.addEventListener("paste", handlePaste, true);
+
+        return () => {
+            window.removeEventListener("paste", handlePaste, true);
+        };
+    }, [dispatch]);
 
     useEffect(() => {
         const loadPages = async () => {

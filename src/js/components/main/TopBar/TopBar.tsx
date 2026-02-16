@@ -3,14 +3,15 @@ import {
     Button,
     Divider,
     IconButton,
+    Input,
     Popover,
     TextField,
     Tooltip,
     Typography
 } from "@mui/material";
-import { Code, SellOutlined, EditOutlined, BiotechRounded, FormatColorFillRounded } from "@mui/icons-material";
+import { Code, Colorize, EditOutlined, SellOutlined, ImageOutlined, BiotechRounded, FormatColorFillRounded } from "@mui/icons-material";
 import IonIcon from "@reacticons/ionicons";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RgbaColorPicker } from "react-colorful";
 import type { RgbaColor } from "react-colorful";
@@ -23,8 +24,10 @@ import {
     toggleCodeEditorSidebar,
     toggleTestSidebar,
     setPortalTagsEnabled,
-    setPreviewBackgroundColor
+    setPreviewBackgroundColor,
+    setReferenceOverlay
 } from "../../../store/actions";
+import { createReferenceOverlayFromFile } from "../../../utils/referenceOverlay";
 import { TagsDialog } from "./TagsDialog/TagsDialog";
 
 // Helper functions for color conversion
@@ -50,7 +53,7 @@ const DEFAULT_PREVIEW_BACKGROUND_COLOR = "rgba(255, 255, 255, 1)";
 
 export const TopBar = () => {
     const dispatch = useDispatch();
-    const { zoom, viewport, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor } =
+    const { zoom, viewport, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor, referenceOverlay } =
         useSelector((state: RootState) => state.app);
     const [tagsDialogOpen, setTagsDialogOpen] = useState(false);
     const [bgColorAnchorEl, setBgColorAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -61,6 +64,7 @@ export const TopBar = () => {
         `#${rgbaStringToRgbaColor(previewBackgroundColor).r.toString(16).padStart(2, "0")}${rgbaStringToRgbaColor(previewBackgroundColor).g.toString(16).padStart(2, "0")}${rgbaStringToRgbaColor(previewBackgroundColor).b.toString(16).padStart(2, "0")}`
     );
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const imageInputRef = useRef<HTMLInputElement | null>(null);
 
     const bgColorPickerOpen = Boolean(bgColorAnchorEl);
 
@@ -150,6 +154,58 @@ export const TopBar = () => {
         setLocalBgColor(defaultColor);
         setHexInput(`#${defaultColor.r.toString(16).padStart(2, "0")}${defaultColor.g.toString(16).padStart(2, "0")}${defaultColor.b.toString(16).padStart(2, "0")}`);
         dispatch(setPreviewBackgroundColor(DEFAULT_PREVIEW_BACKGROUND_COLOR));
+    };
+
+    const isEyeDropperSupported =
+        typeof window !== "undefined" && "EyeDropper" in window;
+
+    const handleBgColorEyedropperClick = async () => {
+        if (!isEyeDropperSupported) return;
+        try {
+            const EyeDropperConstructor = (window as unknown as { EyeDropper: new () => { open: () => Promise<{ sRGBHex: string }> } }).EyeDropper;
+            const eyeDropper = new EyeDropperConstructor();
+            const result = await eyeDropper.open();
+            const hex = result.sRGBHex;
+            const hexMatch = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            if (hexMatch) {
+                const newColor = {
+                    r: parseInt(hexMatch[1], 16),
+                    g: parseInt(hexMatch[2], 16),
+                    b: parseInt(hexMatch[3], 16),
+                    a: localBgColor.a
+                };
+                setLocalBgColor(newColor);
+                setHexInput(`#${hexMatch[1]}${hexMatch[2]}${hexMatch[3]}`);
+                if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                }
+                dispatch(setPreviewBackgroundColor(rgbaColorToRgbaString(newColor)));
+            }
+        } catch {
+            // User cancelled or error - ignore
+        }
+    };
+
+    const handleImageFile = useCallback(async (file: File) => {
+        const overlay = await createReferenceOverlayFromFile(file);
+        if (!overlay) {
+            return;
+        }
+        dispatch(setReferenceOverlay(overlay));
+    }, [dispatch]);
+
+    const handleOpenImagePicker = () => {
+        imageInputRef.current?.click();
+    };
+
+    const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        await handleImageFile(file);
+        event.target.value = "";
     };
 
     return (
@@ -249,6 +305,19 @@ export const TopBar = () => {
                     }}
                 >
                     <FormatColorFillRounded fontSize="small" />
+                </IconButton>
+            </Tooltip>
+
+            <Tooltip title={referenceOverlay ? "Change Reference Image" : "Add Reference Image"}>
+                <IconButton
+                    size="small"
+                    onClick={handleOpenImagePicker}
+                    sx={{
+                        color: referenceOverlay ? "primary.main" : "rgba(0,0,0,0.6)",
+                        bgcolor: referenceOverlay ? "primary.50" : "transparent"
+                    }}
+                >
+                    <ImageOutlined fontSize="small" />
                 </IconButton>
             </Tooltip>
 
@@ -549,6 +618,20 @@ export const TopBar = () => {
                                 sx={{ flex: 1 }}
                                 placeholder="#000000"
                             />
+                            {isEyeDropperSupported && (
+                                <Tooltip title="Pick color from page">
+                                    <span>
+                                        <IconButton
+                                            size="small"
+                                            onClick={handleBgColorEyedropperClick}
+                                            sx={{ p: 0.5 }}
+                                            aria-label="Pick color from page"
+                                        >
+                                            <Colorize fontSize="small" />
+                                        </IconButton>
+                                    </span>
+                                </Tooltip>
+                            )}
                         </Box>
                     </Box>
                     <Box>
@@ -572,6 +655,13 @@ export const TopBar = () => {
                     </Box>
                 </Box>
             </Popover>
+            <Input
+                inputRef={imageInputRef}
+                type="file"
+                inputProps={{ accept: "image/*" }}
+                onChange={handleImageChange}
+                sx={{ display: "none" }}
+            />
         </Box>
     );
 };

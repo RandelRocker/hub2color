@@ -27,7 +27,7 @@ import {
     Button
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Colorize, MoreVert, Restore, RestartAlt } from "@mui/icons-material";
+import { Colorize, MoreHoriz, Restore, RestartAlt } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { RgbaColorPicker } from "react-colorful";
@@ -3556,7 +3556,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                             onClick={(e) => handleFieldMenuOpen(e, field)}
                             sx={{ opacity: 0.7, "&:hover": { opacity: 1 } }}
                         >
-                            <MoreVert fontSize="small" />
+                            <MoreHoriz fontSize="small" />
                         </IconButton>
                     </Tooltip>
                 </Box>

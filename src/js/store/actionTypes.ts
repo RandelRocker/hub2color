@@ -1,4 +1,4 @@
-import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState } from "./types";
 import { ActionTypes } from "./constants";
 
 export interface SetPagesAction {
@@ -136,6 +136,11 @@ export interface SetPortalIconsAction {
     payload: Record<string, string>;
 }
 
+export interface SetReferenceOverlayAction {
+    type: ActionTypes.SET_REFERENCE_OVERLAY;
+    payload: ReferenceOverlayState | null;
+}
+
 export type AppAction =
     | SetPagesAction
     | SetCurrentPageAction
@@ -164,4 +169,5 @@ export type AppAction =
     | SetPortalTagsEnabledAction
     | SetPreviewBackgroundColorAction
     | SetSiteThemeAction
-    | SetPortalIconsAction;
+    | SetPortalIconsAction
+    | SetReferenceOverlayAction;

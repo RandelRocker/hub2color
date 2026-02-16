@@ -33,6 +33,7 @@ const initialState: AppState = {
     themeName: null,
     themeUrl: null,
     portalIcons: {},
+    referenceOverlay: null,
 };
 
 export const appReducer = (
@@ -307,6 +308,9 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_PORTAL_ICONS:
                 draft.portalIcons = action.payload;
+                break;
+            case ActionTypes.SET_REFERENCE_OVERLAY:
+                draft.referenceOverlay = action.payload;
                 break;
         }
     });

@@ -120,6 +120,24 @@ export interface PortalTagRaw {
     conditionIds: string[];
 }
 
+export interface ReferenceOverlayDimensions {
+    width: number;
+    height: number;
+}
+
+export interface ReferenceOverlayPosition {
+    x: number;
+    y: number;
+}
+
+export interface ReferenceOverlayState {
+    imageSrc: string;
+    naturalSize: ReferenceOverlayDimensions;
+    size: ReferenceOverlayDimensions;
+    position: ReferenceOverlayPosition;
+    opacity: number;
+}
+
 export interface AppState {
     pages: PageSection[];
     currentPage: string | null;
@@ -148,4 +166,5 @@ export interface AppState {
     themeName: string | null;
     themeUrl: string | null;
     portalIcons: Record<string, string>;
+    referenceOverlay: ReferenceOverlayState | null;
 }
