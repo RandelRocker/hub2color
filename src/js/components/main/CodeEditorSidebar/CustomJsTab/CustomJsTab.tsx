@@ -1,11 +1,30 @@
 import { useEffect, useState, useRef, forwardRef, useImperativeHandle } from "react";
-import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert, Button } from "@mui/material";
+import {
+    Box,
+    Typography,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Alert,
+    Button,
+    Tabs,
+    Tab,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    CircularProgress
+} from "@mui/material";
 import Editor, { loader } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../../store";
 import { setCustomJs } from "../../../../store/actions";
+
+import { useTagsByType } from "../hooks/useTagsByType";
 
 interface CustomJsTabProps {
     dialogOpen: boolean;
@@ -24,7 +43,11 @@ export const CustomJsTab = forwardRef<CustomJsTabHandle, CustomJsTabProps>(({ di
     const [tagName, setTagName] = useState("");
     const [tagDescription, setTagDescription] = useState("");
     const [validationError, setValidationError] = useState<string | null>(null);
-    
+    const [dialogTabIndex, setDialogTabIndex] = useState(0);
+    const [selectedTagId, setSelectedTagId] = useState("");
+
+    const { tags, loading } = useTagsByType("custom_js", dialogOpen);
+
     useEffect(() => {
         setLocalJs(customJs);
     }, [customJs]);
@@ -72,15 +95,27 @@ export const CustomJsTab = forwardRef<CustomJsTabHandle, CustomJsTabProps>(({ di
         setLocalJs(value);
     };
 
+    useEffect(() => {
+        if (dialogOpen) {
+            setDialogTabIndex(0);
+            setSelectedTagId("");
+        }
+    }, [dialogOpen]);
+
     const handleDialogClose = () => {
         setTagName("");
         setTagDescription("");
+        setDialogTabIndex(0);
+        setSelectedTagId("");
         onDialogClose();
     };
 
     const handleCreateTag = () => {
-        // Here you would typically make an API call to create the tag
-        // For now, we'll just update the store with the JS
+        dispatch(setCustomJs(localJs));
+        handleDialogClose();
+    };
+
+    const handleUpdateTag = () => {
         dispatch(setCustomJs(localJs));
         handleDialogClose();
     };
@@ -146,51 +181,104 @@ export const CustomJsTab = forwardRef<CustomJsTabHandle, CustomJsTabProps>(({ di
             </Box>
 
             <Dialog open={dialogOpen} onClose={handleDialogClose} maxWidth="sm" fullWidth>
-                <DialogTitle>Create custom JavaScript tag</DialogTitle>
-                <DialogContent sx={{ p: 1.5 }}>
-                    <Box sx={{ mb: 1.5 }}>
-                        <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
-                            Tag name
-                        </Typography>
-                        <TextField
-                            autoFocus
-                            size="small"
-                            fullWidth
-                            variant="outlined"
-                            value={tagName}
-                            onChange={(e) => setTagName(e.target.value)}
-                            slotProps={{
-                                input: {
-                                    sx: { fontSize: "0.875rem" }
-                                }
-                            }}
-                        />
-                    </Box>
-                    <Box>
-                        <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
-                            Tag description
-                        </Typography>
-                        <TextField
-                            size="small"
-                            fullWidth
-                            variant="outlined"
-                            multiline
-                            rows={3}
-                            value={tagDescription}
-                            onChange={(e) => setTagDescription(e.target.value)}
-                            slotProps={{
-                                input: {
-                                    sx: { fontSize: "0.875rem" }
-                                }
-                            }}
-                        />
+                <DialogTitle>Custom JavaScript tag</DialogTitle>
+                <DialogContent sx={{ p: 0 }}>
+                    <Tabs
+                        value={dialogTabIndex}
+                        onChange={(_, value) => setDialogTabIndex(value)}
+                        sx={{ borderBottom: 1, borderColor: "divider", px: 1.5 }}
+                    >
+                        <Tab label="Create" />
+                        <Tab label="Update" />
+                    </Tabs>
+                    <Box sx={{ p: 1.5 }}>
+                        {dialogTabIndex === 0 && (
+                            <>
+                                <Box sx={{ mb: 1.5 }}>
+                                    <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                        Tag name
+                                    </Typography>
+                                    <TextField
+                                        autoFocus
+                                        size="small"
+                                        fullWidth
+                                        variant="outlined"
+                                        value={tagName}
+                                        onChange={(e) => setTagName(e.target.value)}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                    />
+                                </Box>
+                                <Box>
+                                    <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
+                                        Tag description
+                                    </Typography>
+                                    <TextField
+                                        size="small"
+                                        fullWidth
+                                        variant="outlined"
+                                        multiline
+                                        rows={3}
+                                        value={tagDescription}
+                                        onChange={(e) => setTagDescription(e.target.value)}
+                                        slotProps={{
+                                            input: {
+                                                sx: { fontSize: "0.875rem" }
+                                            }
+                                        }}
+                                    />
+                                </Box>
+                            </>
+                        )}
+                        {dialogTabIndex === 1 && (
+                            <Box>
+                                {loading ? (
+                                    <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
+                                        <CircularProgress size={24} />
+                                    </Box>
+                                ) : tags.length === 0 ? (
+                                    <Typography color="text.secondary" variant="body2">
+                                        No tags available
+                                    </Typography>
+                                ) : (
+                                    <FormControl fullWidth size="small">
+                                        <InputLabel id="custom-js-tag-select-label">Tag</InputLabel>
+                                        <Select
+                                            labelId="custom-js-tag-select-label"
+                                            value={selectedTagId}
+                                            label="Tag"
+                                            onChange={(e) => setSelectedTagId(e.target.value)}
+                                        >
+                                            {tags.map((tag) => (
+                                                <MenuItem key={tag.tagId} value={tag.tagId}>
+                                                    {tag.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                )}
+                            </Box>
+                        )}
                     </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleDialogClose}>Cancel</Button>
-                    <Button onClick={handleCreateTag} variant="contained" disabled={!tagName.trim()}>
-                        Create
-                    </Button>
+                    {dialogTabIndex === 0 ? (
+                        <Button onClick={handleCreateTag} variant="contained" disabled={!tagName.trim()}>
+                            Create
+                        </Button>
+                    ) : (
+                        <Button
+                            onClick={handleUpdateTag}
+                            variant="contained"
+                            disabled={!selectedTagId || tags.length === 0}
+                        >
+                            Update
+                        </Button>
+                    )}
                 </DialogActions>
             </Dialog>
         </Box>

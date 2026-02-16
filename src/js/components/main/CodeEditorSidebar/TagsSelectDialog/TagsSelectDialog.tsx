@@ -16,8 +16,10 @@ import {
     Typography
 } from "@mui/material";
 
-import * as config from "../../../../../../config";
 import { CustomHtmlPayload } from "../../../../store/types";
+
+import { useTagsByType } from "../hooks/useTagsByType";
+import { TagFromApi } from "../types";
 
 interface TagsSelectDialogProps {
     open: boolean;
@@ -26,49 +28,15 @@ interface TagsSelectDialogProps {
     onTagSelect: (value: string | CustomHtmlPayload) => void;
 }
 
-interface TagFromApi {
-    tagId: string;
-    tagTypeId: string;
-    name: string;
-    description: string;
-    config: {
-        style?: string;
-        code?: string;
-        beforeEndHead?: string;
-        beforeEndBody?: string;
-        [key: string]: unknown;
-    };
-}
-
 export const TagsSelectDialog = ({ open, onClose, tagTypeId, onTagSelect }: TagsSelectDialogProps) => {
-    const [loading, setLoading] = useState(false);
-    const [tags, setTags] = useState<TagFromApi[]>([]);
+    const { tags, loading } = useTagsByType(tagTypeId, open);
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         if (open) {
             setSearchQuery("");
-            loadTags();
         }
     }, [open]);
-
-    const loadTags = async () => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/config/tags.json`);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch tags: ${response.status}`);
-            }
-            const data = await response.json();
-            // Filter tags by tagTypeId
-            const filteredTags = (data.tags || []).filter((tag: TagFromApi) => tag.tagTypeId === tagTypeId);
-            setTags(filteredTags);
-        } catch (error) {
-            console.error("Failed to load tags:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const getFilteredTags = () => {
         if (!searchQuery.trim()) {
