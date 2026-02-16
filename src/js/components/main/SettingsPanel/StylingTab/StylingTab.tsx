@@ -27,7 +27,7 @@ import {
     Button
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { MoreVert, Restore, RestartAlt } from "@mui/icons-material";
+import { Colorize, MoreVert, Restore, RestartAlt } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { RgbaColorPicker } from "react-colorful";
@@ -457,6 +457,30 @@ const DebouncedColorPicker = ({
         setAnchorEl(null);
     };
 
+    const isEyeDropperSupported =
+        typeof window !== "undefined" && "EyeDropper" in window;
+
+    const handleEyedropperClick = async () => {
+        if (disabled || !isEyeDropperSupported) return;
+        try {
+            const EyeDropperConstructor = (window as unknown as { EyeDropper: new () => { open: () => Promise<{ sRGBHex: string }> } }).EyeDropper;
+            const eyeDropper = new EyeDropperConstructor();
+            const result = await eyeDropper.open();
+            const hex = result.sRGBHex;
+            const hexMatch = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            if (hexMatch) {
+                updateColor({
+                    r: parseInt(hexMatch[1], 16),
+                    g: parseInt(hexMatch[2], 16),
+                    b: parseInt(hexMatch[3], 16),
+                    a: localColor.a
+                });
+            }
+        } catch {
+            // User cancelled or error - ignore
+        }
+    };
+
     const displayColor = rgbaColorToRgbaString(localColor);
 
     return (
@@ -564,6 +588,24 @@ const DebouncedColorPicker = ({
                                 sx={{ flex: 1 }}
                                 placeholder="#000000"
                             />
+                            {isEyeDropperSupported && (
+                                <Tooltip title="Pick color from page">
+                                    <span>
+                                        <IconButton
+                                            size="small"
+                                            onClick={handleEyedropperClick}
+                                            disabled={disabled}
+                                            sx={{
+                                                p: 0.5,
+                                                opacity: disabled ? 0.5 : 1
+                                            }}
+                                            aria-label="Pick color from page"
+                                        >
+                                            <Colorize fontSize="small" />
+                                        </IconButton>
+                                    </span>
+                                </Tooltip>
+                            )}
                         </Box>
                     </Box>
                     <Box>
