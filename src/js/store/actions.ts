@@ -82,6 +82,11 @@ export const setViewport = (viewport: "desktop" | "tablet" | "mobile") => ({
     payload: viewport,
 });
 
+export const setViewportRotated = (viewportRotated: boolean) => ({
+    type: ActionTypes.SET_VIEWPORT_ROTATED,
+    payload: viewportRotated,
+});
+
 export const setDirection = (direction: "ltr" | "rtl") => ({
     type: ActionTypes.SET_DIRECTION,
     payload: direction,

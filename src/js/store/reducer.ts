@@ -5,12 +5,13 @@ import { AppAction } from "./actionTypes";
 
 const initialState: AppState = {
     pages: [],
-    currentPage: 'components/sitesettings/typography/typography.html',
+    currentPage: 'components/maincomponents/responsiblegaming/singlebetlimit/singlebetlimit.html',
     customCss: "",
     customJs: "",
     customHtml: { beforeEndHead: "", beforeEndBody: "" },
     zoom: 1,
     viewport: "desktop",
+    viewportRotated: false,
     direction: "ltr",
     panelDock: "bottom",
     codeEditorSidebarOpen: false,
@@ -259,6 +260,9 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_VIEWPORT:
                 draft.viewport = action.payload;
+                break;
+            case ActionTypes.SET_VIEWPORT_ROTATED:
+                draft.viewportRotated = action.payload;
                 break;
             case ActionTypes.SET_DIRECTION:
                 draft.direction = action.payload;

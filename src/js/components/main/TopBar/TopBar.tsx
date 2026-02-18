@@ -9,7 +9,7 @@ import {
     Tooltip,
     Typography
 } from "@mui/material";
-import { Code, Colorize, EditOutlined, SellOutlined, ImageOutlined, BiotechRounded, FormatColorFillRounded } from "@mui/icons-material";
+import { Code, Colorize, EditOutlined, FormatColorFillRounded, ImageOutlined, BiotechRounded, ScreenRotation, SellOutlined } from "@mui/icons-material";
 import IonIcon from "@reacticons/ionicons";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -18,14 +18,15 @@ import type { RgbaColor } from "react-colorful";
 
 import { RootState } from "../../../store";
 import {
-    setZoom,
-    setViewport,
     setDirection,
-    toggleCodeEditorSidebar,
-    toggleTestSidebar,
     setPortalTagsEnabled,
     setPreviewBackgroundColor,
-    setReferenceOverlay
+    setReferenceOverlay,
+    setViewport,
+    setViewportRotated,
+    setZoom,
+    toggleCodeEditorSidebar,
+    toggleTestSidebar
 } from "../../../store/actions";
 import { createReferenceOverlayFromFile } from "../../../utils/referenceOverlay";
 import { TagsDialog } from "./TagsDialog/TagsDialog";
@@ -53,7 +54,7 @@ const DEFAULT_PREVIEW_BACKGROUND_COLOR = "rgba(255, 255, 255, 1)";
 
 export const TopBar = () => {
     const dispatch = useDispatch();
-    const { zoom, viewport, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor, referenceOverlay } =
+    const { zoom, viewport, viewportRotated, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor, referenceOverlay } =
         useSelector((state: RootState) => state.app);
     const [tagsDialogOpen, setTagsDialogOpen] = useState(false);
     const [bgColorAnchorEl, setBgColorAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -405,6 +406,34 @@ export const TopBar = () => {
                         <IonIcon
                             name="phone-portrait-outline"
                             style={{
+                                display: "flex",
+                                alignItems: "center"
+                            }}
+                        />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Rotate screen">
+                    <IconButton
+                        size="small"
+                        onClick={() =>
+                            viewport !== "desktop" && dispatch(setViewportRotated(!viewportRotated))
+                        }
+                        aria-label="rotate screen"
+                        sx={{
+                            color:
+                                viewport !== "desktop" && viewportRotated
+                                    ? "primary.main"
+                                    : "rgba(0,0,0,0.8)",
+                            bgcolor:
+                                viewport !== "desktop" && viewportRotated
+                                    ? "primary.50"
+                                    : "transparent"
+                        }}
+                    >
+                        <ScreenRotation
+                            sx={{
+                                width: '0.8em',
+                                height: '0.8em',
                                 display: "flex",
                                 alignItems: "center"
                             }}

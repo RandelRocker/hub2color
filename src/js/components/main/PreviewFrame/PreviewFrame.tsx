@@ -20,6 +20,7 @@ export const PreviewFrame = () => {
         pages,
         zoom,
         viewport,
+        viewportRotated,
         direction,
         customCss,
         customJs,
@@ -580,6 +581,10 @@ export const PreviewFrame = () => {
         sendMessageToFrame("PORTAL_INFO_UPDATE", { themeName, themeUrl });
     }, [themeName, themeUrl, sendMessageToFrame]);
 
+    useEffect(() => {
+        sendMessageToFrame("ORIENTATION_CHANGE");
+    }, [viewportRotated, sendMessageToFrame]);
+
     // Listen for PORTAL_READY message from iframe
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
@@ -602,9 +607,9 @@ export const PreviewFrame = () => {
     const getViewportWidth = () => {
         switch (viewport) {
             case "mobile":
-                return 375;
+                return viewportRotated ? 812 : 375;
             case "tablet":
-                return 768;
+                return viewportRotated ? 1024 : 768;
             default:
                 return "100%";
         }
@@ -613,9 +618,9 @@ export const PreviewFrame = () => {
     const getViewportHeight = () => {
         switch (viewport) {
             case "mobile":
-                return 812;
+                return viewportRotated ? 375 : 812;
             case "tablet":
-                return 1024;
+                return viewportRotated ? 768 : 1024;
             default:
                 return "100%";
         }

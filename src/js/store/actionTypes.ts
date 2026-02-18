@@ -83,6 +83,11 @@ export interface SetViewportAction {
     payload: "desktop" | "tablet" | "mobile";
 }
 
+export interface SetViewportRotatedAction {
+    type: ActionTypes.SET_VIEWPORT_ROTATED;
+    payload: boolean;
+}
+
 export interface SetDirectionAction {
     type: ActionTypes.SET_DIRECTION;
     payload: "ltr" | "rtl";
@@ -158,6 +163,7 @@ export type AppAction =
     | SetCustomHtmlAction
     | SetZoomAction
     | SetViewportAction
+    | SetViewportRotatedAction
     | SetDirectionAction
     | SetPanelDockAction
     | ToggleCodeEditorSidebarAction

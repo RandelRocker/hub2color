@@ -153,6 +153,7 @@ export interface AppState {
     customHtml: CustomHtmlPayload;
     zoom: number;
     viewport: "desktop" | "tablet" | "mobile";
+    viewportRotated: boolean;
     direction: "ltr" | "rtl";
     panelDock: "bottom";
     codeEditorSidebarOpen: boolean;
