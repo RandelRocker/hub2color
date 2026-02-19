@@ -11,6 +11,21 @@ export interface PageSection {
     items: PageItem[];
 }
 
+export interface SchemaMock {
+    requestId: number;
+    description: string;
+    response: unknown;
+}
+
+export type ServerResponseType = "success" | "error";
+
+export interface ServerResponsesMockConfig {
+    requestId: number;
+    response: unknown;
+    responseType: ServerResponseType;
+    delay?: number;
+}
+
 export interface ControlField {
     id: string;
     label: string;
@@ -90,6 +105,7 @@ export interface StyleSchema {
 export interface ComponentSchema {
     controls: ControlField[];
     styles: (StyleField | StyleGroup)[];
+    mocks?: SchemaMock[];
 }
 
 export interface PortalTagCondition {
@@ -144,6 +160,7 @@ export interface AppState {
     componentSchema: ComponentSchema | null;
     controlsTabValues: ControlsTabValues;
     controlsTabDefaultValues: ControlsTabValues;
+    serverResponsesMocks: ServerResponsesMockConfig[];
     styleTabValues: StylingTabValues;
     styleTabDefaultValues: Record<string, unknown>;
     savedTheme: TStoredThemeStyles | null;

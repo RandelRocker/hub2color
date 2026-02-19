@@ -3,6 +3,7 @@ import {
     useCallback,
     useRef,
     useEffect,
+    useMemo,
     lazy,
     Suspense
 } from "react";
@@ -50,10 +51,19 @@ const StylingTab = lazy(() =>
         return { default: module.StylingTab };
     })
 );
+const ServerResponsesTab = lazy(() =>
+    import(
+        /* webpackChunkName: "server-responses-tab" */ "./ServerResponsesTab/ServerResponsesTab"
+    ).then((module) => {
+        return { default: module.ServerResponsesTab };
+    })
+);
 
 const MIN_HEIGHT = 320;
 const MAX_HEIGHT = 600;
 const DEFAULT_HEIGHT = MIN_HEIGHT;
+
+type SettingsTabKey = "controls" | "styling" | "serverResponses";
 
 export const SettingsPanel = () => {
     const dispatch = useDispatch();
@@ -61,38 +71,51 @@ export const SettingsPanel = () => {
         (state: RootState) => state.app
     );
     
-    // Check if controls and styles are empty
+    // Check if each tab is available
     const hasControls = componentSchema?.controls && componentSchema.controls.length > 0;
     const hasStyles = componentSchema?.styles && componentSchema.styles.length > 0;
-    
-    // Map tab indices: 0 = Controls, 1 = Styling
-    // When tabs are hidden, MUI Tabs will re-index automatically
-    const [activeTab, setActiveTab] = useState(0);
-    
-    // Determine which logical tab (Controls=0, Styling=1) is active based on visible tabs
-    const getLogicalTab = useCallback((tabIndex: number): number | null => {
-        if (hasControls && hasStyles) {
-            return tabIndex; // 0 = Controls, 1 = Styling
-        } else if (hasControls) {
-            return tabIndex === 0 ? 0 : null; // Only Controls
-        } else if (hasStyles) {
-            return tabIndex === 0 ? 1 : null; // Only Styling
+    const hasServerResponses = useMemo(() => {
+        if (typeof window === "undefined") {
+            return false;
         }
-        return null;
-    }, [hasControls, hasStyles]);
-    
-    // Adjust activeTab if current tab is hidden
-    useEffect(() => {
-        const logicalTab = getLogicalTab(activeTab);
-        if (logicalTab === null) {
-            // Current tab is hidden, switch to first available
+
+        const isServerResponsesTabEnabled =
+            localStorage.getItem("isServerResponsesTabEnabled") !== null;
+        const hasMocksSchema = Array.isArray(componentSchema?.mocks);
+
+        return isServerResponsesTabEnabled && hasMocksSchema;
+    }, [componentSchema?.mocks]);
+
+    const visibleTabs = useMemo(
+        () => {
+            const tabs: { key: SettingsTabKey; label: string }[] = [];
+
             if (hasControls) {
-                setActiveTab(0);
-            } else if (hasStyles) {
-                setActiveTab(0);
+                tabs.push({ key: "controls", label: "Controls" });
             }
+
+            if (hasStyles) {
+                tabs.push({ key: "styling", label: "Styling" });
+            }
+
+            if (hasServerResponses) {
+                tabs.push({ key: "serverResponses", label: "Server responses" });
+            }
+
+            return tabs;
+        },
+        [hasControls, hasServerResponses, hasStyles]
+    );
+
+    const [activeTab, setActiveTab] = useState(0);
+
+    useEffect(() => {
+        if (activeTab >= visibleTabs.length && visibleTabs.length > 0) {
+            setActiveTab(0);
         }
-    }, [hasControls, hasStyles, activeTab, getLogicalTab]);
+    }, [activeTab, visibleTabs.length]);
+
+    const activeTabConfig = visibleTabs[activeTab];
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(
         null
@@ -219,8 +242,8 @@ export const SettingsPanel = () => {
         handleMenuClose();
     };
 
-    // Hide the entire panel if both tabs are not available
-    if (!hasControls && !hasStyles) {
+    // Hide the entire panel if no tabs are available
+    if (visibleTabs.length === 0) {
         return null;
     }
 
@@ -323,15 +346,16 @@ export const SettingsPanel = () => {
                                 }
                             }}
                         >
-                            {hasControls && <Tab label="Controls" />}
-                            {hasStyles && <Tab label="Styling" />}
+                            {visibleTabs.map((tab) => (
+                                <Tab key={tab.key} label={tab.label} />
+                            ))}
                         </Tabs>
                     </Box>
 
                     <Box
                         sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
                     >
-                        {getLogicalTab(activeTab) === 1 && (
+                        {activeTabConfig?.key === "styling" && (
                             <>
                                 <Tooltip title="Filter Styles">
                                     <IconButton
@@ -477,11 +501,18 @@ export const SettingsPanel = () => {
                         }
                     >
                         {(() => {
-                            const logicalTab = getLogicalTab(activeTab);
-                            if (logicalTab === 0 && hasControls) {
+                            if (activeTabConfig?.key === "controls" && hasControls) {
                                 return <ControlsTab />;
-                            } else if (logicalTab === 1 && hasStyles) {
+                            } else if (
+                                activeTabConfig?.key === "styling" &&
+                                hasStyles
+                            ) {
                                 return <StylingTab stylesFilter={stylesFilter} />;
+                            } else if (
+                                activeTabConfig?.key === "serverResponses" &&
+                                hasServerResponses
+                            ) {
+                                return <ServerResponsesTab />;
                             }
                             return null;
                         })()}

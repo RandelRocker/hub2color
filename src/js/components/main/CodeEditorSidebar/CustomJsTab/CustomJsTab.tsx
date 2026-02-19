@@ -175,7 +175,10 @@ export const CustomJsTab = forwardRef<CustomJsTabHandle, CustomJsTabProps>(({ di
                         lineNumbersMinChars: 2,
                         lineDecorationsWidth: 0,
                         scrollBeyondLastLine: false,
-                        renderLineHighlight: "gutter"
+                        renderLineHighlight: "gutter",
+                        stickyScroll: {
+                            enabled: false
+                        }
                     }}
                 />
             </Box>

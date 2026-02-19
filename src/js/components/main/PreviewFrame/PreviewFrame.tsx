@@ -29,6 +29,7 @@ export const PreviewFrame = () => {
         styleTabValues,
         savedTheme,
         controlsTabValues,
+        serverResponsesMocks,
         portalTags,
         portalTagsEnabled,
         previewBackgroundColor,
@@ -553,6 +554,10 @@ export const PreviewFrame = () => {
 
         sendMessageToFrame("CONTROLS_CHANGE", { values: processedValues });
     }, [controlsTabValues, sendMessageToFrame]);
+
+    useEffect(() => {
+        sendMessageToFrame("MOCKS_CHANGE", serverResponsesMocks);
+    }, [serverResponsesMocks, sendMessageToFrame]);
 
     useEffect(() => {
         if (styleTabValues) {

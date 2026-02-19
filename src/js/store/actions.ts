@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -28,6 +28,11 @@ export const updateControlsTabValues = (values: ControlsTabValues) => ({
 export const updateStylingTabValues = (values: StylingTabValues) => ({
     type: ActionTypes.UPDATE_STYLE_TAB_VALUES,
     payload: values,
+});
+
+export const setServerResponsesMocks = (mocks: ServerResponsesMockConfig[]) => ({
+    type: ActionTypes.SET_SERVER_RESPONSES_MOCKS,
+    payload: mocks,
 });
 
 export const updateStylingTabValuesWithDefault = (values: StylingTabValues) => ({

@@ -1,4 +1,4 @@
-import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig } from "./types";
 import { ActionTypes } from "./constants";
 
 export interface SetPagesAction {
@@ -24,6 +24,11 @@ export interface UpdateControlsTabValuesAction {
 export interface UpdateStyleTabValuesAction {
     type: ActionTypes.UPDATE_STYLE_TAB_VALUES;
     payload: StylingTabValues;
+}
+
+export interface SetServerResponsesMocksAction {
+    type: ActionTypes.SET_SERVER_RESPONSES_MOCKS;
+    payload: ServerResponsesMockConfig[];
 }
 
 export interface UpdateStyleTabValuesWithDefaultAction {
@@ -152,6 +157,7 @@ export type AppAction =
     | SetComponentSchemaAction
     | UpdateStyleTabValuesAction
     | UpdateControlsTabValuesAction
+    | SetServerResponsesMocksAction
     | UpdateStyleTabValuesWithDefaultAction
     | SetStylingTabUIStateAction
     | UpdateStyleTabToDefaultValuesAction

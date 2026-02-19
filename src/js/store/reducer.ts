@@ -24,6 +24,7 @@ const initialState: AppState = {
     componentSchema: null,
     controlsTabValues: {},
     controlsTabDefaultValues: {},
+    serverResponsesMocks: [],
     styleTabValues: {},
     styleTabDefaultValues: {},
     portalTags: [],
@@ -60,6 +61,7 @@ export const appReducer = (
                 draft.componentSchema = action.payload;
                 draft.controlsTabValues = {},
                 draft.controlsTabDefaultValues = {},
+                draft.serverResponsesMocks = [];
                 draft.styleTabValues = {},
                 draft.styleTabDefaultValues = {};
 
@@ -121,6 +123,10 @@ export const appReducer = (
                 });
                 break;
             }
+
+            case ActionTypes.SET_SERVER_RESPONSES_MOCKS:
+                draft.serverResponsesMocks = action.payload;
+                break;
 
             case ActionTypes.UPDATE_STYLE_TAB_VALUES_WITH_DEFAULT: {
                 draft.styleTabDefaultValues = {

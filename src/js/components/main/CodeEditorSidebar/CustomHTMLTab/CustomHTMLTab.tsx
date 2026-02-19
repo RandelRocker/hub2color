@@ -227,7 +227,10 @@ export const CustomHTMLTab = forwardRef<
                                 lineNumbersMinChars: 2,
                                 lineDecorationsWidth: 0,
                                 scrollBeyondLastLine: false,
-                                renderLineHighlight: "gutter"
+                                renderLineHighlight: "gutter",
+                                stickyScroll: {
+                                    enabled: false
+                                }
                             }}
                         />
                     </Box>
@@ -267,7 +270,10 @@ export const CustomHTMLTab = forwardRef<
                                 lineNumbersMinChars: 2,
                                 lineDecorationsWidth: 0,
                                 scrollBeyondLastLine: false,
-                                renderLineHighlight: "gutter"
+                                renderLineHighlight: "gutter",
+                                stickyScroll: {
+                                    enabled: false
+                                }
                             }}
                         />
                     </Box>
