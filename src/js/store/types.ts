@@ -15,6 +15,8 @@ export interface SchemaMock {
     requestId: number;
     description: string;
     response: unknown;
+    responseType?: ServerResponseType;
+    delay?: number;
 }
 
 export type ServerResponseType = "success" | "error";
@@ -24,6 +26,16 @@ export interface ServerResponsesMockConfig {
     response: unknown;
     responseType: ServerResponseType;
     delay?: number;
+}
+
+export interface ServerResponseFormItem {
+    requestId: number;
+    description: string;
+    isEnabled: boolean;
+    responseType: ServerResponseType;
+    responseDelay: string;
+    responseBody: string;
+    responseBodyError: string | null;
 }
 
 export interface ControlField {
@@ -161,6 +173,8 @@ export interface AppState {
     controlsTabValues: ControlsTabValues;
     controlsTabDefaultValues: ControlsTabValues;
     serverResponsesMocks: ServerResponsesMockConfig[];
+    serverResponsesTabFormItems: ServerResponseFormItem[];
+    serverResponsesTabExpandedAccordions: string[];
     styleTabValues: StylingTabValues;
     styleTabDefaultValues: Record<string, unknown>;
     savedTheme: TStoredThemeStyles | null;

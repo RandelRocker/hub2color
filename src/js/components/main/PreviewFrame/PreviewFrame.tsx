@@ -520,7 +520,7 @@ export const PreviewFrame = () => {
         if (currentPage) {
             loadComponentSchema(currentPage);
         }
-    }, [currentPage, loadComponentSchema]);
+    }, [currentPage, loadComponentSchema, dispatch]);
 
     useEffect(() => {
         sendMessageToFrame("DIR_CHANGE", { dir: direction });
@@ -631,6 +631,11 @@ export const PreviewFrame = () => {
         }
     };
 
+    const viewportWidthPx =
+        viewport === "desktop" ? undefined : (getViewportWidth() as number);
+    const viewportHeightPx =
+        viewport === "desktop" ? undefined : (getViewportHeight() as number);
+
     const getIframeSrc = () => {
         if (!currentPage) return "";
 
@@ -688,51 +693,65 @@ export const PreviewFrame = () => {
         <Box
             sx={{
                 flex: 1,
+                minHeight: 0,
                 bgcolor: "#f5f5f5",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "visible"
+                overflow: "auto"
             }}
         >
             <Box
                 sx={{
-                    width: getViewportWidth(),
-                    height: getViewportHeight(),
-                    transform: `scale(${zoom})`,
-                    position: "relative",
-                    overflow: "visible",
-                    transformOrigin: "center center"
+                    ...(viewport === "desktop"
+                        ? { width: "100%", height: "100%" }
+                        : {
+                              minWidth: `max(100%, ${viewportWidthPx}px)`,
+                              minHeight: `max(100%, ${viewportHeightPx}px)`
+                          }),
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0
                 }}
             >
                 <Box
                     sx={{
-                        inset: 0,
-                        overflow: "hidden",
-                        position: "absolute",
-                        bgcolor: previewBackgroundColor
+                        width: getViewportWidth(),
+                        height: getViewportHeight(),
+                        flexShrink: 0,
+                        transform: `scale(${zoom})`,
+                        position: "relative",
+                        overflow: "visible",
+                        transformOrigin: "center center"
                     }}
                 >
-                    <iframe
-                        ref={iframeRef}
-                        src={getIframeSrc()}
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            border: "none",
-                            display: "block"
+                    <Box
+                        sx={{
+                            inset: 0,
+                            overflow: "hidden",
+                            position: "absolute",
+                            bgcolor: previewBackgroundColor
                         }}
-                        title="Component Preview"
-                    />
-                </Box>
+                    >
+                        <iframe
+                            ref={iframeRef}
+                            src={getIframeSrc()}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                border: "none",
+                                display: "block"
+                            }}
+                            title="Component Preview"
+                        />
+                    </Box>
 
-                {referenceOverlay && (
-                    <ReferenceOverlay
-                        overlay={referenceOverlay}
-                        onDelete={handleReferenceOverlayDelete}
-                        onChange={handleReferenceOverlayChange}
-                    />
-                )}
+                    {referenceOverlay && (
+                        <ReferenceOverlay
+                            overlay={referenceOverlay}
+                            onDelete={handleReferenceOverlayDelete}
+                            onChange={handleReferenceOverlayChange}
+                        />
+                    )}
+                </Box>
             </Box>
         </Box>
     );

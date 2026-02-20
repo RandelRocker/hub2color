@@ -25,6 +25,8 @@ const initialState: AppState = {
     controlsTabValues: {},
     controlsTabDefaultValues: {},
     serverResponsesMocks: [],
+    serverResponsesTabFormItems: [],
+    serverResponsesTabExpandedAccordions: [],
     styleTabValues: {},
     styleTabDefaultValues: {},
     portalTags: [],
@@ -62,6 +64,8 @@ export const appReducer = (
                 draft.controlsTabValues = {},
                 draft.controlsTabDefaultValues = {},
                 draft.serverResponsesMocks = [];
+                draft.serverResponsesTabFormItems = [];
+                draft.serverResponsesTabExpandedAccordions = [];
                 draft.styleTabValues = {},
                 draft.styleTabDefaultValues = {};
 
@@ -126,6 +130,14 @@ export const appReducer = (
 
             case ActionTypes.SET_SERVER_RESPONSES_MOCKS:
                 draft.serverResponsesMocks = action.payload;
+                break;
+
+            case ActionTypes.SET_SERVER_RESPONSES_TAB_FORM_ITEMS:
+                draft.serverResponsesTabFormItems = action.payload;
+                break;
+
+            case ActionTypes.SET_SERVER_RESPONSES_TAB_EXPANDED_ACCORDIONS:
+                draft.serverResponsesTabExpandedAccordions = action.payload;
                 break;
 
             case ActionTypes.UPDATE_STYLE_TAB_VALUES_WITH_DEFAULT: {

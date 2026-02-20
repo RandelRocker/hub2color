@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig, ServerResponseFormItem } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -33,6 +33,16 @@ export const updateStylingTabValues = (values: StylingTabValues) => ({
 export const setServerResponsesMocks = (mocks: ServerResponsesMockConfig[]) => ({
     type: ActionTypes.SET_SERVER_RESPONSES_MOCKS,
     payload: mocks,
+});
+
+export const setServerResponsesTabFormItems = (formItems: ServerResponseFormItem[]) => ({
+    type: ActionTypes.SET_SERVER_RESPONSES_TAB_FORM_ITEMS,
+    payload: formItems,
+});
+
+export const setServerResponsesTabExpandedAccordions = (expandedAccordions: string[]) => ({
+    type: ActionTypes.SET_SERVER_RESPONSES_TAB_EXPANDED_ACCORDIONS,
+    payload: expandedAccordions,
 });
 
 export const updateStylingTabValuesWithDefault = (values: StylingTabValues) => ({

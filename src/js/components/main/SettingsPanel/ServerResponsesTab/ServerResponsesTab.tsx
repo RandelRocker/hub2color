@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
@@ -16,10 +16,15 @@ import {
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 
-import { setServerResponsesMocks } from "../../../../store/actions";
+import {
+    setServerResponsesMocks,
+    setServerResponsesTabExpandedAccordions,
+    setServerResponsesTabFormItems
+} from "../../../../store/actions";
 import { RootState } from "../../../../store";
 
 import {
+    areServerResponsePayloadsEqual,
     buildServerResponsePayload,
     formatResponseForEditor,
     isValidDelayInput,
@@ -58,34 +63,76 @@ const fieldRowSx = {
 export const ServerResponsesTab = () => {
     const dispatch = useDispatch();
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const { componentSchema } = useSelector((state: RootState) => state.app);
-    const [formItems, setFormItems] = useState<ServerResponseFormItem[]>([]);
-    const [expandedAccordions, setExpandedAccordions] = useState<string[]>([]);
+    const {
+        componentSchema,
+        serverResponsesMocks,
+        serverResponsesTabFormItems,
+        serverResponsesTabExpandedAccordions
+    } =
+        useSelector((state: RootState) => state.app);
+    const formItems = useMemo(
+        () => serverResponsesTabFormItems ?? [],
+        [serverResponsesTabFormItems]
+    );
+    const expandedAccordions = useMemo(
+        () => serverResponsesTabExpandedAccordions ?? [],
+        [serverResponsesTabExpandedAccordions]
+    );
+    const lastSentPayloadRef = useRef(serverResponsesMocks);
 
     useEffect(() => {
         const mocks = componentSchema?.mocks ?? [];
-        const nextItems = mocks.map((mock) => ({
-            requestId: mock.requestId,
-            description: mock.description,
-            isEnabled: false,
-            responseType: "success" as const,
-            responseDelay: "0",
-            responseBody: formatResponseForEditor(mock.response),
-            responseBodyError: null
-        }));
 
-        setFormItems(nextItems);
-        dispatch(setServerResponsesMocks([]));
-        setExpandedAccordions([]);
-    }, [componentSchema, dispatch]);
+        if (mocks.length === 0) {
+            return;
+        }
+
+        const formItemsMatchSchema =
+            formItems.length === mocks.length &&
+            formItems.every((item, i) => item.requestId === mocks[i].requestId);
+
+        if (!formItemsMatchSchema) {
+            const nextItems = mocks.map((mock) => ({
+                requestId: mock.requestId,
+                description: mock.description,
+                isEnabled: false,
+                responseType: mock.responseType ?? "success",
+                responseDelay:
+                    typeof mock.delay === "number" &&
+                    Number.isFinite(mock.delay) &&
+                    mock.delay > 0
+                        ? String(mock.delay)
+                        : "0",
+                responseBody: formatResponseForEditor(mock.response),
+                responseBodyError: null
+            }));
+
+            dispatch(setServerResponsesTabFormItems(nextItems));
+        }
+    }, [componentSchema, dispatch, formItems]);
+
+    useEffect(() => {
+        lastSentPayloadRef.current = serverResponsesMocks;
+    }, [serverResponsesMocks]);
 
     useEffect(() => {
         if (debounceRef.current) {
             clearTimeout(debounceRef.current);
+            debounceRef.current = null;
+        }
+
+        const nextPayload =
+            formItems.length === 0
+                ? []
+                : buildServerResponsePayload(formItems);
+
+        if (areServerResponsePayloadsEqual(lastSentPayloadRef.current, nextPayload)) {
+            return;
         }
 
         debounceRef.current = setTimeout(() => {
-            dispatch(setServerResponsesMocks(buildServerResponsePayload(formItems)));
+            lastSentPayloadRef.current = nextPayload;
+            dispatch(setServerResponsesMocks(nextPayload));
         }, DISPATCH_DEBOUNCE_MS);
 
         return () => {
@@ -99,11 +146,9 @@ export const ServerResponsesTab = () => {
         index: number,
         updater: (prev: ServerResponseFormItem) => ServerResponseFormItem
     ) => {
-        setFormItems((prev) => {
-            const next = [...prev];
-            next[index] = updater(prev[index]);
-            return next;
-        });
+        const next = [...formItems];
+        next[index] = updater(formItems[index]);
+        dispatch(setServerResponsesTabFormItems(next));
     };
 
     const handleMockEnabledChange = (index: number, checked: boolean) => {
@@ -146,11 +191,11 @@ export const ServerResponsesTab = () => {
         String(item.requestId);
 
     const handleAccordionChange = (accordionId: string) => {
-        setExpandedAccordions((prev) =>
-            prev.includes(accordionId)
-                ? prev.filter((id) => id !== accordionId)
-                : [...prev, accordionId]
-        );
+        const next = expandedAccordions.includes(accordionId)
+            ? expandedAccordions.filter((id) => id !== accordionId)
+            : [...expandedAccordions, accordionId];
+
+        dispatch(setServerResponsesTabExpandedAccordions(next));
     };
 
     if (!componentSchema || !Array.isArray(componentSchema.mocks)) {

@@ -63,3 +63,26 @@ export const buildServerResponsePayload = (
         return acc;
     }, []);
 };
+
+export const areServerResponsePayloadsEqual = (
+    prevPayload: ServerResponsesMockConfig[],
+    nextPayload: ServerResponsesMockConfig[]
+): boolean => {
+    if (prevPayload.length !== nextPayload.length) {
+        return false;
+    }
+
+    return prevPayload.every((prevItem, index) => {
+        const nextItem = nextPayload[index];
+
+        if (
+            prevItem.requestId !== nextItem.requestId ||
+            prevItem.responseType !== nextItem.responseType ||
+            prevItem.delay !== nextItem.delay
+        ) {
+            return false;
+        }
+
+        return JSON.stringify(prevItem.response) === JSON.stringify(nextItem.response);
+    });
+};
