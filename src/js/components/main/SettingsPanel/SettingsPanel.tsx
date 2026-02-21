@@ -81,7 +81,9 @@ export const SettingsPanel = () => {
 
         const isServerResponsesTabEnabled =
             localStorage.getItem("isServerResponsesTabEnabled") !== null;
-        const hasMocksSchema = Array.isArray(componentSchema?.mocks);
+        const mocks = componentSchema?.mocks;
+        const hasMocksSchema =
+            Array.isArray(mocks) && mocks.length > 0;
 
         return isServerResponsesTabEnabled && hasMocksSchema;
     }, [componentSchema?.mocks]);

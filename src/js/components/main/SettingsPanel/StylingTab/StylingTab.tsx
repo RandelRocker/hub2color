@@ -1703,6 +1703,22 @@ const DebouncedBoxShadowPicker = ({
         setAnchorEl(null);
     };
 
+    const isEyeDropperSupported =
+        typeof window !== "undefined" && "EyeDropper" in window;
+
+    const handleEyedropperClick = async () => {
+        if (disabled || !isEyeDropperSupported) return;
+        try {
+            const EyeDropperConstructor = (window as unknown as { EyeDropper: new () => { open: () => Promise<{ sRGBHex: string }> } }).EyeDropper;
+            const eyeDropper = new EyeDropperConstructor();
+            const result = await eyeDropper.open();
+            const hex = result.sRGBHex;
+            handleColorChange(hexToRgba(hex, localAlpha));
+        } catch {
+            // User cancelled or error - ignore
+        }
+    };
+
     const currentValue = value || "0px 0px 0px 0px rgba(0, 0, 0, 0.5)";
     const displayText = formatBoxShadowString(currentValue);
     const boxShadowValue = `${localHorizontal || "0"}px ${localVertical || "0"}px ${localBlur || "0"}px ${localSpread || "0"}px ${localColor || "rgba(0, 0, 0, 0.5)"}`;
@@ -2021,6 +2037,24 @@ const DebouncedBoxShadowPicker = ({
                                     }}
                                     placeholder="#000000"
                                 />
+                                {isEyeDropperSupported && (
+                                    <Tooltip title="Pick color from page">
+                                        <span>
+                                            <IconButton
+                                                size="small"
+                                                onClick={handleEyedropperClick}
+                                                disabled={disabled}
+                                                sx={{
+                                                    p: 0.5,
+                                                    opacity: disabled ? 0.5 : 1
+                                                }}
+                                                aria-label="Pick color from page"
+                                            >
+                                                <Colorize fontSize="small" />
+                                            </IconButton>
+                                        </span>
+                                    </Tooltip>
+                                )}
                             </Box>
                         </Box>
                         <Box>
@@ -2164,6 +2198,22 @@ const DebouncedTextShadowPicker = ({
 
     const handlePopoverClose = () => {
         setAnchorEl(null);
+    };
+
+    const isEyeDropperSupported =
+        typeof window !== "undefined" && "EyeDropper" in window;
+
+    const handleEyedropperClick = async () => {
+        if (disabled || !isEyeDropperSupported) return;
+        try {
+            const EyeDropperConstructor = (window as unknown as { EyeDropper: new () => { open: () => Promise<{ sRGBHex: string }> } }).EyeDropper;
+            const eyeDropper = new EyeDropperConstructor();
+            const result = await eyeDropper.open();
+            const hex = result.sRGBHex;
+            handleColorChange(hexToRgba(hex, localAlpha));
+        } catch {
+            // User cancelled or error - ignore
+        }
     };
 
     const currentValue = value || "0px 0px 0px #000000";
@@ -2447,6 +2497,24 @@ const DebouncedTextShadowPicker = ({
                                     }}
                                     placeholder="#000000"
                                 />
+                                {isEyeDropperSupported && (
+                                    <Tooltip title="Pick color from page">
+                                        <span>
+                                            <IconButton
+                                                size="small"
+                                                onClick={handleEyedropperClick}
+                                                disabled={disabled}
+                                                sx={{
+                                                    p: 0.5,
+                                                    opacity: disabled ? 0.5 : 1
+                                                }}
+                                                aria-label="Pick color from page"
+                                            >
+                                                <Colorize fontSize="small" />
+                                            </IconButton>
+                                        </span>
+                                    </Tooltip>
+                                )}
                             </Box>
                         </Box>
                         <Box>
@@ -2591,6 +2659,22 @@ const DebouncedBorderPicker = ({
 
     const handlePopoverClose = () => {
         setAnchorEl(null);
+    };
+
+    const isEyeDropperSupported =
+        typeof window !== "undefined" && "EyeDropper" in window;
+
+    const handleEyedropperClick = async () => {
+        if (disabled || !isEyeDropperSupported) return;
+        try {
+            const EyeDropperConstructor = (window as unknown as { EyeDropper: new () => { open: () => Promise<{ sRGBHex: string }> } }).EyeDropper;
+            const eyeDropper = new EyeDropperConstructor();
+            const result = await eyeDropper.open();
+            const hex = result.sRGBHex;
+            handleColorChange(hexToRgba(hex, localAlpha));
+        } catch {
+            // User cancelled or error - ignore
+        }
     };
 
     const currentValue = value || "1px solid #000000";
@@ -2841,6 +2925,24 @@ const DebouncedBorderPicker = ({
                                     }}
                                     placeholder="#000000"
                                 />
+                                {isEyeDropperSupported && (
+                                    <Tooltip title="Pick color from page">
+                                        <span>
+                                            <IconButton
+                                                size="small"
+                                                onClick={handleEyedropperClick}
+                                                disabled={disabled}
+                                                sx={{
+                                                    p: 0.5,
+                                                    opacity: disabled ? 0.5 : 1
+                                                }}
+                                                aria-label="Pick color from page"
+                                            >
+                                                <Colorize fontSize="small" />
+                                            </IconButton>
+                                        </span>
+                                    </Tooltip>
+                                )}
                             </Box>
                         </Box>
                         <Box>

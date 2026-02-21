@@ -32,6 +32,7 @@ export const ReferenceOverlay = ({ overlay, onChange, onDelete }: ReferenceOverl
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const rafScheduledRef = useRef(false);
     const lastPointerRef = useRef({ clientX: 0, clientY: 0 });
+    const lockAspectRatioRef = useRef(false);
 
     const [isSelected, setIsSelected] = useState(false);
     const [isInteracting, setIsInteracting] = useState(false);
@@ -78,7 +79,8 @@ export const ReferenceOverlay = ({ overlay, onChange, onDelete }: ReferenceOverl
                 interaction.startOverlay,
                 interaction.handle,
                 deltaX,
-                deltaY
+                deltaY,
+                lockAspectRatioRef.current
             );
             setLiveTransform({ position: next.position, size: next.size });
         }
@@ -91,6 +93,9 @@ export const ReferenceOverlay = ({ overlay, onChange, onDelete }: ReferenceOverl
         }
 
         lastPointerRef.current = { clientX: event.clientX, clientY: event.clientY };
+        if (interaction.mode === "resize") {
+            lockAspectRatioRef.current = event.metaKey || event.shiftKey;
+        }
 
         if (!rafScheduledRef.current) {
             rafScheduledRef.current = true;
@@ -114,7 +119,8 @@ export const ReferenceOverlay = ({ overlay, onChange, onDelete }: ReferenceOverl
                               interaction.startOverlay,
                               interaction.handle,
                               deltaX,
-                              deltaY
+                              deltaY,
+                              lockAspectRatioRef.current
                           )
                         : overlay;
             onChange(finalOverlay);
@@ -154,6 +160,7 @@ export const ReferenceOverlay = ({ overlay, onChange, onDelete }: ReferenceOverl
         setIsSelected(true);
         setMenuAnchorEl(null);
 
+        lastPointerRef.current = { clientX: event.clientX, clientY: event.clientY };
         interactionRef.current = {
             mode: "drag",
             startMouseX: event.clientX,
@@ -174,6 +181,8 @@ export const ReferenceOverlay = ({ overlay, onChange, onDelete }: ReferenceOverl
         setIsSelected(true);
         setMenuAnchorEl(null);
 
+        lastPointerRef.current = { clientX: event.clientX, clientY: event.clientY };
+        lockAspectRatioRef.current = event.metaKey || event.shiftKey;
         interactionRef.current = {
             mode: "resize",
             handle,
@@ -320,19 +329,32 @@ export const ReferenceOverlay = ({ overlay, onChange, onDelete }: ReferenceOverl
                         </IconButton>
                     </Tooltip>
 
-                    {RESIZE_HANDLES.map((handle) => (
-                        <Box
-                            key={handle}
-                            onMouseDown={(event: React.MouseEvent<HTMLDivElement>) =>
-                                startResize(handle, event)
-                            }
-                            sx={{
-                                zIndex: 5,
-                                cursor: getHandleCursor(handle),
-                                ...getHandleStyles(handle)
-                            }}
-                        />
-                    ))}
+                    {RESIZE_HANDLES.map((handle) => {
+                        const handleBox = (
+                            <Box
+                                key={handle}
+                                onMouseDown={(event: React.MouseEvent<HTMLDivElement>) =>
+                                    startResize(handle, event)
+                                }
+                                sx={{
+                                    zIndex: 5,
+                                    cursor: getHandleCursor(handle),
+                                    ...getHandleStyles(handle)
+                                }}
+                            />
+                        );
+                        return handle === "se" ? (
+                            <Tooltip
+                                key={handle}
+                                title="Hold ⌘ or Shift while dragging to keep aspect ratio"
+                                placement="top"
+                            >
+                                {handleBox}
+                            </Tooltip>
+                        ) : (
+                            handleBox
+                        );
+                    })}
                 </>
             )}
 

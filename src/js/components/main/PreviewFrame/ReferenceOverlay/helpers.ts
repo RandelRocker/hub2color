@@ -69,12 +69,12 @@ export const getNextDragOverlay = (
     };
 };
 
-export const getNextResizeOverlay = (
+const getNextResizeOverlayUnlocked = (
     overlay: ReferenceOverlayState,
     handle: ResizeHandle,
     deltaX: number,
     deltaY: number
-): ReferenceOverlayState => {
+): { nextX: number; nextY: number; nextWidth: number; nextHeight: number } => {
     let nextX = overlay.position.x;
     let nextY = overlay.position.y;
     let nextWidth = overlay.size.width;
@@ -97,15 +97,49 @@ export const getNextResizeOverlay = (
         nextY = Math.round(overlay.position.y + (overlay.size.height - nextHeight));
     }
 
+    return { nextX, nextY, nextWidth, nextHeight };
+};
+
+export const getNextResizeOverlay = (
+    overlay: ReferenceOverlayState,
+    handle: ResizeHandle,
+    deltaX: number,
+    deltaY: number,
+    lockAspectRatio = false
+): ReferenceOverlayState => {
+    const { nextX, nextY, nextWidth, nextHeight } = getNextResizeOverlayUnlocked(
+        overlay,
+        handle,
+        deltaX,
+        deltaY
+    );
+
+    if (!lockAspectRatio) {
+        return {
+            ...overlay,
+            position: { x: nextX, y: nextY },
+            size: { width: nextWidth, height: nextHeight }
+        };
+    }
+
+    const scaleW = nextWidth / overlay.size.width;
+    const scaleH = nextHeight / overlay.size.height;
+    const scale = (scaleW + scaleH) / 2;
+    const lockedWidth = clampSize(overlay.size.width * scale);
+    const lockedHeight = clampSize(overlay.size.height * scale);
+
+    let finalX = nextX;
+    let finalY = nextY;
+    if (handle.includes("w")) {
+        finalX = Math.round(overlay.position.x + (overlay.size.width - lockedWidth));
+    }
+    if (handle.includes("n")) {
+        finalY = Math.round(overlay.position.y + (overlay.size.height - lockedHeight));
+    }
+
     return {
         ...overlay,
-        position: {
-            x: nextX,
-            y: nextY
-        },
-        size: {
-            width: nextWidth,
-            height: nextHeight
-        }
+        position: { x: finalX, y: finalY },
+        size: { width: lockedWidth, height: lockedHeight }
     };
 };
