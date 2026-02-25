@@ -164,3 +164,7 @@ export const setReferenceOverlay = (overlay: ReferenceOverlayState | null) => ({
     type: ActionTypes.SET_REFERENCE_OVERLAY,
     payload: overlay,
 });
+
+export const refreshIframe = () => ({
+    type: ActionTypes.REFRESH_IFRAME,
+});

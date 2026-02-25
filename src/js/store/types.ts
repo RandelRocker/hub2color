@@ -12,6 +12,7 @@ export interface PageSection {
 }
 
 export interface SchemaMock {
+    url: string;
     requestId: number;
     description: string;
     response: unknown;
@@ -22,6 +23,7 @@ export interface SchemaMock {
 export type ServerResponseType = "success" | "error";
 
 export interface ServerResponsesMockConfig {
+    url: string;
     requestId: number;
     response: unknown;
     responseType: ServerResponseType;
@@ -29,6 +31,7 @@ export interface ServerResponsesMockConfig {
 }
 
 export interface ServerResponseFormItem {
+    url: string;
     requestId: number;
     description: string;
     isEnabled: boolean;
@@ -199,4 +202,5 @@ export interface AppState {
     themeUrl: string | null;
     portalIcons: Record<string, string>;
     referenceOverlay: ReferenceOverlayState | null;
+    iframeRefreshKey: number;
 }

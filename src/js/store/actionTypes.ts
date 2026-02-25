@@ -161,6 +161,10 @@ export interface SetReferenceOverlayAction {
     payload: ReferenceOverlayState | null;
 }
 
+export interface RefreshIframeAction {
+    type: ActionTypes.REFRESH_IFRAME;
+}
+
 export type AppAction =
     | SetPagesAction
     | SetCurrentPageAction
@@ -194,4 +198,5 @@ export type AppAction =
     | SetPreviewBackgroundColorAction
     | SetSiteThemeAction
     | SetPortalIconsAction
-    | SetReferenceOverlayAction;
+    | SetReferenceOverlayAction
+    | RefreshIframeAction;

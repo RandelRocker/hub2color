@@ -35,7 +35,8 @@ export const PreviewFrame = () => {
         previewBackgroundColor,
         themeName,
         themeUrl,
-        referenceOverlay
+        referenceOverlay,
+        iframeRefreshKey
     } = useSelector((state: RootState) => state.app);
 
     const handleReferenceOverlayChange = useCallback((nextOverlay: NonNullable<typeof referenceOverlay>) => {
@@ -520,7 +521,7 @@ export const PreviewFrame = () => {
         if (currentPage) {
             loadComponentSchema(currentPage);
         }
-    }, [currentPage, loadComponentSchema, dispatch]);
+    }, [currentPage, loadComponentSchema, dispatch, iframeRefreshKey]);
 
     useEffect(() => {
         sendMessageToFrame("DIR_CHANGE", { dir: direction });
@@ -732,6 +733,7 @@ export const PreviewFrame = () => {
                         }}
                     >
                         <iframe
+                            key={iframeRefreshKey}
                             ref={iframeRef}
                             src={getIframeSrc()}
                             style={{

@@ -89,10 +89,11 @@ export const ServerResponsesTab = () => {
 
         const formItemsMatchSchema =
             formItems.length === mocks.length &&
-            formItems.every((item, i) => item.requestId === mocks[i].requestId);
+            formItems.every((item, i) => item.requestId === mocks[i].requestId && item.url === mocks[i].url);
 
         if (!formItemsMatchSchema) {
             const nextItems = mocks.map((mock) => ({
+                url: mock.url,
                 requestId: mock.requestId,
                 description: mock.description,
                 isEnabled: false,
@@ -242,7 +243,7 @@ export const ServerResponsesTab = () => {
                     const isExpanded = expandedAccordions.includes(accordionId);
 
                     return (
-                        <Box key={item.requestId}>
+                        <Box key={item.url || item.requestId}>
                             <Accordion
                                 expanded={isExpanded}
                                 onChange={() =>
@@ -259,7 +260,7 @@ export const ServerResponsesTab = () => {
                                         variant="subtitle2"
                                         sx={{ fontWeight: 600 }}
                                     >
-                                        {item.requestId} - {item.description}
+                                        {item.url || item.requestId} - {item.description}
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{ p: 0 }}>

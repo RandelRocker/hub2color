@@ -38,6 +38,7 @@ const initialState: AppState = {
     themeUrl: null,
     portalIcons: {},
     referenceOverlay: null,
+    iframeRefreshKey: 0,
 };
 
 export const appReducer = (
@@ -333,6 +334,9 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_REFERENCE_OVERLAY:
                 draft.referenceOverlay = action.payload;
+                break;
+            case ActionTypes.REFRESH_IFRAME:
+                draft.iframeRefreshKey = draft.iframeRefreshKey + 1;
                 break;
         }
     });

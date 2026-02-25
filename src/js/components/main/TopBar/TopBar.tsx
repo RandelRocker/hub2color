@@ -9,7 +9,7 @@ import {
     Tooltip,
     Typography
 } from "@mui/material";
-import { Code, Colorize, EditOutlined, FormatColorFillRounded, ImageOutlined, BiotechRounded, ScreenRotation, SellOutlined } from "@mui/icons-material";
+import { Code, Colorize, EditOutlined, FormatColorFillRounded, ImageOutlined, BiotechRounded, OpenInNewRounded, RefreshRounded, ScreenRotation, SellOutlined } from "@mui/icons-material";
 import IonIcon from "@reacticons/ionicons";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -17,7 +17,9 @@ import { RgbaColorPicker } from "react-colorful";
 import type { RgbaColor } from "react-colorful";
 
 import { RootState } from "../../../store";
+import * as config from "../../../../../config";
 import {
+    refreshIframe,
     setDirection,
     setPortalTagsEnabled,
     setPreviewBackgroundColor,
@@ -54,7 +56,7 @@ const DEFAULT_PREVIEW_BACKGROUND_COLOR = "rgba(255, 255, 255, 1)";
 
 export const TopBar = () => {
     const dispatch = useDispatch();
-    const { zoom, viewport, viewportRotated, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor, referenceOverlay } =
+    const { zoom, viewport, viewportRotated, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor, referenceOverlay, currentPage } =
         useSelector((state: RootState) => state.app);
     const [tagsDialogOpen, setTagsDialogOpen] = useState(false);
     const [bgColorAnchorEl, setBgColorAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -209,6 +211,24 @@ export const TopBar = () => {
         event.target.value = "";
     };
 
+    const handleRefreshIframe = () => {
+        dispatch(refreshIframe());
+    };
+
+    const handleOpenInNewTab = () => {
+        if (!currentPage) return;
+
+        let url = `${config.HUB2COLOR_PUBLIC_PATH}/${currentPage}`;
+
+        if (viewport === "mobile") {
+            url += "?hideAdminControls=1&emulate=mobile";
+        } else if (viewport === "tablet") {
+            url += "?hideAdminControls=1&emulate=tablet";
+        }
+
+        window.open(url, "_blank");
+    };
+
     return (
         <Box
             sx={{
@@ -288,6 +308,28 @@ export const TopBar = () => {
                     </IconButton>
                 </Tooltip>
             </Box>
+
+            <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ alignSelf: "center", height: "60%", mx: 1 }}
+            />
+
+            {/* Refresh Iframe */}
+            <Tooltip title="Refresh Preview">
+                <span>
+                    <IconButton
+                        size="small"
+                        onClick={handleRefreshIframe}
+                        disabled={!currentPage}
+                        sx={{
+                            color: "rgba(0,0,0,0.8)"
+                        }}
+                    >
+                        <RefreshRounded fontSize="small" />
+                    </IconButton>
+                </span>
+            </Tooltip>
 
             <Divider
                 orientation="vertical"
@@ -553,6 +595,28 @@ export const TopBar = () => {
                 >
                     <BiotechRounded fontSize="small" />
                 </IconButton>
+            </Tooltip>
+
+            <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ alignSelf: "center", height: "60%", mx: 1 }}
+            />
+
+            {/* Open in New Tab */}
+            <Tooltip title="Open in New Tab">
+                <span>
+                    <IconButton
+                        size="small"
+                        onClick={handleOpenInNewTab}
+                        disabled={!currentPage}
+                        sx={{
+                            color: "rgba(0,0,0,0.8)"
+                        }}
+                    >
+                        <OpenInNewRounded fontSize="small" />
+                    </IconButton>
+                </span>
             </Tooltip>
 
             <TagsDialog

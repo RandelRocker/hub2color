@@ -3000,7 +3000,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
         );
     }, [componentSchema, stylesFilter, enabledCssVariables]);
 
-    const { control, subscribe, getValues, reset } = useForm({
+    const { control, subscribe, reset } = useForm({
         defaultValues: styleTabDefaultValues
     });
 
@@ -3205,7 +3205,10 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
             defaultValue = ""
         } = field;
 
-        const isFieldEnabled = type === "image" || type === "staticImage" ? true : (getValues(`${id}_enabled`) || false);
+        const isFieldEnabled =
+            type === "image" || type === "staticImage"
+                ? true
+                : (styleTabValues?.[field.cssVariable]?.isEnabled ?? false);
 
         switch (type) {
             case "text":
