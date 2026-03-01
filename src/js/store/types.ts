@@ -151,6 +151,16 @@ export interface PortalTagRaw {
     conditionIds: string[];
 }
 
+export interface FontItem {
+    name: string;
+    type: "file" | "import" | "default";
+    fontStyle?: string;
+    fontWeight?: string;
+    fontDisplay?: string;
+    unicodeRange?: string;
+    url?: string;
+}
+
 export interface ReferenceOverlayDimensions {
     width: number;
     height: number;
@@ -203,4 +213,5 @@ export interface AppState {
     portalIcons: Record<string, string>;
     referenceOverlay: ReferenceOverlayState | null;
     iframeRefreshKey: number;
+    fonts: FontItem[];
 }

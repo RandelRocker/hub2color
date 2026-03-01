@@ -1,4 +1,4 @@
-import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig, ServerResponseFormItem } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig, ServerResponseFormItem, FontItem } from "./types";
 import { ActionTypes } from "./constants";
 
 export interface SetPagesAction {
@@ -165,6 +165,11 @@ export interface RefreshIframeAction {
     type: ActionTypes.REFRESH_IFRAME;
 }
 
+export interface SetFontsAction {
+    type: ActionTypes.SET_FONTS;
+    payload: FontItem[];
+}
+
 export type AppAction =
     | SetPagesAction
     | SetCurrentPageAction
@@ -199,4 +204,5 @@ export type AppAction =
     | SetSiteThemeAction
     | SetPortalIconsAction
     | SetReferenceOverlayAction
-    | RefreshIframeAction;
+    | RefreshIframeAction
+    | SetFontsAction;

@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig, ServerResponseFormItem } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig, ServerResponseFormItem, FontItem } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -167,4 +167,9 @@ export const setReferenceOverlay = (overlay: ReferenceOverlayState | null) => ({
 
 export const refreshIframe = () => ({
     type: ActionTypes.REFRESH_IFRAME,
+});
+
+export const setFonts = (fonts: FontItem[]) => ({
+    type: ActionTypes.SET_FONTS,
+    payload: fonts,
 });

@@ -24,10 +24,11 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Button
+    Button,
+    Autocomplete,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Colorize, MoreHoriz, Restore, RestartAlt } from "@mui/icons-material";
+import { Colorize, MoreHoriz, Restore, RestartAlt, Edit as EditIcon } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { RgbaColorPicker } from "react-colorful";
@@ -36,6 +37,7 @@ import type { RgbaColor } from "react-colorful";
 import { RootState } from "../../../../store";
 import { updateStylingTabValues, updateStylingTabValuesWithDefault, setStylingTabUIState, updateStylingTabDefaultValues } from "../../../../store/actions";
 import { StylingTabValues, StyleGroup, StyleField } from "../../../../store/types";
+import { FontManagerDialog } from "./FontManagerDialog/FontManagerDialog";
 
 type StylesFilter = "all" | "colors" | "images" | "changed";
 
@@ -2979,8 +2981,9 @@ const DebouncedBorderPicker = ({
 export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilter }) => {
     const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const { componentSchema, styleTabDefaultValues, styleTabValues, stylingUIState, savedTheme, portalIcons, themeUrl } =
+    const { componentSchema, styleTabDefaultValues, styleTabValues, stylingUIState, savedTheme, portalIcons, themeUrl, fonts } =
         useSelector((state: RootState) => state.app);
+    const [fontManagerDialogOpen, setFontManagerDialogOpen] = useState(false);
 
     const enabledCssVariables = useMemo(() => {
         return new Set(
@@ -3605,6 +3608,59 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                     />
                 );
 
+            case "font":
+                return (
+                    <Controller
+                        name={id}
+                        control={control}
+                        defaultValue={defaultValue}
+                        render={({ field: fieldProps }) => {
+                            const fontNames = fonts.map((f) => f.name);
+
+                            return (
+                                <Box sx={{ display: "flex", gap: 1, alignItems: "center", flex: 1 }}>
+                                    <Autocomplete
+                                        freeSolo
+                                        size="small"
+                                        fullWidth
+                                        options={fontNames}
+                                        value={(fieldProps.value as string) ?? ""}
+                                        disabled={!isFieldEnabled}
+                                        onChange={(_, newValue) => {
+                                            fieldProps.onChange(newValue ?? "");
+                                        }}
+                                        onInputChange={(_, newInputValue, reason) => {
+                                            if (reason === "input") {
+                                                fieldProps.onChange(newInputValue);
+                                            }
+                                        }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                variant="outlined"
+                                                slotProps={{
+                                                    input: {
+                                                        ...params.InputProps,
+                                                        sx: { fontSize: "0.875rem" },
+                                                    },
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                    <Tooltip title="Manage fonts">
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => setFontManagerDialogOpen(true)}
+                                        >
+                                            <EditIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Box>
+                            );
+                        }}
+                    />
+                );
+
             default:
                 return (
                     <Typography variant="caption" color="error">
@@ -3985,6 +4041,12 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                     Reset to Default
                 </MenuItem>
             </Menu>
+
+            <FontManagerDialog
+                open={fontManagerDialogOpen}
+                onClose={() => setFontManagerDialogOpen(false)}
+                fonts={fonts}
+            />
         </Box>
     );
 };

@@ -39,6 +39,7 @@ const initialState: AppState = {
     portalIcons: {},
     referenceOverlay: null,
     iframeRefreshKey: 0,
+    fonts: [],
 };
 
 export const appReducer = (
@@ -337,6 +338,9 @@ export const appReducer = (
                 break;
             case ActionTypes.REFRESH_IFRAME:
                 draft.iframeRefreshKey = draft.iframeRefreshKey + 1;
+                break;
+            case ActionTypes.SET_FONTS:
+                draft.fonts = action.payload;
                 break;
         }
     });

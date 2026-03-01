@@ -14,7 +14,8 @@ import {
     setPortalTags,
     setSiteTheme,
     setPortalIcons,
-    setReferenceOverlay
+    setReferenceOverlay,
+    setFonts
 } from "../../../store/actions";
 import { PortalTag, PortalTagRaw } from "../../../store/types";
 import { createReferenceOverlayFromFile, getFirstImageFromClipboard } from "../../../utils/referenceOverlay";
@@ -162,9 +163,23 @@ export const App = () => {
             }
         };
 
+        const loadFonts = async () => {
+            try {
+                const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/config/get-fonts.json`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch fonts: ${response.status}`);
+                }
+                const data = await response.json();
+                dispatch(setFonts(data));
+            } catch (error) {
+                console.error("Failed to load fonts:", error);
+            }
+        };
+
         loadPages();
         loadSavedStylingTheme();
         loadPortalTag();
+        loadFonts();
         
         // Load site theme first, then use the themeUrl to load icons
         loadSiteTheme().then((themeUrl) => {
