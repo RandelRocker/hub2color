@@ -62,7 +62,7 @@ const DEFAULT_PREVIEW_BACKGROUND_COLOR = "rgba(255, 255, 255, 1)";
 
 export const TopBar = () => {
     const dispatch = useDispatch();
-    const { zoom, viewport, viewportRotated, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor, referenceOverlay, currentPage, savedTheme, showTranslationKeys } =
+    const { zoom, viewport, viewportRotated, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor, referenceOverlay, currentPage, savedTheme, showTranslationKeys, controlsTabValues } =
         useSelector((state: RootState) => state.app);
     const [tagsDialogOpen, setTagsDialogOpen] = useState(false);
     const [bgColorAnchorEl, setBgColorAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -231,11 +231,25 @@ export const TopBar = () => {
         if (!currentPage) return;
 
         let url = `${config.HUB2COLOR_PUBLIC_PATH}/${currentPage}`;
+        const params = new URLSearchParams();
 
         if (viewport === "mobile") {
-            url += "?hideAdminControls=1&emulate=mobile";
+            params.set("hideAdminControls", "1");
+            params.set("emulate", "mobile");
         } else if (viewport === "tablet") {
-            url += "?hideAdminControls=1&emulate=tablet";
+            params.set("hideAdminControls", "1");
+            params.set("emulate", "tablet");
+        }
+
+        Object.entries(controlsTabValues).forEach(([id, value]) => {
+            if (value !== undefined && value !== null) {
+                params.set(`control_${id}`, String(value));
+            }
+        });
+
+        const queryString = params.toString();
+        if (queryString) {
+            url += `?${queryString}`;
         }
 
         window.open(url, "_blank");

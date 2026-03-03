@@ -501,6 +501,8 @@ export const PreviewFrame = () => {
 
         sendMessageToFrame("TOGGLE_SHOW_TRANSLATION_KEYS", showTranslationKeys);
 
+        sendMessageToFrame("MOCKS_CHANGE", serverResponsesMocks);
+
         sendMessageToFrame("CMSR_READY");
     }, [
         currentPage,
@@ -519,13 +521,18 @@ export const PreviewFrame = () => {
         themeName,
         themeUrl,
         showTranslationKeys,
+        serverResponsesMocks,
     ]);
 
     useEffect(() => {
         if (currentPage) {
             loadComponentSchema(currentPage);
         }
-    }, [currentPage, loadComponentSchema, dispatch, iframeRefreshKey]);
+    }, [currentPage, loadComponentSchema, dispatch]);
+
+    useEffect(() => {
+        handleIframeLoad()
+    }, [handleIframeLoad, iframeRefreshKey]);
 
     useEffect(() => {
         sendMessageToFrame("DIR_CHANGE", { dir: direction });
