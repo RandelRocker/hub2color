@@ -40,6 +40,7 @@ const initialState: AppState = {
     referenceOverlay: null,
     iframeRefreshKey: 0,
     fonts: [],
+    showTranslationKeys: false,
 };
 
 export const appReducer = (
@@ -341,6 +342,9 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_FONTS:
                 draft.fonts = action.payload;
+                break;
+            case ActionTypes.SET_SHOW_TRANSLATION_KEYS:
+                draft.showTranslationKeys = action.payload;
                 break;
         }
     });

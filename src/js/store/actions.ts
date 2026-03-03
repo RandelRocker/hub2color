@@ -173,3 +173,8 @@ export const setFonts = (fonts: FontItem[]) => ({
     type: ActionTypes.SET_FONTS,
     payload: fonts,
 });
+
+export const setShowTranslationKeys = (show: boolean) => ({
+    type: ActionTypes.SET_SHOW_TRANSLATION_KEYS,
+    payload: show,
+});

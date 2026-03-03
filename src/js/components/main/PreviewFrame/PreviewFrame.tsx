@@ -36,7 +36,8 @@ export const PreviewFrame = () => {
         themeName,
         themeUrl,
         referenceOverlay,
-        iframeRefreshKey
+        iframeRefreshKey,
+        showTranslationKeys
     } = useSelector((state: RootState) => state.app);
 
     const handleReferenceOverlayChange = useCallback((nextOverlay: NonNullable<typeof referenceOverlay>) => {
@@ -498,6 +499,8 @@ export const PreviewFrame = () => {
         // Send portal theme info
         sendMessageToFrame("PORTAL_INFO_UPDATE", { themeName, themeUrl });
 
+        sendMessageToFrame("TOGGLE_SHOW_TRANSLATION_KEYS", showTranslationKeys);
+
         sendMessageToFrame("CMSR_READY");
     }, [
         currentPage,
@@ -515,6 +518,7 @@ export const PreviewFrame = () => {
         previewBackgroundColor,
         themeName,
         themeUrl,
+        showTranslationKeys,
     ]);
 
     useEffect(() => {
@@ -590,6 +594,10 @@ export const PreviewFrame = () => {
     useEffect(() => {
         sendMessageToFrame("ORIENTATION_CHANGE");
     }, [viewportRotated, sendMessageToFrame]);
+
+    useEffect(() => {
+        sendMessageToFrame("TOGGLE_SHOW_TRANSLATION_KEYS", showTranslationKeys);
+    }, [showTranslationKeys, sendMessageToFrame]);
 
     // Listen for PORTAL_READY message from iframe
     useEffect(() => {

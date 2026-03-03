@@ -4,12 +4,14 @@ import {
     Divider,
     IconButton,
     Input,
+    Menu,
+    MenuItem,
     Popover,
     TextField,
     Tooltip,
     Typography
 } from "@mui/material";
-import { Code, Colorize, EditOutlined, FormatColorFillRounded, ImageOutlined, BiotechRounded, OpenInNewRounded, RefreshRounded, ScreenRotation, SellOutlined } from "@mui/icons-material";
+import { Code, Colorize, EditOutlined, FileDownload, FileUpload, FormatColorFillRounded, ImageOutlined, BiotechRounded, MoreHoriz, OpenInNewRounded, RefreshRounded, ScreenRotation, SellOutlined, Translate } from "@mui/icons-material";
 import IonIcon from "@reacticons/ionicons";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -20,17 +22,21 @@ import { RootState } from "../../../store";
 import * as config from "../../../../../config";
 import {
     refreshIframe,
+    saveStylingTheme,
     setDirection,
     setPortalTagsEnabled,
     setPreviewBackgroundColor,
     setReferenceOverlay,
+    setShowTranslationKeys,
     setViewport,
     setViewportRotated,
     setZoom,
     toggleCodeEditorSidebar,
-    toggleTestSidebar
+    toggleTestSidebar,
+    updateStylingTabToPreviousValues
 } from "../../../store/actions";
 import { createReferenceOverlayFromFile } from "../../../utils/referenceOverlay";
+import { exportThemeToCsv, parseThemeCsv } from "./helpers";
 import { TagsDialog } from "./TagsDialog/TagsDialog";
 
 // Helper functions for color conversion
@@ -56,7 +62,7 @@ const DEFAULT_PREVIEW_BACKGROUND_COLOR = "rgba(255, 255, 255, 1)";
 
 export const TopBar = () => {
     const dispatch = useDispatch();
-    const { zoom, viewport, viewportRotated, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor, referenceOverlay, currentPage } =
+    const { zoom, viewport, viewportRotated, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor, referenceOverlay, currentPage, savedTheme, showTranslationKeys } =
         useSelector((state: RootState) => state.app);
     const [tagsDialogOpen, setTagsDialogOpen] = useState(false);
     const [bgColorAnchorEl, setBgColorAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -68,6 +74,8 @@ export const TopBar = () => {
     );
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const imageInputRef = useRef<HTMLInputElement | null>(null);
+    const themeFileInputRef = useRef<HTMLInputElement | null>(null);
+    const [themeMenuAnchorEl, setThemeMenuAnchorEl] = useState<null | HTMLElement>(null);
 
     const bgColorPickerOpen = Boolean(bgColorAnchorEl);
 
@@ -119,6 +127,10 @@ export const TopBar = () => {
 
     const handlePortalTagsToggle = () => {
         dispatch(setPortalTagsEnabled(!portalTagsEnabled));
+    };
+
+    const handleTranslationKeysToggle = () => {
+        dispatch(setShowTranslationKeys(!showTranslationKeys));
     };
 
     const handleOpenTagsDialog = () => {
@@ -229,6 +241,42 @@ export const TopBar = () => {
         window.open(url, "_blank");
     };
 
+    const handleThemeMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setThemeMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleThemeMenuClose = () => {
+        setThemeMenuAnchorEl(null);
+    };
+
+    const handleExportTheme = () => {
+        exportThemeToCsv(savedTheme);
+        handleThemeMenuClose();
+    };
+
+    const handleImportTheme = () => {
+        themeFileInputRef.current?.click();
+        handleThemeMenuClose();
+    };
+
+    const handleThemeFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const csvContent = e.target?.result as string;
+            if (!csvContent) return;
+
+            const parsed = parseThemeCsv(csvContent);
+            localStorage.setItem("stylingTheme", JSON.stringify(parsed));
+            dispatch(saveStylingTheme(parsed));
+            dispatch(updateStylingTabToPreviousValues());
+        };
+        reader.readAsText(file);
+        event.target.value = "";
+    };
+
     return (
         <Box
             sx={{
@@ -314,7 +362,7 @@ export const TopBar = () => {
                 flexItem
                 sx={{ alignSelf: "center", height: "60%", mx: 1 }}
             />
-            
+
             {/* Direction Toggle */}
             <Tooltip title={`Switch to ${direction === "ltr" ? "RTL" : "LTR"}`}>
                 <IconButton
@@ -603,6 +651,26 @@ export const TopBar = () => {
                 sx={{ alignSelf: "center", height: "60%", mx: 1 }}
             /> */}
 
+            {/* Translation Keys Toggle */}
+            <Tooltip title={showTranslationKeys ? "Hide Translation Keys" : "Show Translation Keys"}>
+                <IconButton
+                    size="small"
+                    onClick={handleTranslationKeysToggle}
+                    sx={{
+                        color: showTranslationKeys ? "primary.main" : "rgba(0,0,0,0.8)",
+                        bgcolor: showTranslationKeys ? "primary.50" : "transparent"
+                    }}
+                >
+                    <Translate fontSize="small" />
+                </IconButton>
+            </Tooltip>
+
+            <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ alignSelf: "center", height: "60%", mx: 1 }}
+            />
+
             {/* Open in New Tab */}
             <Tooltip title="Open in New Tab">
                 <span>
@@ -618,6 +686,50 @@ export const TopBar = () => {
                     </IconButton>
                 </span>
             </Tooltip>
+
+            <Box sx={{ flexGrow: 1 }} />
+
+            {/* Theme Options Menu */}
+            <Tooltip title="Theme Options">
+                <IconButton
+                    size="small"
+                    onClick={handleThemeMenuOpen}
+                    sx={{
+                        color: themeMenuAnchorEl ? "primary.main" : "rgba(0,0,0,0.8)",
+                        bgcolor: themeMenuAnchorEl ? "primary.50" : "transparent"
+                    }}
+                >
+                    <MoreHoriz fontSize="small" />
+                </IconButton>
+            </Tooltip>
+            <Menu
+                anchorEl={themeMenuAnchorEl}
+                open={Boolean(themeMenuAnchorEl)}
+                onClose={handleThemeMenuClose}
+                transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right"
+                }}
+                anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right"
+                }}
+            >
+                <MenuItem
+                    onClick={handleExportTheme}
+                    sx={{ fontSize: "0.875rem" }}
+                >
+                    <FileDownload sx={{ mr: 1, fontSize: "1rem" }} />
+                    Export theme
+                </MenuItem>
+                <MenuItem
+                    onClick={handleImportTheme}
+                    sx={{ fontSize: "0.875rem" }}
+                >
+                    <FileUpload sx={{ mr: 1, fontSize: "1rem" }} />
+                    Import theme
+                </MenuItem>
+            </Menu>
 
             <TagsDialog
                 open={tagsDialogOpen}
@@ -753,6 +865,13 @@ export const TopBar = () => {
                 type="file"
                 inputProps={{ accept: "image/*" }}
                 onChange={handleImageChange}
+                sx={{ display: "none" }}
+            />
+            <Input
+                inputRef={themeFileInputRef}
+                type="file"
+                inputProps={{ accept: ".csv" }}
+                onChange={handleThemeFileChange}
                 sx={{ display: "none" }}
             />
         </Box>

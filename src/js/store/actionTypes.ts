@@ -170,6 +170,11 @@ export interface SetFontsAction {
     payload: FontItem[];
 }
 
+export interface SetShowTranslationKeysAction {
+    type: ActionTypes.SET_SHOW_TRANSLATION_KEYS;
+    payload: boolean;
+}
+
 export type AppAction =
     | SetPagesAction
     | SetCurrentPageAction
@@ -205,4 +210,5 @@ export type AppAction =
     | SetPortalIconsAction
     | SetReferenceOverlayAction
     | RefreshIframeAction
-    | SetFontsAction;
+    | SetFontsAction
+    | SetShowTranslationKeysAction;

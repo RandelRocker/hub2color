@@ -3125,7 +3125,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                             const isEnabled = field.type === "image" || field.type === "staticImage" ? true : Boolean(values[enabledKey]);
                             const resolvedValue =
                                 field.type === "staticImage" && themeUrl && (field.defaultValue ?? value)
-                                    ? `https://core3-qa09.mws.playtechgaming.com/${themeUrl}/${field.defaultValue ?? value}` // remove hostname and leave absolute path once moved to real CMS
+                                    ? `/${themeUrl}/${field.defaultValue ?? value}` // remove hostname and leave absolute path once moved to real CMS
                                     : value;
                             stylingTabValues[field.cssVariable] = {
                                 id: field.id,
@@ -3435,7 +3435,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                         defaultValue={defaultValue}
                         render={() => {
                             const iconKey = String(defaultValue ?? "");
-                            const iconUrl = themeUrl ? `https://core3-qa09.mws.playtechgaming.com/${themeUrl}/${defaultValue}` : undefined; // remove hostname and leave absolute path once moved to real CMS
+                            const iconUrl = themeUrl ? `/${themeUrl}/${defaultValue}` : undefined; // remove hostname and leave absolute path once moved to real CMS
 
                             return <PortalIconImagePicker iconUrl={iconUrl} iconKey={iconKey} />;
                         }}
@@ -3571,6 +3571,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                 );
 
             case "padding":
+            case "margin":
                 return (
                     <Controller
                         name={id}

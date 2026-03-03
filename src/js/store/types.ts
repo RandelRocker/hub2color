@@ -214,4 +214,5 @@ export interface AppState {
     referenceOverlay: ReferenceOverlayState | null;
     iframeRefreshKey: number;
     fonts: FontItem[];
+    showTranslationKeys: boolean;
 }

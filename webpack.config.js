@@ -64,6 +64,11 @@ module.exports = (env, argv) => {
                     publicPath: config.HUB2COLOR_CSS_PUBLIC_PATH + '/', // Files in /external-folder/ are ALSO at localhost:8080/
                     watch: true,
                 },
+                {
+                    directory: path.resolve(__dirname, config.PORTAL_IMAGES_MOUNT_FOLDER), 
+                    publicPath: config.HUB2COLOR_IMAGES_PUBLIC_PATH + '/', // Files in /external-folder/ are ALSO at localhost:8080/
+                    watch: true,
+                },
             ],
             port: 3000,
             hot: true,
