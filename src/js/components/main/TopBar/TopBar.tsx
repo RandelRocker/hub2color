@@ -314,6 +314,33 @@ export const TopBar = () => {
                 flexItem
                 sx={{ alignSelf: "center", height: "60%", mx: 1 }}
             />
+            
+            {/* Direction Toggle */}
+            <Tooltip title={`Switch to ${direction === "ltr" ? "RTL" : "LTR"}`}>
+                <IconButton
+                    size="small"
+                    onClick={handleDirectionToggle}
+                    sx={{
+                        color: direction === "rtl" ? "primary.main" : "rgba(0,0,0,0.8)",
+                        bgcolor:
+                            direction === "rtl" ? "primary.50" : "transparent"
+                    }}
+                >
+                    <IonIcon
+                        name="swap-horizontal-outline"
+                        style={{
+                            display: "flex",
+                            alignItems: "center"
+                        }}
+                    />
+                </IconButton>
+            </Tooltip>
+
+            <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ alignSelf: "center", height: "60%", mx: 1 }}
+            />
 
             {/* Refresh Iframe */}
             <Tooltip title="Refresh Preview">
@@ -490,33 +517,6 @@ export const TopBar = () => {
                 sx={{ alignSelf: "center", height: "60%", mx: 1 }}
             />
 
-            {/* Direction Toggle */}
-            <Tooltip title={`Switch to ${direction === "ltr" ? "RTL" : "LTR"}`}>
-                <IconButton
-                    size="small"
-                    onClick={handleDirectionToggle}
-                    sx={{
-                        color: direction === "rtl" ? "primary.main" : "rgba(0,0,0,0.8)",
-                        bgcolor:
-                            direction === "rtl" ? "primary.50" : "transparent"
-                    }}
-                >
-                    <IonIcon
-                        name="swap-horizontal-outline"
-                        style={{
-                            display: "flex",
-                            alignItems: "center"
-                        }}
-                    />
-                </IconButton>
-            </Tooltip>
-
-            <Divider
-                orientation="vertical"
-                flexItem
-                sx={{ alignSelf: "center", height: "60%", mx: 1 }}
-            />
-
             {/* Portal Tags Controls */}
             <Box 
                 sx={{ 
@@ -584,7 +584,7 @@ export const TopBar = () => {
             />
 
             {/* Test Sidebar Toggle */}
-            <Tooltip title="Testing Tools">
+            {/* <Tooltip title="Testing Tools">
                 <IconButton
                     size="small"
                     onClick={handleTestSidebarToggle}
@@ -601,7 +601,7 @@ export const TopBar = () => {
                 orientation="vertical"
                 flexItem
                 sx={{ alignSelf: "center", height: "60%", mx: 1 }}
-            />
+            /> */}
 
             {/* Open in New Tab */}
             <Tooltip title="Open in New Tab">

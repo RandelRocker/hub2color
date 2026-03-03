@@ -134,8 +134,17 @@ const filterStyleItems = (
 };
 
 // Helper functions for color conversion
+const normalizeHexToSix = (hex: string): string => {
+    const three = /^#?([a-f\d])([a-f\d])([a-f\d])$/i.exec(hex);
+    if (three) {
+        return `#${three[1]}${three[1]}${three[2]}${three[2]}${three[3]}${three[3]}`;
+    }
+    return hex;
+};
+
 const hexToRgba = (hex: string, alpha: number = 1): string => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    const six = normalizeHexToSix(hex);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(six);
     if (result) {
         const r = parseInt(result[1], 16);
         const g = parseInt(result[2], 16);
@@ -165,8 +174,9 @@ const parseColor = (color: string): { hex: string; alpha: number } => {
             return { hex, alpha };
         }
     }
-    // Default to hex color with full opacity
-    return { hex: color || "#000000", alpha: 1 };
+    // Default to hex color with full opacity; normalize so 3-digit (#fff) becomes 6-digit (#ffffff)
+    const hex = color || "#000000";
+    return { hex: normalizeHexToSix(hex), alpha: 1 };
 };
 
 // Convert rgba string to RgbaColor object
