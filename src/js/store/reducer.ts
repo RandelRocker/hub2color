@@ -5,7 +5,7 @@ import { AppAction } from "./actionTypes";
 
 const initialState: AppState = {
     pages: [],
-    currentPage: 'components/maincomponents/responsiblegaming/singlebetlimit/singlebetlimit.html',
+    currentPage: 'components/sitesettings/header/header.html',
     customCss: "",
     customJs: "",
     customHtml: { beforeEndHead: "", beforeEndBody: "" },

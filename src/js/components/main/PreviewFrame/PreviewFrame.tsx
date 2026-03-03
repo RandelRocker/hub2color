@@ -621,7 +621,7 @@ export const PreviewFrame = () => {
     const getViewportWidth = () => {
         switch (viewport) {
             case "mobile":
-                return viewportRotated ? 812 : 375;
+                return viewportRotated ? 812 : 376;
             case "tablet":
                 return viewportRotated ? 1024 : 768;
             default:
@@ -632,7 +632,7 @@ export const PreviewFrame = () => {
     const getViewportHeight = () => {
         switch (viewport) {
             case "mobile":
-                return viewportRotated ? 375 : 812;
+                return viewportRotated ? 376 : 812;
             case "tablet":
                 return viewportRotated ? 768 : 1024;
             default:
