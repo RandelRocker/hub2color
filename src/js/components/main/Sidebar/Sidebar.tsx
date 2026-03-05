@@ -40,13 +40,15 @@ interface MenuItemProps {
     currentPage: string | null;
     onPageSelect: (path: string) => void;
     level?: number;
+    isSearching?: boolean;
 }
 
 const MenuItem = ({
     item,
     currentPage,
     onPageSelect,
-    level = 0
+    level = 0,
+    isSearching = false
 }: MenuItemProps) => {
     const hasChildren = Boolean(item.items?.length);
     const containsCurrentPage = hasChildren && itemContainsPage(item, currentPage);
@@ -59,6 +61,13 @@ const MenuItem = ({
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage]);
+
+    // Auto-expand when search is active (filtered children already match the query)
+    useEffect(() => {
+        if (isSearching && hasChildren) {
+            setExpanded(true);
+        }
+    }, [isSearching, hasChildren]);
 
     const handleClick = () => {
         if (hasChildren) {
@@ -121,6 +130,7 @@ const MenuItem = ({
                                 currentPage={currentPage}
                                 onPageSelect={onPageSelect}
                                 level={level + 1}
+                                isSearching={isSearching}
                             />
                         ))}
                     </List>
@@ -259,11 +269,13 @@ export const Sidebar = () => {
                     <Accordion
                         key={section.sectionTitle}
                         disableGutters
-                        expanded={expandedSections.includes(
-                            section.sectionTitle
-                        )}
+                        expanded={
+                            searchQuery
+                                ? true
+                                : expandedSections.includes(section.sectionTitle)
+                        }
                         onChange={() =>
-                            handleSectionToggle(section.sectionTitle)
+                            !searchQuery && handleSectionToggle(section.sectionTitle)
                         }
                         sx={{
                             boxShadow: "none",
@@ -312,6 +324,7 @@ export const Sidebar = () => {
                                         item={item}
                                         currentPage={currentPage}
                                         onPageSelect={handlePageSelect}
+                                        isSearching={Boolean(searchQuery)}
                                     />
                                 ))}
                             </List>

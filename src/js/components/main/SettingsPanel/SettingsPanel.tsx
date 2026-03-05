@@ -111,13 +111,20 @@ export const SettingsPanel = () => {
 
     const [activeTab, setActiveTab] = useState(0);
 
+    // Clamp to valid index so we never pass invalid value to Tabs (avoids error when
+    // switching from a page with more tabs to one with fewer before effect runs)
+    const safeTabValue = Math.min(
+        activeTab,
+        Math.max(0, visibleTabs.length - 1)
+    );
+
     useEffect(() => {
         if (activeTab >= visibleTabs.length && visibleTabs.length > 0) {
             setActiveTab(0);
         }
     }, [activeTab, visibleTabs.length]);
 
-    const activeTabConfig = visibleTabs[activeTab];
+    const activeTabConfig = visibleTabs[safeTabValue];
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(
         null
@@ -329,7 +336,7 @@ export const SettingsPanel = () => {
                 >
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Tabs
-                            value={activeTab}
+                            value={safeTabValue}
                             onChange={(_, newValue) => {
                                 setActiveTab(newValue);
                                 dispatch(updateStyleSchemaDefaults());
