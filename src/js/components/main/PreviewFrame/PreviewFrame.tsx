@@ -12,6 +12,7 @@ import { loadTranslations } from "../../../utils/translationsLoader";
 import { ReferenceOverlay } from "./ReferenceOverlay/ReferenceOverlay";
 
 export const PreviewFrame = () => {
+    const iframeRefreshKeyRef = useRef(0);
     const dispatch = useDispatch();
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const translationsRef = useRef<Record<string, string> | null>(null);
@@ -531,7 +532,10 @@ export const PreviewFrame = () => {
     }, [currentPage, loadComponentSchema, dispatch]);
 
     useEffect(() => {
-        handleIframeLoad()
+        if (iframeRefreshKeyRef.current !== iframeRefreshKey) {
+            handleIframeLoad();
+            iframeRefreshKeyRef.current = iframeRefreshKey;
+        }
     }, [handleIframeLoad, iframeRefreshKey]);
 
     useEffect(() => {

@@ -3215,6 +3215,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
             max,
             step,
             checkedValue,
+            uncheckedValue,
             defaultValue = ""
         } = field;
 
@@ -3282,6 +3283,10 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                                 checkedValue !== undefined
                                     ? checkedValue
                                     : true;
+                            const actualUncheckedValue =
+                                uncheckedValue !== undefined
+                                    ? uncheckedValue
+                                    : false;
 
                             const isChecked =
                                 fieldProps.value === actualCheckedValue;
@@ -3291,7 +3296,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                             ) => {
                                 const newValue = e.target.checked
                                     ? actualCheckedValue
-                                    : "";
+                                    : actualUncheckedValue;
                                 fieldProps.onChange(newValue);
                             };
 

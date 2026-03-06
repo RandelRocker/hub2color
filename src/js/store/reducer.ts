@@ -5,7 +5,7 @@ import { AppAction } from "./actionTypes";
 
 const initialState: AppState = {
     pages: [],
-    currentPage: 'components/sitesettings/header/header.html',
+    currentPage: '',
     customCss: "",
     customJs: "",
     customHtml: { beforeEndHead: "", beforeEndBody: "" },

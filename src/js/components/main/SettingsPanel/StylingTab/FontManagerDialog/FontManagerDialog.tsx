@@ -253,6 +253,7 @@ export const FontManagerDialog = ({ open, onClose, fonts }: FontManagerDialogPro
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleBackToList}>Back</Button>
+                    <Button variant="contained">{isEditing ? "Update" : "Create"}</Button>
                 </DialogActions>
             </>
         );
