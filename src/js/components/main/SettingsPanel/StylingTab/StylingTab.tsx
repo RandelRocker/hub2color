@@ -231,6 +231,14 @@ const extractNumber = (value: string): string => {
     return match?.[1] || "0";
 };
 
+const SPACING_UNITS = ["px", "rem", "em"] as const;
+
+const extractUnit = (value: string): string => {
+    const match = value.match(/^-?\d*\.?\d*(.*)/);
+    const unit = match?.[1]?.trim() || "px";
+    return (SPACING_UNITS as readonly string[]).includes(unit) ? unit : "px";
+};
+
 const formatPaddingString = (padding: string): string => {
     const { top, right, bottom, left } = parsePadding(padding);
     
@@ -810,22 +818,27 @@ const DebouncedPaddingPicker = ({
     const [localRight, setLocalRight] = useState(extractNumber(parsedPadding.right));
     const [localBottom, setLocalBottom] = useState(extractNumber(parsedPadding.bottom));
     const [localLeft, setLocalLeft] = useState(extractNumber(parsedPadding.left));
+    const [localTopUnit, setLocalTopUnit] = useState(extractUnit(parsedPadding.top));
+    const [localRightUnit, setLocalRightUnit] = useState(extractUnit(parsedPadding.right));
+    const [localBottomUnit, setLocalBottomUnit] = useState(extractUnit(parsedPadding.bottom));
+    const [localLeftUnit, setLocalLeftUnit] = useState(extractUnit(parsedPadding.left));
     const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const lastEmittedValueRef = useRef<string>(value || "0px 0px 0px 0px");
 
     const open = Boolean(anchorEl);
 
-    // Update local values when prop changes, but only if it's different from what we last emitted
     useEffect(() => {
-        // Only update if the prop value is different from what we last sent via onChange
-        // This prevents overwriting local state while user is typing
         if (value !== lastEmittedValueRef.current) {
             const parsed = parsePadding(value || "0px 0px 0px 0px");
             setLocalTop(extractNumber(parsed.top));
             setLocalRight(extractNumber(parsed.right));
             setLocalBottom(extractNumber(parsed.bottom));
             setLocalLeft(extractNumber(parsed.left));
+            setLocalTopUnit(extractUnit(parsed.top));
+            setLocalRightUnit(extractUnit(parsed.right));
+            setLocalBottomUnit(extractUnit(parsed.bottom));
+            setLocalLeftUnit(extractUnit(parsed.left));
             lastEmittedValueRef.current = value || "0px 0px 0px 0px";
         }
     }, [value]);
@@ -839,28 +852,37 @@ const DebouncedPaddingPicker = ({
         };
     }, []);
 
-    const updatePadding = (top: string, right: string, bottom: string, left: string) => {
-        const topPx = top ? `${top}px` : "0px";
-        const rightPx = right ? `${right}px` : "0px";
-        const bottomPx = bottom ? `${bottom}px` : "0px";
-        const leftPx = left ? `${left}px` : "0px";
-        const newValue = `${topPx} ${rightPx} ${bottomPx} ${leftPx}`;
-        
-        // Clear existing timeout
+    const emitPaddingChange = (newValue: string) => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
 
-        // Debounce the onChange callback
         timeoutRef.current = setTimeout(() => {
             lastEmittedValueRef.current = newValue;
             onChange(newValue);
         }, 150);
     };
 
+    const buildPaddingValue = (
+        top: string, right: string, bottom: string, left: string,
+        topU: string, rightU: string, bottomU: string, leftU: string
+    ) => {
+        const topVal = top ? `${top}${topU}` : `0${topU}`;
+        const rightVal = right ? `${right}${rightU}` : `0${rightU}`;
+        const bottomVal = bottom ? `${bottom}${bottomU}` : `0${bottomU}`;
+        const leftVal = left ? `${left}${leftU}` : `0${leftU}`;
+        return `${topVal} ${rightVal} ${bottomVal} ${leftVal}`;
+    };
+
+    const emitCurrentPadding = (
+        top: string, right: string, bottom: string, left: string,
+        topU: string, rightU: string, bottomU: string, leftU: string
+    ) => {
+        emitPaddingChange(buildPaddingValue(top, right, bottom, left, topU, rightU, bottomU, leftU));
+    };
+
     const handleFieldChange = (field: "top" | "right" | "bottom" | "left", newValue: string) => {
-        // Only allow numeric input with optional decimal
-        const validPattern = /^\d*\.?\d*$/;
+        const validPattern = /^-?\d*\.?\d*$/;
         if (!validPattern.test(newValue)) {
             return;
         }
@@ -868,19 +890,40 @@ const DebouncedPaddingPicker = ({
         switch (field) {
             case "top":
                 setLocalTop(newValue);
-                updatePadding(newValue, localRight, localBottom, localLeft);
+                emitCurrentPadding(newValue, localRight, localBottom, localLeft, localTopUnit, localRightUnit, localBottomUnit, localLeftUnit);
                 break;
             case "right":
                 setLocalRight(newValue);
-                updatePadding(localTop, newValue, localBottom, localLeft);
+                emitCurrentPadding(localTop, newValue, localBottom, localLeft, localTopUnit, localRightUnit, localBottomUnit, localLeftUnit);
                 break;
             case "bottom":
                 setLocalBottom(newValue);
-                updatePadding(localTop, localRight, newValue, localLeft);
+                emitCurrentPadding(localTop, localRight, newValue, localLeft, localTopUnit, localRightUnit, localBottomUnit, localLeftUnit);
                 break;
             case "left":
                 setLocalLeft(newValue);
-                updatePadding(localTop, localRight, localBottom, newValue);
+                emitCurrentPadding(localTop, localRight, localBottom, newValue, localTopUnit, localRightUnit, localBottomUnit, localLeftUnit);
+                break;
+        }
+    };
+
+    const handleUnitChange = (field: "top" | "right" | "bottom" | "left", newUnit: string) => {
+        switch (field) {
+            case "top":
+                setLocalTopUnit(newUnit);
+                emitCurrentPadding(localTop, localRight, localBottom, localLeft, newUnit, localRightUnit, localBottomUnit, localLeftUnit);
+                break;
+            case "right":
+                setLocalRightUnit(newUnit);
+                emitCurrentPadding(localTop, localRight, localBottom, localLeft, localTopUnit, newUnit, localBottomUnit, localLeftUnit);
+                break;
+            case "bottom":
+                setLocalBottomUnit(newUnit);
+                emitCurrentPadding(localTop, localRight, localBottom, localLeft, localTopUnit, localRightUnit, newUnit, localLeftUnit);
+                break;
+            case "left":
+                setLocalLeftUnit(newUnit);
+                emitCurrentPadding(localTop, localRight, localBottom, localLeft, localTopUnit, localRightUnit, localBottomUnit, newUnit);
                 break;
         }
     };
@@ -974,7 +1017,7 @@ const DebouncedPaddingPicker = ({
                                     whiteSpace: "nowrap"
                                 }}
                             >
-                                {localTop || "0"}px
+                                {localTop || "0"}{localTopUnit}
                             </Box>
                             {/* Right padding label */}
                             <Box
@@ -993,7 +1036,7 @@ const DebouncedPaddingPicker = ({
                                     whiteSpace: "nowrap"
                                 }}
                             >
-                                {localRight || "0"}px
+                                {localRight || "0"}{localRightUnit}
                             </Box>
                             {/* Bottom padding label */}
                             <Box
@@ -1012,7 +1055,7 @@ const DebouncedPaddingPicker = ({
                                     whiteSpace: "nowrap"
                                 }}
                             >
-                                {localBottom || "0"}px
+                                {localBottom || "0"}{localBottomUnit}
                             </Box>
                             {/* Left padding label */}
                             <Box
@@ -1031,7 +1074,7 @@ const DebouncedPaddingPicker = ({
                                     whiteSpace: "nowrap"
                                 }}
                             >
-                                {localLeft || "0"}px
+                                {localLeft || "0"}{localLeftUnit}
                             </Box>
                             {/* Central content box */}
                             <Box
@@ -1067,13 +1110,13 @@ const DebouncedPaddingPicker = ({
                             <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
                                 Top
                             </Typography>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                                 <TextField
                                     size="small"
                                     value={localTop || ""}
                                     onChange={(e) => handleFieldChange("top", e.target.value)}
                                     disabled={disabled}
-                                    sx={{ width: 70 }}
+                                    sx={{ width: 60, "& .MuiInputBase-root": { height: 36 } }}
                                     slotProps={{
                                         input: {
                                             sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
@@ -1081,17 +1124,19 @@ const DebouncedPaddingPicker = ({
                                     }}
                                     placeholder="0"
                                 />
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        fontSize: "0.875rem",
-                                        color: "text.secondary",
-                                        ml: 0.5,
-                                        userSelect: "none"
-                                    }}
-                                >
-                                    px
-                                </Typography>
+                                <FormControl size="small" sx={{ minWidth: 56 }}>
+                                    <Select
+                                        value={localTopUnit}
+                                        onChange={(e) => handleUnitChange("top", e.target.value)}
+                                        variant="outlined"
+                                        disabled={disabled}
+                                        sx={{ fontSize: "0.75rem", height: 36 }}
+                                    >
+                                        {SPACING_UNITS.map((u) => (
+                                            <MenuItem key={u} value={u} sx={{ fontSize: "0.75rem" }}>{u}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             </Box>
                         </Box>
                         {/* Right */}
@@ -1099,13 +1144,13 @@ const DebouncedPaddingPicker = ({
                             <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
                                 Right
                             </Typography>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                                 <TextField
                                     size="small"
                                     value={localRight || ""}
                                     onChange={(e) => handleFieldChange("right", e.target.value)}
                                     disabled={disabled}
-                                    sx={{ width: 70 }}
+                                    sx={{ width: 60, "& .MuiInputBase-root": { height: 36 } }}
                                     slotProps={{
                                         input: {
                                             sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
@@ -1113,17 +1158,19 @@ const DebouncedPaddingPicker = ({
                                     }}
                                     placeholder="0"
                                 />
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        fontSize: "0.875rem",
-                                        color: "text.secondary",
-                                        ml: 0.5,
-                                        userSelect: "none"
-                                    }}
-                                >
-                                    px
-                                </Typography>
+                                <FormControl size="small" sx={{ minWidth: 56 }}>
+                                    <Select
+                                        value={localRightUnit}
+                                        onChange={(e) => handleUnitChange("right", e.target.value)}
+                                        variant="outlined"
+                                        disabled={disabled}
+                                        sx={{ fontSize: "0.75rem", height: 36 }}
+                                    >
+                                        {SPACING_UNITS.map((u) => (
+                                            <MenuItem key={u} value={u} sx={{ fontSize: "0.75rem" }}>{u}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             </Box>
                         </Box>
                         {/* Bottom */}
@@ -1131,13 +1178,13 @@ const DebouncedPaddingPicker = ({
                             <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
                                 Bottom
                             </Typography>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                                 <TextField
                                     size="small"
                                     value={localBottom || ""}
                                     onChange={(e) => handleFieldChange("bottom", e.target.value)}
                                     disabled={disabled}
-                                    sx={{ width: 70 }}
+                                    sx={{ width: 60, "& .MuiInputBase-root": { height: 36 } }}
                                     slotProps={{
                                         input: {
                                             sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
@@ -1145,17 +1192,19 @@ const DebouncedPaddingPicker = ({
                                     }}
                                     placeholder="0"
                                 />
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        fontSize: "0.875rem",
-                                        color: "text.secondary",
-                                        ml: 0.5,
-                                        userSelect: "none"
-                                    }}
-                                >
-                                    px
-                                </Typography>
+                                <FormControl size="small" sx={{ minWidth: 56 }}>
+                                    <Select
+                                        value={localBottomUnit}
+                                        onChange={(e) => handleUnitChange("bottom", e.target.value)}
+                                        variant="outlined"
+                                        disabled={disabled}
+                                        sx={{ fontSize: "0.75rem", height: 36 }}
+                                    >
+                                        {SPACING_UNITS.map((u) => (
+                                            <MenuItem key={u} value={u} sx={{ fontSize: "0.75rem" }}>{u}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             </Box>
                         </Box>
                         {/* Left */}
@@ -1163,13 +1212,13 @@ const DebouncedPaddingPicker = ({
                             <Typography variant="caption" sx={{ mb: 0.5, display: "block" }}>
                                 Left
                             </Typography>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                                 <TextField
                                     size="small"
                                     value={localLeft || ""}
                                     onChange={(e) => handleFieldChange("left", e.target.value)}
                                     disabled={disabled}
-                                    sx={{ width: 70 }}
+                                    sx={{ width: 60, "& .MuiInputBase-root": { height: 36 } }}
                                     slotProps={{
                                         input: {
                                             sx: { fontSize: "0.875rem", textAlign: "right", pr: 0.5 }
@@ -1177,17 +1226,19 @@ const DebouncedPaddingPicker = ({
                                     }}
                                     placeholder="0"
                                 />
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        fontSize: "0.875rem",
-                                        color: "text.secondary",
-                                        ml: 0.5,
-                                        userSelect: "none"
-                                    }}
-                                >
-                                    px
-                                </Typography>
+                                <FormControl size="small" sx={{ minWidth: 56 }}>
+                                    <Select
+                                        value={localLeftUnit}
+                                        onChange={(e) => handleUnitChange("left", e.target.value)}
+                                        variant="outlined"
+                                        disabled={disabled}
+                                        sx={{ fontSize: "0.75rem", height: 36 }}
+                                    >
+                                        {SPACING_UNITS.map((u) => (
+                                            <MenuItem key={u} value={u} sx={{ fontSize: "0.75rem" }}>{u}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             </Box>
                         </Box>
                     </Box>
@@ -3455,7 +3506,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                         defaultValue={defaultValue}
                         render={({ field: fieldProps }) => {
                             const parseValue = (value: string) => {
-                                const match = value.match(/^(\d*\.?\d*)(.*)$/);
+                                const match = value.match(/^(-?\d*\.?\d*)(.*)$/);
                                 return {
                                     number: match?.[1] || "",
                                     unit: match?.[2] || "px"
@@ -3470,7 +3521,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                                 e: React.ChangeEvent<HTMLInputElement>
                             ) => {
                                 const inputValue = e.target.value;
-                                const validPattern = /^(\d*\.?\d*)$/;
+                                const validPattern = /^(-?\d*\.?\d*)$/;
 
                                 if (validPattern.test(inputValue)) {
                                     const newValue = `${inputValue.trim()}${unit}`;
