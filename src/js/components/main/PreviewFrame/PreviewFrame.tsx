@@ -396,24 +396,23 @@ export const PreviewFrame = () => {
     const loadComponentSchema = useCallback(
         async (pagePath: string) => {
             try {
-                // Find the page item to check for schemaPath
                 const pageItem = findPageItemByPath(pages, pagePath);
 
                 let schemaPaths: string[];
 
                 if (pageItem?.schemaPath) {
-                    // Use schemaPath from menu config
                     if (Array.isArray(pageItem.schemaPath)) {
                         schemaPaths = pageItem.schemaPath;
                     } else {
                         schemaPaths = [pageItem.schemaPath];
                     }
                 } else {
-                    // Fall back to default behavior: replace .html with .schema.json
                     schemaPaths = [pagePath.replace(/\.html$/, ".schema.json")];
                 }
 
-                // Load all schema files
+                const cssVariablesPath = pageItem?.cssVariablesPath
+                    ?? `${pagePath.substring(0, pagePath.lastIndexOf("/") + 1)}css-variables.json`;
+
                 const schemaPromises = schemaPaths.map(async (schemaPath) => {
                     try {
                         const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/${schemaPath}`);
@@ -428,13 +427,21 @@ export const PreviewFrame = () => {
                     }
                 });
 
-                const schemas = await Promise.all(schemaPromises);
+                const cssVariablesPromise: Promise<helpers.CssVariablesMap> = fetch(
+                    `${config.HUB2COLOR_PUBLIC_PATH}/${cssVariablesPath}`
+                )
+                    .then((res) => (res.ok ? res.json() : {}))
+                    .catch(() => ({}));
 
-                // Merge schemas if multiple were loaded
+                const [schemas, cssVariables] = await Promise.all([
+                    Promise.all(schemaPromises),
+                    cssVariablesPromise
+                ]);
+
                 const mergedSchema = mergeSchemas(schemas);
-                dispatch(setComponentSchema(mergedSchema));
+                const enrichedSchema = helpers.enrichSchemaWithCssVariables(mergedSchema, cssVariables);
+                dispatch(setComponentSchema(enrichedSchema));
             } catch (error) {
-                // console.error("Error loading component schema:", error);
                 dispatch(setComponentSchema(null));
             }
         },

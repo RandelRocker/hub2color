@@ -1,4 +1,4 @@
-import { TStoredThemeStyles, StylingTabValues } from "@/js/store/types";
+import { TStoredThemeStyles, StylingTabValues, ComponentSchema, StyleField, StyleGroup } from "@/js/store/types";
 
 type FlatInput = {
     [path: string]: {
@@ -73,6 +73,38 @@ export const removeUnitsFromValue = (value: unknown) => {
         ? undefined
         : value;
 };
+
+export type CssVariablesMap = Record<string, string>;
+
+const enrichStyleItems = (
+    items: (StyleField | StyleGroup)[],
+    cssVariables: CssVariablesMap
+): (StyleField | StyleGroup)[] =>
+    items.map((item) => {
+        if ("fields" in item && item.fields) {
+            return { ...item, fields: enrichStyleItems(item.fields, cssVariables) } as StyleGroup;
+        }
+
+        const field = item as StyleField;
+        if (!field.cssVariable) {
+            return item;
+        }
+
+        if (field.defaultValue !== undefined) {
+            return item;
+        }
+
+        const fallback = cssVariables[field.cssVariable];
+        return { ...field, defaultValue: fallback !== undefined ? fallback : "" };
+    });
+
+export const enrichSchemaWithCssVariables = (
+    schema: ComponentSchema,
+    cssVariables: CssVariablesMap
+): ComponentSchema => ({
+    ...schema,
+    styles: enrichStyleItems(schema.styles, cssVariables)
+});
 
 export const prepareStylingTheme = ({
     savedTheme,

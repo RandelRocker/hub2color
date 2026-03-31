@@ -4,6 +4,7 @@ export interface PageItem {
     icon?: string;
     items?: PageItem[];
     schemaPath?: string | string[];
+    cssVariablesPath?: string;
 }
 
 export interface PageSection {
