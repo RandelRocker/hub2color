@@ -923,12 +923,48 @@ export const ControlsTab = () => {
                         defaultValue={defaultValue || "1px solid #000000"}
                         render={({ field: fieldProps }) => {
                             const parseBorder = (value: string) => {
+                                if (!value || value.trim() === "none") {
+                                    return { width: "0px", style: "none", color: "#000000" };
+                                }
+                                const match = value.match(/^(\d*\.?\d*px)\s+(solid|dashed|dotted|double|groove|ridge|inset|outset|none|hidden)\s+(.+)$/);
+                                if (match) {
+                                    return {
+                                        width: match[1] || "1px",
+                                        style: match[2] || "solid",
+                                        color: match[3] || "#000000"
+                                    };
+                                }
                                 const parts = value.split(/\s+/);
                                 return {
                                     width: parts[0] || "1px",
                                     style: parts[1] || "solid",
-                                    color: parts[2] || "#000000"
+                                    color: parts.slice(2).join(" ") || "#000000"
                                 };
+                            };
+
+                            const parseColorParts = (color: string): { hex: string; alpha: number } => {
+                                const rgbaMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+                                if (rgbaMatch) {
+                                    const r = parseInt(rgbaMatch[1]).toString(16).padStart(2, "0");
+                                    const g = parseInt(rgbaMatch[2]).toString(16).padStart(2, "0");
+                                    const b = parseInt(rgbaMatch[3]).toString(16).padStart(2, "0");
+                                    return {
+                                        hex: `#${r}${g}${b}`,
+                                        alpha: rgbaMatch[4] !== undefined ? parseFloat(rgbaMatch[4]) : 1
+                                    };
+                                }
+                                return { hex: color || "#000000", alpha: 1 };
+                            };
+
+                            const toRgba = (hex: string, alpha: number): string => {
+                                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                                if (result) {
+                                    const r = parseInt(result[1], 16);
+                                    const g = parseInt(result[2], 16);
+                                    const b = parseInt(result[3], 16);
+                                    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                                }
+                                return hex;
                             };
 
                             const {
@@ -936,6 +972,8 @@ export const ControlsTab = () => {
                                 style,
                                 color
                             } = parseBorder(fieldProps.value as string || "");
+
+                            const colorParts = parseColorParts(color);
 
                             const handleFieldChange = (
                                 field: string,
@@ -967,6 +1005,15 @@ export const ControlsTab = () => {
                                 handleFieldChange("style", e.target.value);
                             };
 
+                            const handleColorHexChange = (newHex: string) => {
+                                handleFieldChange("color", toRgba(newHex, colorParts.alpha));
+                            };
+
+                            const handleAlphaChange = (_event: React.SyntheticEvent | Event, newValue: number | number[]) => {
+                                const alpha = typeof newValue === "number" ? newValue / 100 : newValue[0] / 100;
+                                handleFieldChange("color", toRgba(colorParts.hex, alpha));
+                            };
+
                             const extractNumber = (value: string) => {
                                 const match = value.match(/^(\d*\.?\d*)/);
                                 return match?.[1] || "1";
@@ -989,62 +1036,84 @@ export const ControlsTab = () => {
                                 <Box
                                     sx={{
                                         display: "flex",
-                                        gap: 1,
-                                        alignItems: "center"
+                                        flexDirection: "column",
+                                        gap: 1
                                     }}
                                 >
-                                    <TextField
-                                        type="text"
-                                        value={extractNumber(width)}
-                                        onChange={handleWidthChange}
-                                        size="small"
-                                        variant="outlined"
-                                        sx={{ width: "33%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            gap: 1,
+                                            alignItems: "center"
                                         }}
-                                        placeholder="Width"
-                                        title="Border Width"
-                                    />
-                                    <FormControl
-                                        size="small"
-                                        sx={{ width: "33%" }}
                                     >
-                                        <Select
-                                            value={style}
-                                            onChange={handleStyleChange}
+                                        <TextField
+                                            type="text"
+                                            value={extractNumber(width)}
+                                            onChange={handleWidthChange}
+                                            size="small"
                                             variant="outlined"
-                                            sx={{ fontSize: "0.875rem" }}
+                                            sx={{ width: "30%" }}
+                                            slotProps={{
+                                                input: {
+                                                    sx: { fontSize: "0.875rem" }
+                                                }
+                                            }}
+                                            placeholder="Width"
+                                            title="Border Width"
+                                        />
+                                        <FormControl
+                                            size="small"
+                                            sx={{ width: "30%" }}
                                         >
-                                            {borderStyles.map((styleOption) => (
-                                                <MenuItem
-                                                    key={styleOption}
-                                                    value={styleOption}
-                                                    sx={{
-                                                        fontSize: "0.875rem"
-                                                    }}
-                                                >
-                                                    {styleOption}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                    <TextField
-                                        type="color"
-                                        value={color}
-                                        onChange={(e) =>
-                                            handleFieldChange("color", e.target.value)
-                                        }
+                                            <Select
+                                                value={style}
+                                                onChange={handleStyleChange}
+                                                variant="outlined"
+                                                sx={{ fontSize: "0.875rem" }}
+                                            >
+                                                {borderStyles.map((styleOption) => (
+                                                    <MenuItem
+                                                        key={styleOption}
+                                                        value={styleOption}
+                                                        sx={{
+                                                            fontSize: "0.875rem"
+                                                        }}
+                                                    >
+                                                        {styleOption}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                        <TextField
+                                            type="color"
+                                            value={colorParts.hex}
+                                            onChange={(e) => handleColorHexChange(e.target.value)}
+                                            size="small"
+                                            sx={{ width: "20%" }}
+                                            slotProps={{
+                                                input: {
+                                                    sx: { fontSize: "0.875rem" }
+                                                }
+                                            }}
+                                            title="Border Color"
+                                        />
+                                        <Typography
+                                            variant="caption"
+                                            sx={{ width: "20%", textAlign: "center", whiteSpace: "nowrap" }}
+                                        >
+                                            {Math.round(colorParts.alpha * 100)}%
+                                        </Typography>
+                                    </Box>
+                                    <Slider
+                                        value={colorParts.alpha * 100}
+                                        onChange={handleAlphaChange}
+                                        min={0}
+                                        max={100}
+                                        step={1}
                                         size="small"
-                                        sx={{ width: "33%" }}
-                                        slotProps={{
-                                            input: {
-                                                sx: { fontSize: "0.875rem" }
-                                            }
-                                        }}
-                                        title="Border Color"
+                                        valueLabelDisplay="off"
+                                        sx={{ mx: 0.5 }}
                                     />
                                 </Box>
                             );
