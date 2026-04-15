@@ -513,14 +513,17 @@ const DebouncedColorPicker = ({
                     ...sx
                 }}
             >
-                {/* Color square */}
+                {/* Color square with checkerboard for opacity visibility */}
                 <Box
                     onClick={handleColorSquareClick}
                     sx={{
                         width: 30,
                         height: 30,
                         minWidth: 30,
-                        backgroundColor: displayColor,
+                        backgroundImage:
+                            "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
+                        backgroundSize: "10px 10px",
+                        backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0px",
                         border: "1px solid #e0e0e0",
                         borderRadius: 1,
                         cursor: disabled ? "not-allowed" : "pointer",
@@ -528,7 +531,16 @@ const DebouncedColorPicker = ({
                         "&:hover": {
                             opacity: disabled ? 0.5 : 0.8
                         },
-                        transition: "opacity 0.2s"
+                        transition: "opacity 0.2s",
+                        position: "relative",
+                        overflow: "hidden",
+                        "&::after": {
+                            content: '""',
+                            position: "absolute",
+                            inset: 0,
+                            backgroundColor: displayColor,
+                            borderRadius: "inherit"
+                        }
                     }}
                 />
             </Box>
@@ -562,9 +574,21 @@ const DebouncedColorPicker = ({
                                 sx={{
                                     width: 40,
                                     height: 40,
-                                    backgroundColor: displayColor,
+                                    backgroundImage:
+                                        "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
+                                    backgroundSize: "10px 10px",
+                                    backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0px",
                                     border: "1px solid #e0e0e0",
-                                    borderRadius: 1
+                                    borderRadius: 1,
+                                    position: "relative",
+                                    overflow: "hidden",
+                                    "&::after": {
+                                        content: '""',
+                                        position: "absolute",
+                                        inset: 0,
+                                        backgroundColor: displayColor,
+                                        borderRadius: "inherit"
+                                    }
                                 }}
                             />
                             <TextField
@@ -1822,10 +1846,22 @@ const DebouncedBoxShadowPicker = ({
                         width: 20,
                         height: 20,
                         minWidth: 20,
-                        backgroundColor: displayColor,
+                        backgroundImage:
+                            "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
+                        backgroundSize: "10px 10px",
+                        backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0px",
                         border: "1px solid #e0e0e0",
                         borderRadius: 1,
-                        flexShrink: 0
+                        flexShrink: 0,
+                        position: "relative",
+                        overflow: "hidden",
+                        "&::after": {
+                            content: '""',
+                            position: "absolute",
+                            inset: 0,
+                            backgroundColor: displayColor,
+                            borderRadius: "inherit"
+                        }
                     }}
                 />
             </Box>
@@ -2319,10 +2355,22 @@ const DebouncedTextShadowPicker = ({
                         width: 20,
                         height: 20,
                         minWidth: 20,
-                        backgroundColor: displayColor,
+                        backgroundImage:
+                            "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
+                        backgroundSize: "10px 10px",
+                        backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0px",
                         border: "1px solid #e0e0e0",
                         borderRadius: 1,
-                        flexShrink: 0
+                        flexShrink: 0,
+                        position: "relative",
+                        overflow: "hidden",
+                        "&::after": {
+                            content: '""',
+                            position: "absolute",
+                            inset: 0,
+                            backgroundColor: displayColor,
+                            borderRadius: "inherit"
+                        }
                     }}
                 />
             </Box>
@@ -2780,10 +2828,22 @@ const DebouncedBorderPicker = ({
                         width: 20,
                         height: 20,
                         minWidth: 20,
-                        backgroundColor: displayColor,
+                        backgroundImage:
+                            "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
+                        backgroundSize: "10px 10px",
+                        backgroundPosition: "0 0, 0 5px, 5px -5px, -5px 0px",
                         border: "1px solid #e0e0e0",
                         borderRadius: 1,
-                        flexShrink: 0
+                        flexShrink: 0,
+                        position: "relative",
+                        overflow: "hidden",
+                        "&::after": {
+                            content: '""',
+                            position: "absolute",
+                            inset: 0,
+                            backgroundColor: displayColor,
+                            borderRadius: "inherit"
+                        }
                     }}
                 />
             </Box>
