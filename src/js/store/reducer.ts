@@ -5,7 +5,7 @@ import { AppAction } from "./actionTypes";
 
 const initialState: AppState = {
     pages: [],
-    currentPage: '',
+    currentPage: 'components/maincomponents/dynamicforms/dynamiccustomform/dynamiccustomform.html',
     customCss: "",
     customJs: "",
     customHtml: { beforeEndHead: "", beforeEndBody: "" },

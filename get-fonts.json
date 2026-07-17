@@ -1,0 +1,60 @@
+[
+    {
+        "name": "Roboto",
+        "type": "file",
+        "fontStyle": "normal",
+        "fontWeight": "400",
+        "fontDisplay": "swap",
+        "unicodeRange": "",
+        "url": "/core3-qa09_core-theme/css/fonts/roboto.woff2"
+    },
+    {
+        "name": "Open Sans",
+        "type": "import",
+        "url": "https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap"
+    },
+    {
+        "name": "Asap",
+        "type": "default"
+    },
+    {
+        "name": "Arial",
+        "type": "default"
+    },
+    {
+        "name": "Helvetica Neue",
+        "type": "default"
+    },
+    {
+        "name": "Trebuchet MS",
+        "type": "default"
+    },
+    {
+        "name": "Tahoma",
+        "type": "default"
+    },
+    {
+        "name": "Times New Roman",
+        "type": "default"
+    },
+    {
+        "name": "Georgia",
+        "type": "default"
+    },
+    {
+        "name": "Palatino",
+        "type": "default"
+    },
+    {
+        "name": "Garamond",
+        "type": "default"
+    },
+    {
+        "name": "Courier New",
+        "type": "default"
+    },
+    {
+        "name": "Lucida Console",
+        "type": "default"
+    }
+]

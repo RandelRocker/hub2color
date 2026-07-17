@@ -1,10 +1,29 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
+const fs = require("fs");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const config = require("./config");
+
+const stripLeadingSlash = (publicPath) => publicPath.replace(/^\/+/, "");
+
+const assetMounts = [
+    { from: config.PORTAL_HUB2COLOR_MOUNT_FOLDER, to: config.HUB2COLOR_PUBLIC_PATH },
+    { from: config.PORTAL_IMG_MOUNT_FOLDER, to: config.HUB2COLOR_IMG_PUBLIC_PATH },
+    { from: config.PORTAL_CSS_MOUNT_FOLDER, to: config.HUB2COLOR_CSS_PUBLIC_PATH },
+    { from: config.PORTAL_IMAGES_MOUNT_FOLDER, to: config.HUB2COLOR_IMAGES_PUBLIC_PATH }
+];
 
 module.exports = (env, argv) => {
     const isProduction = argv.mode === "production";
+
+    const copyPatterns = assetMounts
+        .map(({ from, to }) => ({
+            from: path.resolve(__dirname, from),
+            to: path.resolve(__dirname, "dist", stripLeadingSlash(to)),
+            noErrorOnMissing: true
+        }))
+        .filter(({ from }) => fs.existsSync(from));
 
     return {
         entry: "./src/index.tsx",
@@ -41,7 +60,10 @@ module.exports = (env, argv) => {
             new HtmlWebpackPlugin({
                 template: "./src/index.html",
                 title: "Mini Storybook"
-            })
+            }),
+            ...(copyPatterns.length > 0
+                ? [new CopyWebpackPlugin({ patterns: copyPatterns })]
+                : [])
         ],
         devServer: {
             static: [
