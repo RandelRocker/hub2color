@@ -118,9 +118,16 @@ export interface StyleSchema {
     styles: (StyleField | StyleGroup)[];
 }
 
+export type StyleSchemasConfig = Record<string, string>;
+
+export type StylesObjectMap = Record<
+    string,
+    (StyleField | StyleGroup)[] | string
+>;
+
 export interface ComponentSchema {
     controls: ControlField[];
-    styles: (StyleField | StyleGroup)[];
+    styles: (StyleField | StyleGroup)[] | StylesObjectMap;
     mocks?: SchemaMock[];
 }
 
@@ -216,4 +223,9 @@ export interface AppState {
     iframeRefreshKey: number;
     fonts: FontItem[];
     showTranslationKeys: boolean;
+    stylesMap: StylesObjectMap | null;
+    styleSchemasConfig: StyleSchemasConfig | null;
+    elementHighlightActive: boolean;
+    selectedStyleSchemaName: string | null;
+    selectedElementStyles: (StyleField | StyleGroup)[] | null;
 }

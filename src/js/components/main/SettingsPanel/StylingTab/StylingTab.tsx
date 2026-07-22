@@ -35,9 +35,10 @@ import { RgbaColorPicker } from "react-colorful";
 import type { RgbaColor } from "react-colorful";
 
 import { RootState } from "../../../../store";
-import { updateStylingTabValues, updateStylingTabValuesWithDefault, setStylingTabUIState, updateStylingTabDefaultValues } from "../../../../store/actions";
+import { updateStylingTabValues, updateStylingTabValuesWithDefault, setStylingTabUIState, updateStylingTabDefaultValues, setElementHighlightActive } from "../../../../store/actions";
 import { StylingTabValues, StyleGroup, StyleField } from "../../../../store/types";
 import { FontManagerDialog } from "./FontManagerDialog/FontManagerDialog";
+import { SelectElementPrompt } from "./SelectElementPrompt/SelectElementPrompt";
 
 type StylesFilter = "all" | "colors" | "images" | "changed";
 
@@ -3102,9 +3103,25 @@ const DebouncedBorderPicker = ({
 export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilter }) => {
     const dispatch = useDispatch();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const { componentSchema, styleTabDefaultValues, styleTabValues, stylingUIState, savedTheme, portalIcons, themeUrl, fonts } =
+    const { componentSchema, styleTabDefaultValues, styleTabValues, stylingUIState, savedTheme, portalIcons, themeUrl, fonts, stylesMap, selectedElementStyles, elementHighlightActive } =
         useSelector((state: RootState) => state.app);
     const [fontManagerDialogOpen, setFontManagerDialogOpen] = useState(false);
+
+    // In element-picker (object) mode the active styles are the resolved styles
+    // of the selected element; otherwise they come from the schema's own array.
+    const activeStyles = useMemo<(StyleField | StyleGroup)[]>(() => {
+        if (selectedElementStyles) {
+            return selectedElementStyles;
+        }
+
+        return Array.isArray(componentSchema?.styles)
+            ? componentSchema.styles
+            : [];
+    }, [selectedElementStyles, componentSchema?.styles]);
+
+    const handleSelectElement = useCallback(() => {
+        dispatch(setElementHighlightActive(true));
+    }, [dispatch]);
 
     const enabledCssVariables = useMemo(() => {
         return new Set(
@@ -3115,14 +3132,14 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
     }, [styleTabValues]);
 
     const stylesToRender = useMemo(() => {
-        const baseStyles = componentSchema?.styles || [];
+        const baseStyles = activeStyles;
         if (stylesFilter === "all") return baseStyles;
         return filterStyleItems(
             baseStyles,
             stylesFilter,
             stylesFilter === "changed" ? enabledCssVariables : undefined
         );
-    }, [componentSchema, stylesFilter, enabledCssVariables]);
+    }, [activeStyles, stylesFilter, enabledCssVariables]);
 
     const { control, subscribe, reset } = useForm({
         defaultValues: styleTabDefaultValues
@@ -3173,7 +3190,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
         }
 
         const savedFieldValue = savedTheme[field.cssVariable];
-        const schemaField = findFieldById(componentSchema?.styles || [], field.id);
+        const schemaField = findFieldById(activeStyles, field.id);
 
         dispatch(updateStylingTabValuesWithDefault({
             [field.cssVariable]: {
@@ -3185,7 +3202,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
         }));
 
         handleFieldMenuClose();
-    }, [fieldMenuAnchor.field, savedTheme, findFieldById, componentSchema?.styles, dispatch, handleFieldMenuClose]);
+    }, [fieldMenuAnchor.field, savedTheme, findFieldById, activeStyles, dispatch, handleFieldMenuClose]);
 
     const handleFieldResetToDefault = useCallback(() => {
         const field = fieldMenuAnchor.field;
@@ -3196,7 +3213,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
             return;
         }
 
-        const schemaField = findFieldById(componentSchema?.styles || [], field.id);
+        const schemaField = findFieldById(activeStyles, field.id);
         const defaultValue = schemaField?.defaultValue;
 
         if (!schemaField || defaultValue === undefined) {
@@ -3215,7 +3232,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
         }));
 
         handleFieldMenuClose();
-    }, [fieldMenuAnchor.field, findFieldById, componentSchema?.styles, dispatch, handleFieldMenuClose]);
+    }, [fieldMenuAnchor.field, findFieldById, activeStyles, dispatch, handleFieldMenuClose]);
 
     useEffect(() => {
         const callback = subscribe({
@@ -3228,7 +3245,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                 Object.entries(values).forEach(([key, value]) => {
                     if (value !== undefined) {
                         const field = findFieldById(
-                            componentSchema?.styles || [],
+                            activeStyles,
                             key
                         );
                         if (field?.cssVariable) {
@@ -3253,7 +3270,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
         });
 
         return () => callback();
-    }, [componentSchema?.styles, dispatch, findFieldById, subscribe, themeUrl]);
+    }, [activeStyles, dispatch, findFieldById, subscribe, themeUrl]);
 
     // useEffect(() => {
     //     if (currentComponentSchema.current !== componentSchema) {
@@ -3314,6 +3331,17 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                     No style schema available for this page
                 </Typography>
             </Box>
+        );
+    }
+
+    // Element-picker (object) mode with no element selected yet: prompt the user
+    // to pick an element from the preview before showing style fields.
+    if (stylesMap && !selectedElementStyles) {
+        return (
+            <SelectElementPrompt
+                active={elementHighlightActive}
+                onSelect={handleSelectElement}
+            />
         );
     }
 
@@ -3569,13 +3597,16 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                                 const match = value.match(/^(-?\d*\.?\d*)(.*)$/);
                                 return {
                                     number: match?.[1] || "",
-                                    unit: match?.[2] || "px"
+                                    unit: match?.[2] || "plain"
                                 };
                             };
 
                             const { number, unit } = parseValue(
                                 (fieldProps.value as string) || ""
                             );
+
+                            const buildValue = (num: string, u: string) =>
+                                u === "plain" ? num.trim() : `${num.trim()}${u}`;
 
                             const handleNumberChange = (
                                 e: React.ChangeEvent<HTMLInputElement>
@@ -3584,7 +3615,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                                 const validPattern = /^(-?\d*\.?\d*)$/;
 
                                 if (validPattern.test(inputValue)) {
-                                    const newValue = `${inputValue.trim()}${unit}`;
+                                    const newValue = buildValue(inputValue, unit);
                                     fieldProps.onChange(newValue);
                                 }
                             };
@@ -3593,11 +3624,17 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                                 target: { value: string };
                             }) => {
                                 const newUnit = e.target.value;
-                                const newValue = `${number.trim()}${newUnit}`;
+                                const newValue = buildValue(number, newUnit);
                                 fieldProps.onChange(newValue);
                             };
 
-                            const fontUnits = ["px", "rem", "em", "%"];
+                            const fontUnits = [
+                                { value: "px", label: "px" },
+                                { value: "rem", label: "rem" },
+                                { value: "em", label: "em" },
+                                { value: "%", label: "%" },
+                                { value: "plain", label: "none" }
+                            ];
 
                             return (
                                 <Box
@@ -3635,13 +3672,13 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                                         >
                                             {fontUnits.map((unitOption) => (
                                                 <MenuItem
-                                                    key={unitOption}
-                                                    value={unitOption}
+                                                    key={unitOption.value}
+                                                    value={unitOption.value}
                                                     sx={{
                                                         fontSize: "0.875rem"
                                                     }}
                                                 >
-                                                    {unitOption}
+                                                    {unitOption.label}
                                                 </MenuItem>
                                             ))}
                                         </Select>

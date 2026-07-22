@@ -24,16 +24,20 @@ import {
     RestartAlt,
     Save,
     MoreHoriz,
-    FilterList
+    FilterList,
+    HighlightAlt
 } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 
 import { RootState } from "../../../store";
+import * as config from "../../../../../config";
 import {
     saveStylingTheme,
     updateStylingTabToDefaultValues,
     updateStylingTabToPreviousValues,
-    updateStyleSchemaDefaults
+    updateStyleSchemaDefaults,
+    setStyleSchemasConfig,
+    setElementHighlightActive
 } from "../../../store/actions";
 import { TStoredThemeStyles } from "../../../store/types";
 
@@ -67,13 +71,33 @@ type SettingsTabKey = "controls" | "styling" | "serverResponses";
 
 export const SettingsPanel = () => {
     const dispatch = useDispatch();
-    const { currentPage, styleTabValues, savedTheme, componentSchema } = useSelector(
-        (state: RootState) => state.app
-    );
+    const {
+        currentPage,
+        styleTabValues,
+        savedTheme,
+        componentSchema,
+        stylesMap,
+        styleSchemasConfig,
+        elementHighlightActive
+    } = useSelector((state: RootState) => state.app);
     
     // Check if each tab is available
     const hasControls = componentSchema?.controls && componentSchema.controls.length > 0;
-    const hasStyles = componentSchema?.styles && componentSchema.styles.length > 0;
+    const hasStyles = useMemo(() => {
+        const styles = componentSchema?.styles;
+
+        if (!styles) {
+            return false;
+        }
+
+        // Array styles: shown only when non-empty (legacy behaviour).
+        if (Array.isArray(styles)) {
+            return styles.length > 0;
+        }
+
+        // Object styles (even empty): element-picker mode.
+        return typeof styles === "object";
+    }, [componentSchema?.styles]);
     const hasServerResponses = useMemo(() => {
         if (typeof window === "undefined") {
             return false;
@@ -125,6 +149,49 @@ export const SettingsPanel = () => {
     }, [activeTab, visibleTabs.length]);
 
     const activeTabConfig = visibleTabs[safeTabValue];
+
+    // Load the global style-schemas config once when the styling tab is opened
+    // in element-picker (object) mode. Cached in the store so switching tabs or
+    // components does not trigger a new request.
+    useEffect(() => {
+        if (
+            activeTabConfig?.key !== "styling" ||
+            !stylesMap ||
+            styleSchemasConfig !== null
+        ) {
+            return;
+        }
+
+        let cancelled = false;
+
+        fetch(`${config.HUB2COLOR_PUBLIC_PATH}/config/style-schemas.json`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(
+                        `Failed to load style schemas config: ${response.status}`
+                    );
+                }
+
+                return response.json();
+            })
+            .then((data) => {
+                if (!cancelled) {
+                    dispatch(setStyleSchemasConfig(data));
+                }
+            })
+            .catch((error) => {
+                console.error("Failed to load style schemas config:", error);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [activeTabConfig?.key, stylesMap, styleSchemasConfig, dispatch]);
+
+    const handleToggleElementHighlight = useCallback(() => {
+        dispatch(setElementHighlightActive(!elementHighlightActive));
+    }, [dispatch, elementHighlightActive]);
+
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(
         null
@@ -366,6 +433,29 @@ export const SettingsPanel = () => {
                     >
                         {activeTabConfig?.key === "styling" && (
                             <>
+                                {stylesMap && (
+                                    <Tooltip title="Select element">
+                                        <IconButton
+                                            size="small"
+                                            onClick={handleToggleElementHighlight}
+                                            sx={{
+                                                backgroundColor:
+                                                    elementHighlightActive
+                                                        ? "rgba(25, 118, 210, 0.12)"
+                                                        : "transparent"
+                                            }}
+                                        >
+                                            <HighlightAlt
+                                                fontSize="small"
+                                                sx={{
+                                                    color: elementHighlightActive
+                                                        ? "#1976d2"
+                                                        : "inherit"
+                                                }}
+                                            />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
                                 <Tooltip title="Filter Styles">
                                     <IconButton
                                         size="small"

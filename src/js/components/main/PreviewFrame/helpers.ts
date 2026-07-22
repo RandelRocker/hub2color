@@ -76,7 +76,7 @@ export const removeUnitsFromValue = (value: unknown) => {
 
 export type CssVariablesMap = Record<string, string>;
 
-const enrichStyleItems = (
+export const enrichStyleItems = (
     items: (StyleField | StyleGroup)[],
     cssVariables: CssVariablesMap
 ): (StyleField | StyleGroup)[] =>
@@ -103,7 +103,11 @@ export const enrichSchemaWithCssVariables = (
     cssVariables: CssVariablesMap
 ): ComponentSchema => ({
     ...schema,
-    styles: enrichStyleItems(schema.styles, cssVariables)
+    // Object-style (element-picker) schemas are enriched later, per selected
+    // element, so leave the styles map untouched here.
+    styles: Array.isArray(schema.styles)
+        ? enrichStyleItems(schema.styles, cssVariables)
+        : schema.styles
 });
 
 export const prepareStylingTheme = ({

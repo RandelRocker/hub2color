@@ -1,5 +1,5 @@
 import { ActionTypes } from "./constants";
-import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig, ServerResponseFormItem, FontItem } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig, ServerResponseFormItem, FontItem, StyleSchemasConfig, StyleField, StyleGroup } from "./types";
 
 export const setPages = (pages: PageSection[]) => ({
     type: ActionTypes.SET_PAGES,
@@ -177,4 +177,22 @@ export const setFonts = (fonts: FontItem[]) => ({
 export const setShowTranslationKeys = (show: boolean) => ({
     type: ActionTypes.SET_SHOW_TRANSLATION_KEYS,
     payload: show,
+});
+
+export const setStyleSchemasConfig = (config: StyleSchemasConfig) => ({
+    type: ActionTypes.SET_STYLE_SCHEMAS_CONFIG,
+    payload: config,
+});
+
+export const setElementHighlightActive = (active: boolean) => ({
+    type: ActionTypes.SET_ELEMENT_HIGHLIGHT_ACTIVE,
+    payload: active,
+});
+
+export const setSelectedElementStyles = (payload: {
+    schemaName: string;
+    styles: (StyleField | StyleGroup)[];
+}) => ({
+    type: ActionTypes.SET_SELECTED_ELEMENT_STYLES,
+    payload,
 });

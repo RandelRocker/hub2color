@@ -5,10 +5,11 @@ import { useSelector, useDispatch } from "react-redux";
 import * as helpers from "./helpers";
 import { RootState } from "../../../store";
 import * as config from "../../../../../config";
-import { setComponentSchema, setReferenceOverlay } from "../../../store/actions";
-import { PageItem, PageSection, ComponentSchema, StyleField, StyleGroup, ControlField } from "../../../store/types";
+import { setComponentSchema, setReferenceOverlay, setElementHighlightActive, setSelectedElementStyles } from "../../../store/actions";
+import { PageItem, PageSection, ComponentSchema, StyleField, StyleGroup, ControlField, StylesObjectMap } from "../../../store/types";
 import { createReferenceOverlayFromFile, getFirstImageFromClipboard } from "../../../utils/referenceOverlay";
 import { loadTranslations } from "../../../utils/translationsLoader";
+import { resolveElementStyles } from "../../../utils/elementStylesLoader";
 import { ReferenceOverlay } from "./ReferenceOverlay/ReferenceOverlay";
 
 export const PreviewFrame = () => {
@@ -16,6 +17,7 @@ export const PreviewFrame = () => {
     const dispatch = useDispatch();
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const translationsRef = useRef<Record<string, string> | null>(null);
+    const cssVariablesRef = useRef<helpers.CssVariablesMap>({});
     const {
         currentPage,
         pages,
@@ -38,7 +40,10 @@ export const PreviewFrame = () => {
         themeUrl,
         referenceOverlay,
         iframeRefreshKey,
-        showTranslationKeys
+        showTranslationKeys,
+        stylesMap,
+        styleSchemasConfig,
+        elementHighlightActive
     } = useSelector((state: RootState) => state.app);
 
     const handleReferenceOverlayChange = useCallback((nextOverlay: NonNullable<typeof referenceOverlay>) => {
@@ -189,6 +194,57 @@ export const PreviewFrame = () => {
                 return schemas[0];
             }
 
+            // If any schema uses object-style (element-picker) styles, merge the
+            // styles objects separately since the array-merge path below assumes
+            // an array. Inline arrays win over links from later schemas.
+            const hasObjectStyles = schemas.some(
+                (schema) =>
+                    schema.styles &&
+                    !Array.isArray(schema.styles) &&
+                    typeof schema.styles === "object"
+            );
+
+            if (hasObjectStyles) {
+                const mergedObjectStyles: StylesObjectMap = {};
+
+                schemas.forEach((schema) => {
+                    if (
+                        schema.styles &&
+                        !Array.isArray(schema.styles) &&
+                        typeof schema.styles === "object"
+                    ) {
+                        Object.assign(
+                            mergedObjectStyles,
+                            schema.styles as StylesObjectMap
+                        );
+                    }
+                });
+
+                const mergedControls: ControlField[] = [];
+                schemas.forEach((schema) => {
+                    if (Array.isArray(schema.controls)) {
+                        schema.controls.forEach((control) => {
+                            if (!("label" in control) || !control.id) {
+                                return;
+                            }
+                            const existingIndex = mergedControls.findIndex(
+                                (c) => c.id === control.id
+                            );
+                            if (existingIndex !== -1) {
+                                mergedControls[existingIndex] = control;
+                            } else {
+                                mergedControls.push(control);
+                            }
+                        });
+                    }
+                });
+
+                return {
+                    controls: mergedControls,
+                    styles: mergedObjectStyles
+                };
+            }
+
             const merged: ComponentSchema = {
                 controls: [],
                 styles: []
@@ -255,7 +311,7 @@ export const PreviewFrame = () => {
                 });
             };
             schemas.forEach((schema) => {
-                if (schema.styles) {
+                if (Array.isArray(schema.styles)) {
                     collectStylesToDelete(schema.styles);
                 }
             });
@@ -320,8 +376,11 @@ export const PreviewFrame = () => {
 
             // Merge styles arrays, handling groups with equal IDs
             schemas.forEach((schema) => {
-                if (schema.styles) {
-                    merged.styles = mergeStyleItems(merged.styles, schema.styles);
+                if (Array.isArray(schema.styles)) {
+                    merged.styles = mergeStyleItems(
+                        merged.styles as (StyleField | StyleGroup)[],
+                        schema.styles
+                    );
                 }
             });
 
@@ -351,7 +410,9 @@ export const PreviewFrame = () => {
 
             // After all schemas are processed, filter out any styles that should be deleted
             // This ensures deletion works regardless of schema load order
-            merged.styles = filterDeletedStyles(merged.styles);
+            merged.styles = filterDeletedStyles(
+                merged.styles as (StyleField | StyleGroup)[]
+            );
 
             // Deep merge other properties
             const deepMerge = (
@@ -438,6 +499,10 @@ export const PreviewFrame = () => {
                     cssVariablesPromise
                 ]);
 
+                // Keep css variables for enriching element-picker styles that
+                // are resolved later (on ELEMENT_SELECTED).
+                cssVariablesRef.current = cssVariables;
+
                 const mergedSchema = mergeSchemas(schemas);
                 const enrichedSchema = helpers.enrichSchemaWithCssVariables(mergedSchema, cssVariables);
                 dispatch(setComponentSchema(enrichedSchema));
@@ -511,6 +576,9 @@ export const PreviewFrame = () => {
 
         sendMessageToFrame("MOCKS_CHANGE", serverResponsesMocks);
 
+        // Restore element-highlight state after the iframe (re)loads
+        sendMessageToFrame("TOGGLE_ELEMENT_HIGHLIGHT", elementHighlightActive);
+
         sendMessageToFrame("CMSR_READY");
     }, [
         currentPage,
@@ -530,6 +598,7 @@ export const PreviewFrame = () => {
         themeUrl,
         showTranslationKeys,
         serverResponsesMocks,
+        elementHighlightActive,
     ]);
 
     useEffect(() => {
@@ -617,16 +686,59 @@ export const PreviewFrame = () => {
         sendMessageToFrame("TOGGLE_SHOW_TRANSLATION_KEYS", showTranslationKeys);
     }, [showTranslationKeys, sendMessageToFrame]);
 
-    // Listen for PORTAL_READY message from iframe
+    useEffect(() => {
+        sendMessageToFrame("TOGGLE_ELEMENT_HIGHLIGHT", elementHighlightActive);
+    }, [elementHighlightActive, sendMessageToFrame]);
+
+    // Listen for messages from the iframe (PORTAL_READY, ELEMENT_SELECTED)
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
             // Verify message is from our iframe
             if (
-                iframeRef.current?.contentWindow &&
-                event.source === iframeRef.current.contentWindow &&
-                event.data?.type === "PORTAL_READY"
+                !iframeRef.current?.contentWindow ||
+                event.source !== iframeRef.current.contentWindow
             ) {
+                return;
+            }
+
+            if (event.data?.type === "PORTAL_READY") {
                 handleIframeLoad();
+                return;
+            }
+
+            if (event.data?.type === "ELEMENT_SELECTED") {
+                const schemaName: string | undefined =
+                    event.data.payload?.schemaName ?? event.data.schemaName;
+
+                // Reset the picker/highlight state once an element is picked
+                dispatch(setElementHighlightActive(false));
+
+                if (!schemaName) {
+                    return;
+                }
+
+                resolveElementStyles(schemaName, stylesMap, styleSchemasConfig)
+                    .then((styles) => {
+                        // Enrich with css-variables defaults, mirroring the
+                        // array-mode schema enrichment.
+                        const enrichedStyles = helpers.enrichStyleItems(
+                            styles,
+                            cssVariablesRef.current
+                        );
+
+                        dispatch(
+                            setSelectedElementStyles({
+                                schemaName,
+                                styles: enrichedStyles
+                            })
+                        );
+                    })
+                    .catch((error) => {
+                        console.error(
+                            "Failed to resolve element styles:",
+                            error
+                        );
+                    });
             }
         };
 
@@ -634,7 +746,7 @@ export const PreviewFrame = () => {
         return () => {
             window.removeEventListener("message", handleMessage);
         };
-    }, [handleIframeLoad]);
+    }, [handleIframeLoad, dispatch, stylesMap, styleSchemasConfig]);
 
     const getViewportWidth = () => {
         switch (viewport) {

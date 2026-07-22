@@ -3,6 +3,19 @@ import { ActionTypes } from "./constants";
 import { AppState, TStoredThemeStyles, StyleField, StyleGroup, CustomHtmlPayload } from "./types";
 import { AppAction } from "./actionTypes";
 
+// Returns the styles array that is currently active for the styling tab.
+// In element-picker (object) mode this is the resolved styles of the selected
+// element; otherwise it is the schema's own styles array.
+const getActiveStyles = (state: AppState): (StyleField | StyleGroup)[] => {
+    if (state.selectedElementStyles) {
+        return state.selectedElementStyles;
+    }
+
+    const schemaStyles = state.componentSchema?.styles;
+
+    return Array.isArray(schemaStyles) ? schemaStyles : [];
+};
+
 const initialState: AppState = {
     pages: [],
     currentPage: 'components/maincomponents/dynamicforms/dynamiccustomform/dynamiccustomform.html',
@@ -41,6 +54,11 @@ const initialState: AppState = {
     iframeRefreshKey: 0,
     fonts: [],
     showTranslationKeys: false,
+    stylesMap: null,
+    styleSchemasConfig: null,
+    elementHighlightActive: false,
+    selectedStyleSchemaName: null,
+    selectedElementStyles: null,
 };
 
 export const appReducer = (
@@ -60,6 +78,11 @@ export const appReducer = (
                     scrollPosition: 0,
                     expandedAccordions: []
                 };
+                // Reset element-picker selection when switching components
+                // (the global style-schemas config cache is intentionally kept)
+                draft.selectedElementStyles = null;
+                draft.selectedStyleSchemaName = null;
+                draft.elementHighlightActive = false;
                 break;
 
             case ActionTypes.SET_COMPONENT_SCHEMA: {
@@ -71,6 +94,23 @@ export const appReducer = (
                 draft.serverResponsesTabExpandedAccordions = [];
                 draft.styleTabValues = {},
                 draft.styleTabDefaultValues = {};
+
+                // Reset element-picker state for the freshly loaded schema
+                draft.selectedElementStyles = null;
+                draft.selectedStyleSchemaName = null;
+                draft.elementHighlightActive = false;
+
+                // When `styles` is a plain object, we enter element-picker mode:
+                // no fields are shown until an element is selected.
+                const schemaStyles = action.payload?.styles;
+                const isStylesObject =
+                    !!schemaStyles &&
+                    !Array.isArray(schemaStyles) &&
+                    typeof schemaStyles === "object";
+
+                draft.stylesMap = isStylesObject
+                    ? (schemaStyles as AppState["stylesMap"])
+                    : null;
 
                 for (const field of action.payload?.controls || []) {
                     if (field.defaultValue !== undefined) {
@@ -107,7 +147,57 @@ export const appReducer = (
                     });
                 };
 
-                collectStyleTabValues(draft.componentSchema?.styles);
+                // Only array-based schemas populate the styling tab up front.
+                // Object schemas populate on SET_SELECTED_ELEMENT_STYLES.
+                collectStyleTabValues(getActiveStyles(draft));
+
+                break;
+            }
+
+            case ActionTypes.SET_STYLE_SCHEMAS_CONFIG:
+                draft.styleSchemasConfig = action.payload;
+                break;
+
+            case ActionTypes.SET_ELEMENT_HIGHLIGHT_ACTIVE:
+                draft.elementHighlightActive = action.payload;
+                break;
+
+            case ActionTypes.SET_SELECTED_ELEMENT_STYLES: {
+                draft.selectedStyleSchemaName = action.payload.schemaName;
+                draft.selectedElementStyles = action.payload.styles;
+                draft.elementHighlightActive = false;
+                draft.styleTabValues = {};
+                draft.styleTabDefaultValues = {};
+
+                const collectStyleTabValues = (items?: (StyleField | StyleGroup)[]) => {
+
+                    if (!items || items.length === 0) return;
+
+                    items.forEach((item) => {
+                        const field = item as StyleField;
+
+                        if ("id" in item && field.cssVariable ) {
+                            const fieldValue = draft.savedTheme?.[field.cssVariable] ?? field.defaultValue;
+
+                            if (fieldValue !== undefined) {
+                                draft.styleTabDefaultValues[field.id] = fieldValue;
+                                draft.styleTabValues[field.cssVariable] = {
+                                    id: field.id,
+                                    value: fieldValue,
+                                    themeKey: field?.themeKey,
+                                    isEnabled: Boolean(draft.savedTheme?.[field.cssVariable] !== undefined) || false
+                                };
+                                draft.styleTabDefaultValues[`${field.id}_enabled`] = draft.styleTabValues[field.cssVariable].isEnabled;
+                            }
+                        }
+
+                        if ("fields" in item && item.fields) {
+                            collectStyleTabValues(item.fields);
+                        }
+                    });
+                };
+
+                collectStyleTabValues(getActiveStyles(draft));
 
                 break;
             }
@@ -201,7 +291,7 @@ export const appReducer = (
                     });
                 };
 
-                collectStyleTabValues(draft.componentSchema?.styles);
+                collectStyleTabValues(getActiveStyles(draft));
 
                 break;
             }
@@ -240,7 +330,7 @@ export const appReducer = (
                     });
                 };
 
-                collectStyleTabValues(draft.componentSchema?.styles);
+                collectStyleTabValues(getActiveStyles(draft));
 
                 break;
             }

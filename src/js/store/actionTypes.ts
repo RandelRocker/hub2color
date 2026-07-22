@@ -1,4 +1,4 @@
-import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig, ServerResponseFormItem, FontItem } from "./types";
+import { PageSection, ComponentSchema, StylingTabValues, TStoredThemeStyles, ControlsTabValues, PortalTag, CustomHtmlPayload, ReferenceOverlayState, ServerResponsesMockConfig, ServerResponseFormItem, FontItem, StyleSchemasConfig, StyleField, StyleGroup } from "./types";
 import { ActionTypes } from "./constants";
 
 export interface SetPagesAction {
@@ -175,6 +175,24 @@ export interface SetShowTranslationKeysAction {
     payload: boolean;
 }
 
+export interface SetStyleSchemasConfigAction {
+    type: ActionTypes.SET_STYLE_SCHEMAS_CONFIG;
+    payload: StyleSchemasConfig;
+}
+
+export interface SetElementHighlightActiveAction {
+    type: ActionTypes.SET_ELEMENT_HIGHLIGHT_ACTIVE;
+    payload: boolean;
+}
+
+export interface SetSelectedElementStylesAction {
+    type: ActionTypes.SET_SELECTED_ELEMENT_STYLES;
+    payload: {
+        schemaName: string;
+        styles: (StyleField | StyleGroup)[];
+    };
+}
+
 export type AppAction =
     | SetPagesAction
     | SetCurrentPageAction
@@ -211,4 +229,7 @@ export type AppAction =
     | SetReferenceOverlayAction
     | RefreshIframeAction
     | SetFontsAction
-    | SetShowTranslationKeysAction;
+    | SetShowTranslationKeysAction
+    | SetStyleSchemasConfigAction
+    | SetElementHighlightActiveAction
+    | SetSelectedElementStylesAction;
