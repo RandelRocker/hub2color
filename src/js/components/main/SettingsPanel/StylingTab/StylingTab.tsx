@@ -299,13 +299,19 @@ const parseBoxShadow = (value: string): {
     color: string;
 } => {
     const match = value.match(
-        /^(-?\d*\.?\d*px)\s+(-?\d*\.?\d*px)\s+(\d*\.?\d*px)\s+(\d*\.?\d*px)\s+(#[0-9a-fA-F]{6}|rgba?\([^)]+\)|[a-zA-Z]+)$/
+        /^(-?\d*\.?\d+(?:px)?)\s+(-?\d*\.?\d+(?:px)?)\s+(\d*\.?\d+(?:px)?)\s+(\d*\.?\d+(?:px)?)\s+(#[0-9a-fA-F]{6}|rgba?\([^)]+\)|[a-zA-Z]+)$/
     );
+    // Normalize unitless numbers (e.g. "0") to include the "px" unit so downstream
+    // logic that compares against "0px" and renders values stays consistent.
+    const withUnit = (part: string | undefined, fallback: string): string => {
+        if (!part) return fallback;
+        return /px$/.test(part) ? part : `${part}px`;
+    };
     return {
-        horizontalPosition: match?.[1] || "0px",
-        verticalPosition: match?.[2] || "0px",
-        blurRadius: match?.[3] || "0px",
-        spreadRadius: match?.[4] || "0px",
+        horizontalPosition: withUnit(match?.[1], "0px"),
+        verticalPosition: withUnit(match?.[2], "0px"),
+        blurRadius: withUnit(match?.[3], "0px"),
+        spreadRadius: withUnit(match?.[4], "0px"),
         color: match?.[5] || "rgba(0, 0, 0, 0.5)"
     };
 };

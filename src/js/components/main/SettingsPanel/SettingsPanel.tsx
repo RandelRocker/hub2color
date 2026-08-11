@@ -103,13 +103,11 @@ export const SettingsPanel = () => {
             return false;
         }
 
-        const isServerResponsesTabEnabled =
-            localStorage.getItem("isServerResponsesTabEnabled") !== null;
         const mocks = componentSchema?.mocks;
         const hasMocksSchema =
             Array.isArray(mocks) && mocks.length > 0;
 
-        return isServerResponsesTabEnabled && hasMocksSchema;
+        return hasMocksSchema;
     }, [componentSchema?.mocks]);
 
     const visibleTabs = useMemo(
