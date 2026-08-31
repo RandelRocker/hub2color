@@ -54,6 +54,7 @@ export const buildServerResponsePayload = (
                 url: item.url,
                 requestId: item.requestId,
                 response: parsedBody,
+                condition: item.condition,
                 responseType: item.responseType,
                 ...(parsedDelay ? { delay: parsedDelay } : {})
             });

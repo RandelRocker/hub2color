@@ -16,6 +16,7 @@ export interface SchemaMock {
     url: string;
     requestId: number;
     description: string;
+    condition: Record<string, unknown>;
     response: unknown;
     responseType?: ServerResponseType;
     delay?: number;
@@ -26,6 +27,7 @@ export type ServerResponseType = "success" | "error";
 export interface ServerResponsesMockConfig {
     url: string;
     requestId: number;
+    condition: Record<string, unknown>;
     response: unknown;
     responseType: ServerResponseType;
     delay?: number;
@@ -35,6 +37,7 @@ export interface ServerResponseFormItem {
     url: string;
     requestId: number;
     description: string;
+    condition: Record<string, unknown>;
     isEnabled: boolean;
     responseType: ServerResponseType;
     responseDelay: string;

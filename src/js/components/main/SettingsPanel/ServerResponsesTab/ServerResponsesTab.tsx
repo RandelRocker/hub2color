@@ -96,6 +96,7 @@ export const ServerResponsesTab = () => {
                 url: mock.url,
                 requestId: mock.requestId,
                 description: mock.description,
+                condition: mock.condition,
                 isEnabled: false,
                 responseType: mock.responseType ?? "success",
                 responseDelay:
@@ -189,7 +190,7 @@ export const ServerResponsesTab = () => {
     };
 
     const getAccordionId = (item: ServerResponseFormItem) =>
-        String(item.requestId);
+        item.url || `${item.requestId}-${item.description}`;
 
     const handleAccordionChange = (accordionId: string) => {
         const next = expandedAccordions.includes(accordionId)
@@ -243,7 +244,7 @@ export const ServerResponsesTab = () => {
                     const isExpanded = expandedAccordions.includes(accordionId);
 
                     return (
-                        <Box key={item.url || item.requestId}>
+                        <Box key={item.url || `${item.requestId}-${item.description}`}>
                             <Accordion
                                 expanded={isExpanded}
                                 onChange={() =>
