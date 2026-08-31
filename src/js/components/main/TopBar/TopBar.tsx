@@ -62,15 +62,23 @@ const DEFAULT_PREVIEW_BACKGROUND_COLOR = "rgba(255, 255, 255, 1)";
 
 export const TopBar = () => {
     const dispatch = useDispatch();
-    const { zoom, viewport, viewportRotated, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor, referenceOverlay, currentPage, savedTheme, showTranslationKeys, controlsTabValues } =
+    const { zoom, viewport, viewportRotated, direction, codeEditorSidebarOpen, testSidebarOpen, portalTags, portalTagsEnabled, previewBackgroundColor, siteBackgroundCSSVariable, referenceOverlay, currentPage, savedTheme, showTranslationKeys, controlsTabValues } =
         useSelector((state: RootState) => state.app);
+
+    // Color shown in the picker: the live (unsaved) override wins, otherwise the
+    // saved theme value for the site background variable, otherwise the default.
+    const effectiveBgColor =
+        previewBackgroundColor ??
+        (siteBackgroundCSSVariable ? savedTheme?.[siteBackgroundCSSVariable] : undefined) ??
+        DEFAULT_PREVIEW_BACKGROUND_COLOR;
+
     const [tagsDialogOpen, setTagsDialogOpen] = useState(false);
     const [bgColorAnchorEl, setBgColorAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [localBgColor, setLocalBgColor] = useState<RgbaColor>(() => 
-        rgbaStringToRgbaColor(previewBackgroundColor)
+        rgbaStringToRgbaColor(effectiveBgColor)
     );
     const [hexInput, setHexInput] = useState(() => 
-        `#${rgbaStringToRgbaColor(previewBackgroundColor).r.toString(16).padStart(2, "0")}${rgbaStringToRgbaColor(previewBackgroundColor).g.toString(16).padStart(2, "0")}${rgbaStringToRgbaColor(previewBackgroundColor).b.toString(16).padStart(2, "0")}`
+        `#${rgbaStringToRgbaColor(effectiveBgColor).r.toString(16).padStart(2, "0")}${rgbaStringToRgbaColor(effectiveBgColor).g.toString(16).padStart(2, "0")}${rgbaStringToRgbaColor(effectiveBgColor).b.toString(16).padStart(2, "0")}`
     );
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const imageInputRef = useRef<HTMLInputElement | null>(null);
@@ -79,12 +87,12 @@ export const TopBar = () => {
 
     const bgColorPickerOpen = Boolean(bgColorAnchorEl);
 
-    // Update local color when prop changes
+    // Update local color when the effective (live or saved) color changes
     useEffect(() => {
-        const color = rgbaStringToRgbaColor(previewBackgroundColor);
+        const color = rgbaStringToRgbaColor(effectiveBgColor);
         setLocalBgColor(color);
         setHexInput(`#${color.r.toString(16).padStart(2, "0")}${color.g.toString(16).padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`);
-    }, [previewBackgroundColor]);
+    }, [effectiveBgColor]);
 
     // Cleanup timeout on unmount
     useEffect(() => {
@@ -160,15 +168,44 @@ export const TopBar = () => {
         }, 150);
     };
 
+    const handleSaveBgColor = () => {
+        if (!siteBackgroundCSSVariable) return;
+
+        try {
+            const stylingTheme = { ...savedTheme };
+            stylingTheme[siteBackgroundCSSVariable] = rgbaColorToRgbaString(localBgColor);
+
+            localStorage.setItem("stylingTheme", JSON.stringify(stylingTheme));
+            dispatch(saveStylingTheme(stylingTheme));
+        } catch (error) {
+            console.error("Failed to save background color:", error);
+        }
+    };
+
     const handleRemoveBgColor = () => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
             timeoutRef.current = null;
         }
+
+        if (siteBackgroundCSSVariable && savedTheme) {
+            try {
+                const stylingTheme = { ...savedTheme };
+                delete stylingTheme[siteBackgroundCSSVariable];
+
+                localStorage.setItem("stylingTheme", JSON.stringify(stylingTheme));
+                dispatch(saveStylingTheme(stylingTheme));
+            } catch (error) {
+                console.error("Failed to remove background color:", error);
+            }
+        }
+
+        // Clear the live override so the preview reverts to the theme default.
+        dispatch(setPreviewBackgroundColor(null));
+
         const defaultColor = rgbaStringToRgbaColor(DEFAULT_PREVIEW_BACKGROUND_COLOR);
         setLocalBgColor(defaultColor);
         setHexInput(`#${defaultColor.r.toString(16).padStart(2, "0")}${defaultColor.g.toString(16).padStart(2, "0")}${defaultColor.b.toString(16).padStart(2, "0")}`);
-        dispatch(setPreviewBackgroundColor(DEFAULT_PREVIEW_BACKGROUND_COLOR));
     };
 
     const isEyeDropperSupported =
@@ -862,7 +899,16 @@ export const TopBar = () => {
                             }}
                         />
                     </Box>
-                    <Box sx={{ mt: 2 }}>
+                    <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+                        <Button
+                            size="small"
+                            variant="contained"
+                            onClick={handleSaveBgColor}
+                            disabled={!siteBackgroundCSSVariable}
+                            fullWidth
+                        >
+                            Save color
+                        </Button>
                         <Button
                             size="small"
                             variant="outlined"

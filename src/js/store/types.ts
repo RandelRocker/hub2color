@@ -218,7 +218,8 @@ export interface AppState {
     error: string | null;
     portalTags: PortalTag[];
     portalTagsEnabled: boolean;
-    previewBackgroundColor: string;
+    previewBackgroundColor: string | null;
+    siteBackgroundCSSVariable: string | null;
     themeName: string | null;
     themeUrl: string | null;
     portalIcons: Record<string, string>;

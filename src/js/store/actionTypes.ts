@@ -65,7 +65,12 @@ export interface SetStylingTabUIStateAction {
 
 export interface SetPreviewBackgroundColorAction {
     type: ActionTypes.SET_PREVIEW_BACKGROUND_COLOR;
-    payload: string;
+    payload: string | null;
+}
+
+export interface SetSiteBackgroundCSSVariableAction {
+    type: ActionTypes.SET_SITE_BACKGROUND_CSS_VARIABLE;
+    payload: string | null;
 }
 
 export interface saveStylingThemeAction {
@@ -224,6 +229,7 @@ export type AppAction =
     | SetPortalTagsAction
     | SetPortalTagsEnabledAction
     | SetPreviewBackgroundColorAction
+    | SetSiteBackgroundCSSVariableAction
     | SetSiteThemeAction
     | SetPortalIconsAction
     | SetReferenceOverlayAction

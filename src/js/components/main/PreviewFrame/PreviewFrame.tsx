@@ -36,6 +36,7 @@ export const PreviewFrame = () => {
         portalTags,
         portalTagsEnabled,
         previewBackgroundColor,
+        siteBackgroundCSSVariable,
         themeName,
         themeUrl,
         referenceOverlay,
@@ -547,7 +548,9 @@ export const PreviewFrame = () => {
             sendMessageToFrame("STYLING_CHANGE", {
                 styles: helpers.prepareStylingTheme({
                     savedTheme,
-                    styleTabValues
+                    styleTabValues,
+                    siteBackgroundCSSVariable,
+                    previewBackgroundColor
                 })
             });
         }
@@ -565,9 +568,6 @@ export const PreviewFrame = () => {
         if (portalTagsEnabled) {
             portalTags && portalTags.length > 0 && sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: portalTags });
         }
-
-        // Send preview background color
-        sendMessageToFrame("PREVIEW_BACKGROUND_COLOR_CHANGE", { color: previewBackgroundColor });
 
         // Send portal theme info
         sendMessageToFrame("PORTAL_INFO_UPDATE", { themeName, themeUrl });
@@ -594,6 +594,7 @@ export const PreviewFrame = () => {
         portalTagsEnabled,
         portalTags,
         previewBackgroundColor,
+        siteBackgroundCSSVariable,
         themeName,
         themeUrl,
         showTranslationKeys,
@@ -656,11 +657,13 @@ export const PreviewFrame = () => {
             sendMessageToFrame("STYLING_CHANGE", {
                 styles: helpers.prepareStylingTheme({
                     savedTheme,
-                    styleTabValues
+                    styleTabValues,
+                    siteBackgroundCSSVariable,
+                    previewBackgroundColor
                 })
             });
         }
-    }, [styleTabValues, sendMessageToFrame, savedTheme, viewport]);
+    }, [styleTabValues, sendMessageToFrame, savedTheme, viewport, siteBackgroundCSSVariable, previewBackgroundColor]);
 
     useEffect(() => {
         if (portalTagsEnabled) {
@@ -669,10 +672,6 @@ export const PreviewFrame = () => {
             sendMessageToFrame("PORTAL_TAGS_CHANGE", { tags: [] });
         }
     }, [portalTags, portalTagsEnabled, sendMessageToFrame]);
-
-    useEffect(() => {
-        sendMessageToFrame("PREVIEW_BACKGROUND_COLOR_CHANGE", { color: previewBackgroundColor });
-    }, [previewBackgroundColor, sendMessageToFrame]);
 
     useEffect(() => {
         sendMessageToFrame("PORTAL_INFO_UPDATE", { themeName, themeUrl });
@@ -796,8 +795,7 @@ export const PreviewFrame = () => {
                     flex: 1,
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    bgcolor: "#f5f5f5"
+                    justifyContent: "center"
                 }}
             >
                 <CircularProgress />
@@ -813,7 +811,6 @@ export const PreviewFrame = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    bgcolor: "#f5f5f5",
                     flexDirection: "column",
                     gap: 2
                 }}
@@ -833,7 +830,6 @@ export const PreviewFrame = () => {
             sx={{
                 flex: 1,
                 minHeight: 0,
-                bgcolor: "#f5f5f5",
                 overflow: "auto"
             }}
         >
@@ -866,8 +862,7 @@ export const PreviewFrame = () => {
                         sx={{
                             inset: 0,
                             overflow: "hidden",
-                            position: "absolute",
-                            bgcolor: previewBackgroundColor
+                            position: "absolute"
                         }}
                     >
                         <iframe

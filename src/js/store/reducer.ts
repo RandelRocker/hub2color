@@ -44,9 +44,8 @@ const initialState: AppState = {
     styleTabDefaultValues: {},
     portalTags: [],
     portalTagsEnabled: false,
-    previewBackgroundColor: typeof window !== 'undefined' 
-        ? (localStorage.getItem('previewBackgroundColor') || '#fff')
-        : '#fff',
+    previewBackgroundColor: null,
+    siteBackgroundCSSVariable: null,
     themeName: null,
     themeUrl: null,
     portalIcons: {},
@@ -412,10 +411,9 @@ export const appReducer = (
                 break;
             case ActionTypes.SET_PREVIEW_BACKGROUND_COLOR:
                 draft.previewBackgroundColor = action.payload;
-                // Save to localStorage
-                if (typeof window !== 'undefined') {
-                    localStorage.setItem('previewBackgroundColor', action.payload);
-                }
+                break;
+            case ActionTypes.SET_SITE_BACKGROUND_CSS_VARIABLE:
+                draft.siteBackgroundCSSVariable = action.payload;
                 break;
             case ActionTypes.SET_SITE_THEME:
                 draft.themeName = action.payload.themeName;

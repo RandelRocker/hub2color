@@ -15,7 +15,8 @@ import {
     setSiteTheme,
     setPortalIcons,
     setReferenceOverlay,
-    setFonts
+    setFonts,
+    setSiteBackgroundCSSVariable
 } from "../../../store/actions";
 import { PortalTag, PortalTagRaw } from "../../../store/types";
 import { createReferenceOverlayFromFile, getFirstImageFromClipboard } from "../../../utils/referenceOverlay";
@@ -176,10 +177,24 @@ export const App = () => {
             }
         };
 
+        const loadThemeConfig = async () => {
+            try {
+                const response = await fetch(`${config.HUB2COLOR_PUBLIC_PATH}/config/theme.config.json`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch theme config: ${response.status}`);
+                }
+                const data = await response.json();
+                dispatch(setSiteBackgroundCSSVariable(data?.siteBackgroundCSSVariable ?? null));
+            } catch (error) {
+                console.error("Failed to load theme config:", error);
+            }
+        };
+
         loadPages();
         loadSavedStylingTheme();
         loadPortalTag();
         loadFonts();
+        loadThemeConfig();
         
         // Load site theme first, then use the themeUrl to load icons
         loadSiteTheme().then((themeUrl) => {
@@ -191,8 +206,7 @@ export const App = () => {
         <Box
             sx={{
                 display: "flex",
-                height: "100vh",
-                bgcolor: "#f8f9fa"
+                height: "100vh"
             }}
         >
             <Sidebar />

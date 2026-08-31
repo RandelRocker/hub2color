@@ -112,10 +112,14 @@ export const enrichSchemaWithCssVariables = (
 
 export const prepareStylingTheme = ({
     savedTheme,
-    styleTabValues
+    styleTabValues,
+    siteBackgroundCSSVariable,
+    previewBackgroundColor
 }: {
     savedTheme: TStoredThemeStyles | null;
     styleTabValues: StylingTabValues;
+    siteBackgroundCSSVariable?: string | null;
+    previewBackgroundColor?: string | null;
 }) => {
     const result: Record<string, unknown> = { ...savedTheme };
 
@@ -126,6 +130,12 @@ export const prepareStylingTheme = ({
             delete result[key];
         }
     });
+
+    // Merge the live (unsaved) site background override so it rides along with
+    // the saved theme and style-tab values on every STYLING_CHANGE.
+    if (siteBackgroundCSSVariable && previewBackgroundColor) {
+        result[siteBackgroundCSSVariable] = previewBackgroundColor;
+    }
 
     return result;
 };

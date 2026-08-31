@@ -145,9 +145,14 @@ export const setPortalTagsEnabled = (enabled: boolean) => ({
     payload: enabled,
 });
 
-export const setPreviewBackgroundColor = (color: string) => ({
+export const setPreviewBackgroundColor = (color: string | null) => ({
     type: ActionTypes.SET_PREVIEW_BACKGROUND_COLOR,
     payload: color,
+});
+
+export const setSiteBackgroundCSSVariable = (cssVariable: string | null) => ({
+    type: ActionTypes.SET_SITE_BACKGROUND_CSS_VARIABLE,
+    payload: cssVariable,
 });
 
 export const setSiteTheme = (themeName: string, themeUrl: string) => ({
