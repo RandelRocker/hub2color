@@ -838,6 +838,7 @@ export const PreviewFrame = () => {
                     ...(viewport === "desktop"
                         ? { width: "100%", height: "100%" }
                         : {
+                              bgcolor: "#f5f5f5",
                               minWidth: `max(100%, ${viewportWidthPx}px)`,
                               minHeight: `max(100%, ${viewportHeightPx}px)`
                           }),
