@@ -18,7 +18,7 @@ const getActiveStyles = (state: AppState): (StyleField | StyleGroup)[] => {
 
 const initialState: AppState = {
     pages: [],
-    currentPage: 'components/maincomponents/responsiblegaming/responsiblegamingdashboard/responsiblegamingdashboard.html',
+    currentPage: '',
     customCss: "",
     customJs: "",
     customHtml: { beforeEndHead: "", beforeEndBody: "" },

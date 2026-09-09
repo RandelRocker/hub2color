@@ -4128,57 +4128,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
             >
                 {sections}
                 {fieldRows.length > 0 && (
-                    <Box>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 2,
-                                py: 1.5,
-                                px: 2,
-                                backgroundColor: "#f8f9fa",
-                                borderBottom: "2px solid #e0e0e0",
-                                fontWeight: 600,
-                                position: "sticky",
-                                top: 0,
-                                zIndex: 1
-                            }}
-                        >
-                            <Box sx={{ width: "15%", minWidth: 60 }}>
-                                <Typography
-                                    variant="body2"
-                                    sx={{ fontWeight: 600 }}
-                                >
-                                    Enable
-                                </Typography>
-                            </Box>
-                            <Box sx={{ width: "35%", minWidth: 120 }}>
-                                <Typography
-                                    variant="body2"
-                                    sx={{ fontWeight: 600 }}
-                                >
-                                    Name
-                                </Typography>
-                            </Box>
-                            <Box sx={{ width: "50%", flex: 1 }}>
-                                <Typography
-                                    variant="body2"
-                                    sx={{ fontWeight: 600 }}
-                                >
-                                    Control
-                                </Typography>
-                            </Box>
-                            <Box sx={{ width: "auto", minWidth: 32 }}>
-                                <Typography
-                                    variant="body2"
-                                    sx={{ fontWeight: 600 }}
-                                >
-                                    {/* Options column header - empty */}
-                                </Typography>
-                            </Box>
-                        </Box>
-                        <Box>{fieldRows}</Box>
-                    </Box>
+                    <Box>{fieldRows}</Box>
                 )}
             </Box>
 
