@@ -676,10 +676,12 @@ const DebouncedColorPicker = ({
 
 const PortalIconImagePicker = ({
     iconUrl,
-    iconKey
+    iconKey,
+    tooltip
 }: {
     iconUrl?: string;
     iconKey: string;
+    tooltip?: string;
 }) => {
     const [open, setOpen] = useState(false);
     const [source, setSource] = useState<"documents" | "local">("documents");
@@ -695,37 +697,39 @@ const PortalIconImagePicker = ({
     return (
         <>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Box
-                    onClick={handleOpen}
-                    sx={{
-                        width: 30,
-                        height: 30,
-                        minWidth: 30,
-                        border: "1px solid #e0e0e0",
-                        borderRadius: 1,
-                        cursor: "pointer",
-                        overflow: "hidden",
-                        backgroundColor: "#fff",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        "&:hover": { opacity: 0.85 },
-                        transition: "opacity 0.2s"
-                    }}
-                    role="button"
-                    aria-label="Open image picker"
-                >
-                    {iconUrl ? (
-                        <Box
-                            component="img"
-                            src={iconUrl}
-                            alt={iconKey}
-                            sx={{ width: "100%", height: "100%", objectFit: "contain" }}
-                        />
-                    ) : (
-                        <Box sx={{ width: "100%", height: "100%", backgroundColor: "#f0f0f0" }} />
-                    )}
-                </Box>
+                <Tooltip title={tooltip ?? ""} disableHoverListener={!tooltip}>
+                    <Box
+                        onClick={handleOpen}
+                        sx={{
+                            width: 30,
+                            height: 30,
+                            minWidth: 30,
+                            border: "1px solid #e0e0e0",
+                            borderRadius: 1,
+                            cursor: "pointer",
+                            overflow: "hidden",
+                            backgroundColor: "#fff",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            "&:hover": { opacity: 0.85 },
+                            transition: "opacity 0.2s"
+                        }}
+                        role="button"
+                        aria-label="Open image picker"
+                    >
+                        {iconUrl ? (
+                            <Box
+                                component="img"
+                                src={iconUrl}
+                                alt={iconKey}
+                                sx={{ width: "100%", height: "100%", objectFit: "contain" }}
+                            />
+                        ) : (
+                            <Box sx={{ width: "100%", height: "100%", backgroundColor: "#f0f0f0" }} />
+                        )}
+                    </Box>
+                </Tooltip>
             </Box>
 
             <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
@@ -3361,11 +3365,12 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
             step,
             checkedValue,
             uncheckedValue,
+            customValue = "",
             defaultValue = ""
         } = field;
 
         const isFieldEnabled =
-            type === "image" || type === "staticImage"
+            type === "image" || type === "staticImage" ||  type === "iconImage"
                 ? true
                 : (styleTabValues?.[field.cssVariable]?.isEnabled ?? false);
 
@@ -3562,7 +3567,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                     />
                 );
 
-            case "image":
+            case "iconImage":
                 return (
                     <Controller
                         name={id}
@@ -3572,7 +3577,27 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                             const iconKey = String(defaultValue ?? fieldProps.value ?? "");
                             const iconUrl = portalIcons?.[iconKey];
 
-                            return <PortalIconImagePicker iconUrl={iconUrl} iconKey={iconKey} />;
+                            const customIconKey = String(customValue ?? "");
+                            const customIconUrl = customIconKey
+                                ? portalIcons?.[customIconKey]
+                                : undefined;
+
+                            return (
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                    <PortalIconImagePicker
+                                        iconUrl={iconUrl}
+                                        iconKey={iconKey}
+                                        tooltip="Common icon"
+                                    />
+                                    {customValue ? (
+                                        <PortalIconImagePicker
+                                            iconUrl={customIconUrl}
+                                            iconKey={customIconKey}
+                                            tooltip="Icon for this component only"
+                                        />
+                                    ) : null}
+                                </Box>
+                            );
                         }}
                     />
                 );
@@ -3587,7 +3612,26 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                             const iconKey = String(defaultValue ?? "");
                             const iconUrl = themeUrl ? `/${themeUrl}/${defaultValue}` : undefined; // remove hostname and leave absolute path once moved to real CMS
 
-                            return <PortalIconImagePicker iconUrl={iconUrl} iconKey={iconKey} />;
+                            const customIconKey = String(customValue ?? "");
+                            const customIconUrl =
+                                themeUrl && customValue ? `/${themeUrl}/${customValue}` : undefined; // remove hostname and leave absolute path once moved to real CMS
+
+                            return (
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                    <PortalIconImagePicker
+                                        iconUrl={iconUrl}
+                                        iconKey={iconKey}
+                                        tooltip="Common icon"
+                                    />
+                                    {customValue ? (
+                                        <PortalIconImagePicker
+                                            iconUrl={customIconUrl}
+                                            iconKey={customIconKey}
+                                            tooltip="Icon for this component only"
+                                        />
+                                    ) : null}
+                                </Box>
+                            );
                         }}
                     />
                 );

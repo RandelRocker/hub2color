@@ -98,6 +98,7 @@ export interface StyleField {
     id: string;
     label: string;
     type: string;
+    customValue?: string;
     defaultValue?: string | number | boolean;
     themeKey?: string;
     cssVariable: string;
