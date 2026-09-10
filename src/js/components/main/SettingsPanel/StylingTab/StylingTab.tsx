@@ -99,7 +99,7 @@ const filterStyleItems = (
 ): (StyleField | StyleGroup)[] => {
     const matchesFilter = (field: StyleField) => {
         if (stylesFilter === "colors") return field.type === "color";
-        if (stylesFilter === "images") return field.type === "image" || field.type === "staticImage";
+        if (stylesFilter === "images") return field.type === "image" || field.type === "staticImage" || field.type === "iconImage";
         if (stylesFilter === "changed")
             return enabledCssVariables?.has(field.cssVariable) ?? false;
         return true;
@@ -3260,7 +3260,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
                         );
                         if (field?.cssVariable) {
                             const enabledKey = `${key}_enabled`;
-                            const isEnabled = field.type === "image" || field.type === "staticImage" ? true : Boolean(values[enabledKey]);
+                            const isEnabled = field.type === "image" || field.type === "staticImage" || field.type === "iconImage" ? true : Boolean(values[enabledKey]);
                             const resolvedValue =
                                 field.type === "staticImage" && themeUrl && (field.defaultValue ?? value)
                                     ? `/${themeUrl}/${field.defaultValue ?? value}` // remove hostname and leave absolute path once moved to real CMS
@@ -3885,7 +3885,7 @@ export const StylingTab = ({ stylesFilter = "all" }: { stylesFilter?: StylesFilt
     };
 
     const renderField = (field: StyleField) => {
-        const showEnableCheckbox = field.type !== "image" && field.type !== "staticImage";
+        const showEnableCheckbox = field.type !== "image" && field.type !== "staticImage" && field.type !== "iconImage";
 
         return (
             <Box
