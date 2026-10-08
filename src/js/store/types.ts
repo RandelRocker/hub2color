@@ -15,6 +15,7 @@ export interface PageSection {
 export interface SchemaMock {
     url: string;
     requestId: number;
+    actionName: string;
     description: string;
     condition: Record<string, unknown>;
     response: unknown;
@@ -27,6 +28,7 @@ export type ServerResponseType = "success" | "error";
 export interface ServerResponsesMockConfig {
     url: string;
     requestId: number;
+    actionName: string;
     condition: Record<string, unknown>;
     response: unknown;
     responseType: ServerResponseType;
@@ -36,6 +38,7 @@ export interface ServerResponsesMockConfig {
 export interface ServerResponseFormItem {
     url: string;
     requestId: number;
+    actionName: string;
     description: string;
     condition: Record<string, unknown>;
     isEnabled: boolean;

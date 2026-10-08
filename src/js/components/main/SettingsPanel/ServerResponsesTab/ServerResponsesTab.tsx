@@ -89,12 +89,13 @@ export const ServerResponsesTab = () => {
 
         const formItemsMatchSchema =
             formItems.length === mocks.length &&
-            formItems.every((item, i) => item.requestId === mocks[i].requestId && item.url === mocks[i].url);
+            formItems.every((item, i) => item.requestId === mocks[i].requestId && item.url === mocks[i].url && item.actionName === mocks[i].actionName);
 
         if (!formItemsMatchSchema) {
             const nextItems = mocks.map((mock) => ({
                 url: mock.url,
                 requestId: mock.requestId,
+                actionName: mock.actionName,
                 description: mock.description,
                 condition: mock.condition,
                 isEnabled: false,
@@ -190,7 +191,7 @@ export const ServerResponsesTab = () => {
     };
 
     const getAccordionId = (item: ServerResponseFormItem) =>
-        item.url || `${item.requestId}-${item.description}`;
+        item.url || `${item.requestId || item.actionName}-${item.description}`;
 
     const handleAccordionChange = (accordionId: string) => {
         const next = expandedAccordions.includes(accordionId)
@@ -244,7 +245,7 @@ export const ServerResponsesTab = () => {
                     const isExpanded = expandedAccordions.includes(accordionId);
 
                     return (
-                        <Box key={item.url || `${item.requestId}-${item.description}`}>
+                        <Box key={item.url || `${item.requestId || item.actionName}-${item.description}`}>
                             <Accordion
                                 expanded={isExpanded}
                                 onChange={() =>
@@ -261,7 +262,7 @@ export const ServerResponsesTab = () => {
                                         variant="subtitle2"
                                         sx={{ fontWeight: 600 }}
                                     >
-                                        {item.url || item.requestId} - {item.description}
+                                        {item.url || item.requestId || item.actionName} - {item.description}
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails sx={{ p: 0 }}>

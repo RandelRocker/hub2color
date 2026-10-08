@@ -53,6 +53,7 @@ export const buildServerResponsePayload = (
             acc.push({
                 url: item.url,
                 requestId: item.requestId,
+                actionName: item.actionName,
                 response: parsedBody,
                 condition: item.condition,
                 responseType: item.responseType,
@@ -79,6 +80,7 @@ export const areServerResponsePayloadsEqual = (
 
         if (
             prevItem.requestId !== nextItem.requestId ||
+            prevItem.actionName !== nextItem.actionName ||
             prevItem.url !== nextItem.url ||
             prevItem.responseType !== nextItem.responseType ||
             prevItem.delay !== nextItem.delay
